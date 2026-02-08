@@ -70,54 +70,67 @@
 │       ├── F0.42 差分进化（Differential Evolution）
 │       └── F0.43 牛顿法（Newton Method）
 ├── L1 生产层级Skills（Manufacturing Tier）
-│   ├── M1.1 极片缺陷AI检测（defect-detection-yolo）
-│   ├── M1.2 电芯OCV内阻分级（cell-grading-clustering）
-│   ├── M1.3 组装一致性控制（assembly-consistency-gpr）
-│   ├── M1.4 注液量优化（electrolyte-optimization-eis）
-│   ├── M1.5 化成曲线异常检测（formation-anomaly-ica）
-│   └── M1.6 固态界面质量评估（solid-interface-eis）
+│   ├── 质量控制类（3个Skills）
+│   │   ├── M1.1 极片缺陷AI检测（defect-detection-yolo）
+│   │   ├── M1.2 电芯OCV内阻分级（cell-grading-clustering）
+│   │   └── M1.3 组装一致性控制（assembly-consistency-gpr）
+│   ├── 异常检测类（1个Skill）
+│   │   └── M1.4 化成曲线异常检测（formation-anomaly-ica）
+│   └── 工艺优化类（2个Skills）
+│       ├── M1.5 注液量优化（electrolyte-optimization-eis）
+│       └── M1.6 固态界面质量评估（solid-interface-eis）
 ├── L2 BMS层级Skills（BMS Tier）
-│   ├── B2.1 SOC估计-安时积分（soc-estimation-coulomb）
-│   ├── B2.2 SOC估计-查表修正（soc-estimation-lookup）
-│   ├── B2.3 SOC估计-EKF（soc-estimation-ekf）
-│   ├── B2.4 SOC估计-AEKF（soc-estimation-aekf）
-│   ├── B2.5 SOC估计-UKF（soc-estimation-ukf）
-│   ├── B2.6 SOH估计-两点法（soh-estimation-two-point）
-│   ├── B2.7 SOH估计-AEKF（soh-estimation-aekf）
-│   ├── B2.14 膨胀力监测（swelling-force-monitoring）
-│   ├── B2.8 SOP估计-功率边界（sop-estimation-power）
-│   ├── B2.9 智能均衡优化（active-balancing-mpc）
-│   ├── B2.10 析锂检测-简化模型（lithium-plating-detection）
-│   ├── B2.11 热管理-MPC（thermal-management-mpc）
-│   ├── B2.12 主动安全控制（active-safety-l0l4）
-│   └── B2.13 钠电分段滤波（sodium-ion-filtering）
+│   ├── 状态估计类（8个Skills）
+│   │   ├── B2.1 SOC估计-安时积分（soc-estimation-coulomb）
+│   │   ├── B2.2 SOC估计-查表修正（soc-estimation-lookup）
+│   │   ├── B2.3 SOC估计-EKF（soc-estimation-ekf）
+│   │   ├── B2.4 SOC估计-AEKF（soc-estimation-aekf）
+│   │   ├── B2.5 SOC估计-UKF（soc-estimation-ukf）
+│   │   ├── B2.6 SOH估计-两点法（soh-estimation-two-point）
+│   │   ├── B2.7 SOH估计-AEKF（soh-estimation-aekf）
+│   │   └── B2.8 SOP估计-功率边界（sop-estimation-power）
+│   ├── 安全监测类（2个Skills）
+│   │   ├── B2.9 膨胀力监测（swelling-force-monitoring）
+│   │   └── B2.10 析锂检测-简化模型（lithium-plating-detection）
+│   └── 性能控制类（4个Skills）
+│       ├── B2.11 智能均衡优化（active-balancing-mpc）
+│       ├── B2.12 热管理-MPC（thermal-management-mpc）
+│       ├── B2.13 主动安全控制（active-safety-l0l4）
+│       └── B2.14 钠电分段滤波（sodium-ion-filtering）
 ├── L3 云端层级Skills（Cloud Tier）
-│   ├── C3.1 内短路诊断-等效电路（internal-short-circuit-model）
-│   ├── C3.2 内短路诊断-P2D（internal-short-p2d）
-│   ├── C3.3 内短路诊断-PINN（internal-short-pinn）
-│   ├── C3.4 内短路诊断-SOS（internal-short-sos）
-│   ├── C3.5 热失控预警-MEMS（thermal-runaway-mems）
-│   ├── C3.6 寿命预测-RUL（lifetime-prediction-ode）
-│   ├── C3.7 安全熵（safety-entropy）
-│   ├── C3.8 SOH深度学习（soh-deep-learning）
-│   ├── C3.9 析锂检测-弛豫法（lithium-plating-relaxation）
-│   ├── C3.10 析锂检测-SV-RV（lithium-plating-sv-rv）
-│   ├── C3.11 析锂检测-P2D（lithium-plating-p2d）
-│   ├── C3.12 析锂检测-PINN（lithium-plating-pinn）
-│   ├── C3.13 容量异常-充高放低（capacity-anomaly-high-low）
-│   ├── C3.14 容量一致性评价（capacity-consistency）
-│   ├── C3.15 温度场重构（temperature-field-reconstruction）
-│   ├── C3.16 ICA深度分析（ica-deep-analysis）
-│   ├── C3.17 EIS谱图分析（eis-spectrum-analysis）
-│   ├── C3.18 固态界面失效（solid-interface-failure）
-│   ├── C3.19 钠电自放电补偿（sodium-self-discharge）
-│   └── C3.20 智能均衡（active-balancing-cloud）
+│   ├── 故障诊断类（6个Skills）
+│   │   ├── C3.1 内短路诊断-等效电路（internal-short-circuit-model）
+│   │   ├── C3.2 内短路诊断-P2D（internal-short-p2d）
+│   │   ├── C3.3 内短路诊断-PINN（internal-short-pinn）
+│   │   ├── C3.4 内短路诊断-SOS（internal-short-sos）
+│   │   ├── C3.5 安全熵（safety-entropy）
+│   │   └── C3.6 容量异常检测（capacity-anomaly-detection）
+│   ├── 健康评估类（3个Skills）
+│   │   ├── C3.7 SOH深度学习（soh-deep-learning）
+│   │   ├── C3.8 ICA深度分析（ica-deep-analysis）
+│   │   └── C3.9 EIS谱图分析（eis-spectrum-analysis）
+│   ├── 寿命预测类（1个Skill）
+│   │   └── C3.10 RUL预测-半物理ODE（lifetime-prediction-ode）
+│   ├── 安全预警类（6个Skills）
+│   │   ├── C3.11 热失控预警-MEMS（thermal-runaway-mems）
+│   │   ├── C3.12 温度场重构（temperature-field-reconstruction）
+│   │   ├── C3.13 析锂检测-弛豫法（lithium-plating-relaxation）
+│   │   ├── C3.14 析锂检测-SV-RV（lithium-plating-sv-rv）
+│   │   ├── C3.15 析锂检测-P2D（lithium-plating-p2d）
+│   │   └── C3.16 析锂检测-PINN（lithium-plating-pinn）
+│   └── 智能优化类（3个Skills）
+│       ├── C3.17 固态界面失效（solid-interface-failure）
+│       ├── C3.18 钠电自放电补偿（sodium-self-discharge）
+│       └── C3.19 智能均衡（active-balancing-cloud）
 ├── L4 应用层级Skills（Application Tier）
-│   ├── A4.1 电动汽车充电优化（ev-charging-optimization）
-│   ├── A4.2 家庭储能优化（home-storage-optimization）
-│   ├── A4.3 储能场站智能巡检（storage-inspection）
-│   ├── A4.4 储能大屏（storage-dashboard）
-│   └── A4.5 储能运维报告自动化（storage-report-auto）
+│   ├── 充电优化类（2个Skills）
+│   │   ├── A4.1 电动汽车充电优化（ev-charging-optimization）
+│   │   └── A4.2 家庭储能优化（home-storage-optimization）
+│   ├── 储能管理类（2个Skills）
+│   │   ├── A4.3 储能场站智能巡检（storage-inspection）
+│   │   └── A4.4 储能大屏（storage-dashboard）
+│   └── 运维工具类（1个Skill）
+│       └── A4.5 储能运维报告自动化（storage-report-auto）
 └── L5 工商业层级Skills（Industrial Tier）
     ├── I5.1 微网能量管理（microgrid-energy-management）
     ├── I5.2 V2G双向优化（v2g-bidirectional-optimization）
@@ -449,9 +462,9 @@ x_i(t+1) = x_i(t) + v_i(t+1)
 
 ---
 
-## L1 生产层级算法（Manufacturing Tier）
+## L1 生产层级Skills（Manufacturing Tier）
 
-### M1.1 质量控制算法
+### M1.1-M1.3 质量控制类Skills
 
 #### 🔬 M1.1.1 极片缺陷AI检测
 
@@ -546,7 +559,7 @@ x_i(t+1) = x_i(t) + v_i(t+1)
 
 ---
 
-### M1.2 异常检测算法
+### M1.4 异常检测类Skills
 
 #### 🔍 M1.2.1 化成曲线异常检测
 
@@ -587,7 +600,7 @@ x_i(t+1) = x_i(t) + v_i(t+1)
 
 ---
 
-### M1.3 工艺优化算法
+### M1.5-M1.6 工艺优化类Skills
 
 #### 💧 M1.3.1 注液量优化
 
@@ -631,9 +644,11 @@ x_i(t+1) = x_i(t) + v_i(t+1)
 
 ---
 
-## L2 BMS层级算法（BMS Tier）
+## L2 BMS层级Skills（BMS Tier）
 
-### B2.1 SOC估计 - 安时积分法
+### B2.1-B2.8 状态估计类Skills
+
+#### B2.1 SOC估计 - 安时积分法
 
 | 属性 | 值 |
 |-----|---|
@@ -657,7 +672,7 @@ def AnShiJiFenFa_linear(SOC_pre, I, delta_t, accumulated_amendment=0):
 
 ---
 
-### B2.2 SOC估计 - 查表修正法
+#### B2.2 SOC估计 - 查表修正法
 
 | 属性 | 值 |
 |-----|---|
@@ -680,7 +695,7 @@ def AnShiJiFenFa_linear(SOC_pre, I, delta_t, accumulated_amendment=0):
 
 ---
 
-### B2.3 SOC估计 - EKF
+#### B2.3 SOC估计 - EKF
 
 | 属性 | 值 |
 |-----|---|
@@ -712,7 +727,7 @@ def AnShiJiFenFa_linear(SOC_pre, I, delta_t, accumulated_amendment=0):
 
 ---
 
-### B2.4 SOC估计 - AEKF
+#### B2.4 SOC估计 - AEKF
 
 | 属性 | 值 |
 |-----|---|
@@ -746,7 +761,7 @@ R_k = (1 - d_k)·R_{k-1} + d_k·ε_k·ε_k^T
 
 ---
 
-### B2.5 SOC估计 - UKF
+#### B2.5 SOC估计 - UKF
 
 | 属性 | 值 |
 |-----|---|
@@ -782,7 +797,7 @@ W_m^i = W_c^i = 1/(2(n+λ))  (i=1..2n)
 
 ---
 
-### B2.6 SOH估计 - 两点法
+#### B2.6 SOH估计 - 两点法
 
 | 属性 | 值 |
 |-----|---|
@@ -808,7 +823,7 @@ SOH = Q / Q_rated
 
 ---
 
-### B2.7 SOH估计 - AEKF
+#### B2.7 SOH估计 - AEKF
 
 | 属性 | 值 |
 |-----|---|
@@ -844,7 +859,7 @@ if I_k > I_max:
 
 ---
 
-### B2.14 膨胀力监测
+#### B2.8 膨胀力监测
 
 | 属性 | 值 |
 |-----|---|
@@ -1011,9 +1026,9 @@ Subject to:
 
 ---
 
-### B2.2 均衡控制算法
+### B2.9-B2.10 安全监测类Skills
 
-#### 🔄 B2.2.1 智能均衡优化
+#### 🔄 B2.11 智能均衡优化
 
 | 属性 | 值 |
 |-----|---|
@@ -1048,7 +1063,7 @@ Subject to:
 
 ### B2.3 热管理算法
 
-#### 🌡️ B2.3.1 模型预测控制（MPC）
+#### 🌡️ B2.12 热管理 - MPC
 
 | 属性 | 值 |
 |-----|---|
@@ -1085,7 +1100,7 @@ Repeat at next time step
 
 ### B2.4 安全控制算法
 
-#### ⚠️ B2.4.1 主动安全控制（L0-L4分级）
+#### ⚠️ B2.13 主动安全控制（L0-L4分级）
 
 | 属性 | 值 |
 |-----|---|
@@ -1141,7 +1156,7 @@ Repeat at next time step
 
 ---
 
-#### 🔍 B2.4.2 析锂检测 - 简化模型
+#### 🔍 B2.9 析锂检测 - 简化模型
 
 | 属性 | 值 |
 |-----|---|
@@ -1173,7 +1188,7 @@ IF Φanode < 0V THEN 析锂风险 → 触发L2/L3预警
 
 ---
 
-#### 🧪 B2.4.3 钠电分段滤波
+#### 🧪 B2.14 钠电分段滤波
 
 | 属性 | 值 |
 |-----|---|
@@ -1201,33 +1216,19 @@ ELSE:
 
 ---
 
-#### 🎯 B2.4.4 固态压力监测
+---
 
-| 属性 | 值 |
-|-----|---|
-| **算法类型** | 时序异常检测 |
-| **核心模型** | 呼吸效应模式识别 |
-| **输入数据** | 压力传感器数据 + 电压V + 电流I |
-| **输出结果** | 界面失效预警 |
-| **电池类型复用** | ✅ 半固态/全固态专用 |
-| **部署位置** | BMS板端 |
+### B2.10-B2.14 性能控制类Skills
 
-**呼吸效应异常检测**：
-```
-正常呼吸效应：压力 ↔ SOC可逆变化
-异常模式：
-  - 压力突降 → 界面剥离
-  - 压力持续上升 → 气体生成
-  - 压力-SOC滞后增大 → 界面退化
-```
+#### 🔄 B2.11 智能均衡优化
 
 ---
 
-## L3 云端层级算法（Cloud Tier）
+## L3 云端层级Skills（Cloud Tier）
 
-### C3.1 故障诊断算法
+### C3.1-C3.6 故障诊断类Skills
 
-#### 🔥 C3.1.1 内短路诊断 - SOS基因图谱
+#### 🔥 C3.1 内短路诊断 - SOS基因图谱
 
 | 属性 | 值 |
 |-----|---|
@@ -1268,7 +1269,7 @@ Step 5: SOS基因演化
 
 ---
 
-#### 📊 C3.1.2 安全熵
+#### 📊 C3.2 安全熵
 
 | 属性 | 值 |
 |-----|---|
@@ -1306,9 +1307,9 @@ Step 5: SOS基因演化
 
 ---
 
-### C3.2 健康评估算法
+### C3.7-C3.9 健康评估类Skills
 
-#### 🧬 C3.2.1 SOH - XGBoost集成学习
+#### 🧬 C3.3 SOH - XGBoost集成学习
 
 | 属性 | 值 |
 |-----|---|
@@ -2358,11 +2359,11 @@ Level F: 差异 > 15% 不合格
 
 ---
 
-## L4 应用层级算法（Application Tier）
+## L4 应用层级Skills（Application Tier）
 
-### A4.1 场景优化算法
+### A4.1-A4.2 充电优化类Skills
 
-#### 🚗 A4.1.1 电动汽车充电优化
+#### 🚗 A4.1 电动汽车充电优化
 
 | 属性 | 值 |
 |-----|---|
@@ -2391,7 +2392,7 @@ Level F: 差异 > 15% 不合格
 
 ---
 
-#### 🏠 A4.1.2 家庭储能优化
+#### 🏠 A4.2 家庭储能优化
 
 | 属性 | 值 |
 |-----|---|
@@ -2405,7 +2406,9 @@ Level F: 差异 > 15% 不合格
 
 ---
 
-#### 🏭 A4.1.3 储能场站智能巡检
+### A4.3-A4.4 储能管理类Skills
+
+#### 🏭 A4.3 储能场站智能巡检
 
 | 属性 | 值 |
 |-----|---|
@@ -2444,7 +2447,7 @@ Level F: 差异 > 15% 不合格
 
 ---
 
-#### 📊 A4.1.4 储能大屏
+#### 📊 A4.4 储能大屏
 
 | 属性 | 值 |
 |-----|---|
@@ -2483,7 +2486,9 @@ Level F: 差异 > 15% 不合格
 
 ---
 
-#### 📄 A4.1.5 储能运维报告自动化
+### A4.5 运维工具类Skills
+
+#### 📄 A4.5 储能运维报告自动化
 
 | 属性 | 值 |
 |-----|---|

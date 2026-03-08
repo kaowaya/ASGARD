@@ -1,0 +1,33 @@
+{
+  "optimization_id": "factory_sizing_20250308",
+  "factory_id": "FAC_001",
+  "timestamp": "2025-03-08",
+  "optimization_result": {
+    "optimal_capacity_kw": 600,
+    "optimal_capacity_kwh": 1200,
+    "recommended_config": {
+      "battery_type": "LFP",
+      "containers": 2,
+      "capacity_per_container_kwh": 600,
+      "power_per_container_kw": 300
+    },
+    "financial_analysis": {
+      "capex_yuan": 1440000,
+      "annual_savings_yuan": 432000,
+      "payback_period_years": 3.33,
+      "irr": 0.30,
+      "npv_10y_yuan": 2160000
+    },
+    "benefit_breakdown": {
+      "peak_valley_arbitrage_yuan_per_year": 288000,
+      "demand_charge_reduction_yuan_per_year": 120000,
+      "auxiliary_service_revenue_yuan_per_year": 24000
+    },
+    "technical_constraints": {
+      "min_soc": 0.1,
+      "max_soc": 0.9,
+      "cycles_per_day": 1.2,
+      "estimated_battery_life_years": 12
+    }
+  }
+}

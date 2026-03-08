@@ -1,0 +1,41 @@
+{
+  "decision_id": "REC_DEC_20250308_001",
+  "battery_id": "EV_BATT_RET_001",
+  "decision_date": "2025-03-08",
+  "recommendation": {
+    "primary_decision": "cascading",
+    "confidence_percent": 78,
+    "target_scenario": "low_speed_vehicle",
+    "alternative_scenario": "backup_power"
+  },
+  "economic_analysis": {
+    "cascading_value_yuan": 18200,
+    "cascading_cost_yuan": 3500,
+    "net_cascading_value_yuan": 14700,
+    "recycling_value_yuan": 12500,
+    "value_advantage_yuan": 2200
+  },
+  "environmental_impact": {
+    "co2_reduction_kg": 2850,
+    "resource_recovery_kg": 380,
+    "circularity_score": 85
+  },
+  "remaining_life_assessment": {
+    "estimated_remaining_cycles": 1200,
+    "estimated_remaining_life_years": 3.2,
+    "projected_end_of_life": "2028-06"
+  },
+  "implementation_plan": {
+    "refurbishment_required": true,
+    "refurbishment_cost_yuan": 3500,
+    "refurbishment_time_days": 7,
+    "target_application": "golf_cart",
+    "expected_revenue_yuan": 18200,
+    "roi_percent": 420
+  },
+  "risk_factors": [
+    "SOH接近下限，需密切监控",
+    "内阻增长28%，需BMS升级",
+    "建议每季度检测"
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "session_id": "ev_charge_20250308_001",
+  "timestamp": "2025-03-08T08:00:00Z",
+  "battery_info": {
+    "capacity_kwh": 75.0,
+    "battery_type": "NCM",
+    "initial_soc_percent": 20.0,
+    "target_soc_percent": 90.0,
+    "current_soh_percent": 95.0
+  },
+  "charging_schedule": {
+    "hourly_power_kw": [0.0, 0.0, 0.0, 0.0, 0.0, 11.0, 11.0, 11.0, 0.0, 0.0, 0.0, 0.0],
+    "soc_trajectory_percent": [20.0, 20.0, 20.0, 20.0, 20.0, 31.0, 42.0, 53.0, 64.0, 75.0, 86.0, 90.0, 90.0],
+    "charging_hours": [5, 6, 7, 8],
+    "total_charging_time_hours": 4.0,
+    "total_energy_charged_kwh": 52.5
+  },
+  "cost_analysis": {
+    "estimated_cost_usd": 4.95,
+    "average_price_usd_per_kwh": 0.094,
+    "cost_vs_immediate_charging": {
+      "immediate_cost": 8.40,
+      "savings": 3.45,
+      "savings_percentage": 41.1
+    }
+  },
+  "battery_health": {
+    "degradation_this_session_percent": 0.008,
+    "soh_after_charge_percent": 94.992,
+    "cycle_equivalent": 0.7,
+    "health_impact": "low"
+  },
+  "recommendations": {
+    "best_charging_hours": [5, 6, 7, 8],
+    "average_price": 0.094,
+    "cost_saving_potential": "35-45%",
+    "battery_health_tip": "建议保持SOC在20-80%之间以延长电池寿命",
+    "preconditioning": "当前温度18°C，建议无需预热",
+    "peak_hours_to_avoid": [9, 10, 11, 17, 18, 19],
+    "next_maintenance": "建议在SOH降至90%时进行电池健康检查"
+  },
+  "alternative_strategies": {
+    "speed_optimized": {
+      "charging_time_hours": 1.5,
+      "estimated_cost_usd": 7.20,
+      "degradation_percent": 0.012
+    },
+    "health_optimized": {
+      "charging_time_hours": 6.0,
+      "estimated_cost_usd": 5.80,
+      "degradation_percent": 0.005
+    },
+    "v2g_enabled": {
+      "charging_cost_usd": 4.95,
+      "v2g_revenue_usd": 1.20,
+      "net_cost_usd": 3.75,
+      "additional_cycles": 0.3
+    }
+  },
+  "safety_checks": {
+    "temperature_ok": true,
+    "voltage_in_range": true,
+    "current_within_limits": true,
+    "grid_power_available": true,
+    "warnings": []
+  },
+  "metadata": {
+    "algorithm_version": "1.0.0",
+    "optimization_method": "dynamic_programming",
+    "computation_time_ms": 45,
+    "confidence_score": 0.95
+  }
+}

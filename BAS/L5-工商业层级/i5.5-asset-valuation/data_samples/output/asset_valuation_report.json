@@ -1,0 +1,47 @@
+{
+  "valuation_id": "VAL_20250308_001",
+  "station_id": "STATION_SH_001",
+  "valuation_date": "2025-03-08",
+  "valuation_summary": {
+    "asset_value_yuan": 16580000,
+    "value_per_kwh_yuan": 8290,
+    "confidence_level": "High",
+    "valuation_method": "DCF"
+  },
+  "technical_assessment": {
+    "soh_percent": 92,
+    "remaining_life_years": 8.2,
+    "remaining_energy_throughput_mwh": 17150,
+    "technical_risk_level": "Low",
+    "performance_score": 88
+  },
+  "financial_analysis": {
+    "projected_revenue_10y_yuan": 28800000,
+    "npv_10y_yuan": 14580000,
+    "irr_percent": 18.5,
+    "payback_period_remaining_years": 4.2
+  },
+  "risk_assessment": {
+    "technical_risk": {
+      "level": "Low",
+      "factors": ["电池衰减正常", "运行稳定"],
+      "score": 85
+    },
+    "market_risk": {
+      "level": "Medium",
+      "factors": ["电价波动", "辅助服务市场变化"],
+      "score": 65
+    },
+    "policy_risk": {
+      "level": "Low",
+      "factors": ["政策支持稳定"],
+      "score": 80
+    }
+  },
+  "recommendations": [
+    "保持当前运行策略",
+    "可考虑增加调频服务参与度",
+    "建议3年后进行深度维护",
+    "可探索资产证券化(ABS)机会"
+  ]
+}

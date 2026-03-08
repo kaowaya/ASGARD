@@ -1,0 +1,10 @@
+{
+    "success": true,
+    "peak_core_temp_c": 82.01,
+    "peak_surf_temp_c": 44.0,
+    "max_temperature_gradient_c": 38.01,
+    "diagnostics": {
+        "status": "DANGER",
+        "core_heating_anomaly": true
+    }
+}

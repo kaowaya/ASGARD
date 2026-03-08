@@ -1,0 +1,140 @@
+{
+  "optimization_id": "home_energy_20250308_001",
+  "timestamp": "2025-03-08T00:00:00Z",
+  "system_config": {
+    "solar_capacity_kw": 8.0,
+    "battery_capacity_kwh": 13.5,
+    "initial_soc_percent": 45.0,
+    "battery_type": "LFP"
+  },
+  "energy_schedule": {
+    "hourly_data": [
+      {
+        "hour": 0,
+        "solar_to_load_kw": 0.0,
+        "solar_to_battery_kw": 0.0,
+        "solar_to_grid_kw": 0.0,
+        "battery_to_load_kw": 0.0,
+        "grid_to_load_kw": 0.35,
+        "grid_to_battery_kw": 0.0,
+        "battery_soc_percent": 45.0
+      },
+      {
+        "hour": 6,
+        "solar_to_load_kw": 0.1,
+        "solar_to_battery_kw": 0.0,
+        "solar_to_grid_kw": 0.0,
+        "battery_to_load_kw": 0.0,
+        "grid_to_load_kw": 0.35,
+        "grid_to_battery_kw": 0.0,
+        "battery_soc_percent": 44.8
+      },
+      {
+        "hour": 12,
+        "solar_to_load_kw": 1.4,
+        "solar_to_battery_kw": 5.0,
+        "solar_to_grid_kw": 0.1,
+        "battery_to_load_kw": 0.0,
+        "grid_to_load_kw": 0.0,
+        "grid_to_battery_kw": 0.0,
+        "battery_soc_percent": 68.5
+      },
+      {
+        "hour": 18,
+        "solar_to_load_kw": 1.0,
+        "solar_to_battery_kw": 0.0,
+        "solar_to_grid_kw": 0.0,
+        "battery_to_load_kw": 1.2,
+        "grid_to_load_kw": 0.0,
+        "grid_to_battery_kw": 0.0,
+        "battery_soc_percent": 72.3
+      }
+    ],
+    "daily_totals": {
+      "solar_generation_kwh": 48.5,
+      "solar_to_load_kwh": 18.2,
+      "solar_to_battery_kwh": 25.3,
+      "solar_to_grid_kwh": 5.0,
+      "battery_to_load_kwh": 12.8,
+      "grid_to_load_kwh": 8.5,
+      "grid_to_battery_kwh": 0.0,
+      "total_load_kwh": 39.5
+    }
+  },
+  "cost_analysis": {
+    "grid_purchase_kwh": 8.5,
+    "cost_from_grid_usd": 1.45,
+    "solar_export_kwh": 5.0,
+    "revenue_from_export_usd": 0.30,
+    "net_cost_usd": 1.15,
+    "baseline_cost_usd": 4.85,
+    "savings_usd": 3.70,
+    "savings_percentage": 76.3,
+    "daily_savings_breakdown": {
+      "peak_shaving_savings_usd": 1.85,
+      "self_consumption_value_usd": 1.45,
+      "feed_in_revenue_usd": 0.30
+    }
+  },
+  "performance_metrics": {
+    "self_sufficiency_percent": 78.5,
+    "pv_self_consumption_percent": 89.7,
+    "battery_cycles": 2.82,
+    "grid_dependency_percent": 21.5,
+    "total_pv_generation_kwh": 48.5,
+    "total_load_kwh": 39.5,
+    "battery_efficiency_percent": 94.2,
+    "co2_emission_reduction_kg": 28.5
+  },
+  "load_schedule": {
+    "照明": {
+      "scheduled": false,
+      "reason": "Not controllable"
+    },
+    "空调": {
+      "scheduled": true,
+      "best_hours": [10, 11, 12, 13, 14],
+      "priority": "MEDIUM",
+      "power_kw": 2.5,
+      "recommendation": "建议在10-14点光伏充足时段运行"
+    },
+    "电动车": {
+      "scheduled": true,
+      "best_hours": [10, 11, 12, 13, 14],
+      "priority": "LOW",
+      "power_kw": 7.0,
+      "recommendation": "建议在光伏高峰时段充电，可节约60%充电成本"
+    },
+    "冰箱": {
+      "scheduled": false,
+      "reason": "Not controllable"
+    }
+  },
+  "battery_health": {
+    "current_soh_percent": 98.5,
+    "estimated_degradation_this_cycle_percent": 0.008,
+    "remaining_cycles": 4500,
+    "health_status": "Excellent"
+  },
+  "recommendations": {
+    "battery_management": [
+      "电池SOC平均值58%，运行良好",
+      "建议在周末进行一次完全充放电以校准BMS"
+    ],
+    "load_management": [
+      "有2个可控负载，建议在低电价时段运行",
+      "电动车充电可转移至10-14点，预计节约$1.20/天"
+    ],
+    "system_upgrade": [
+      "自给率78.5%，表现优秀",
+      "可考虑增加储能容量至20kWh以实现完全离网"
+    ]
+  },
+  "alerts": [],
+  "metadata": {
+    "optimization_mode": "economic",
+    "algorithm_version": "1.0.0",
+    "computation_time_ms": 120,
+    "confidence_score": 0.92
+  }
+}

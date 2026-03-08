@@ -1,0 +1,132 @@
+{
+    "success": true,
+    "total_analyzed": 500,
+    "total_anomalies_found": 25,
+    "anomalous_batteries": [
+        {
+            "battery_id": "VIN_0005",
+            "score": -0.1183,
+            "current_capacity_ah": 72.21
+        },
+        {
+            "battery_id": "VIN_0006",
+            "score": -0.1164,
+            "current_capacity_ah": 77.7
+        },
+        {
+            "battery_id": "VIN_0004",
+            "score": -0.1139,
+            "current_capacity_ah": 66.51
+        },
+        {
+            "battery_id": "VIN_0000",
+            "score": -0.1104,
+            "current_capacity_ah": 70.68
+        },
+        {
+            "battery_id": "VIN_0008",
+            "score": -0.1064,
+            "current_capacity_ah": 73.22
+        },
+        {
+            "battery_id": "VIN_0009",
+            "score": -0.106,
+            "current_capacity_ah": 65.14
+        },
+        {
+            "battery_id": "VIN_0007",
+            "score": -0.1045,
+            "current_capacity_ah": 74.54
+        },
+        {
+            "battery_id": "VIN_0002",
+            "score": -0.0814,
+            "current_capacity_ah": 75.01
+        },
+        {
+            "battery_id": "VIN_0001",
+            "score": -0.0622,
+            "current_capacity_ah": 73.65
+        },
+        {
+            "battery_id": "VIN_0003",
+            "score": -0.0597,
+            "current_capacity_ah": 75.19
+        },
+        {
+            "battery_id": "VIN_0142",
+            "score": -0.0552,
+            "current_capacity_ah": 95.66
+        },
+        {
+            "battery_id": "VIN_0146",
+            "score": -0.0525,
+            "current_capacity_ah": 98.65
+        },
+        {
+            "battery_id": "VIN_0176",
+            "score": -0.0444,
+            "current_capacity_ah": 102.49
+        },
+        {
+            "battery_id": "VIN_0128",
+            "score": -0.0354,
+            "current_capacity_ah": 101.68
+        },
+        {
+            "battery_id": "VIN_0178",
+            "score": -0.0344,
+            "current_capacity_ah": 96.01
+        },
+        {
+            "battery_id": "VIN_0423",
+            "score": -0.0334,
+            "current_capacity_ah": 98.47
+        },
+        {
+            "battery_id": "VIN_0179",
+            "score": -0.0301,
+            "current_capacity_ah": 101.32
+        },
+        {
+            "battery_id": "VIN_0262",
+            "score": -0.0226,
+            "current_capacity_ah": 92.23
+        },
+        {
+            "battery_id": "VIN_0395",
+            "score": -0.0221,
+            "current_capacity_ah": 97.96
+        },
+        {
+            "battery_id": "VIN_0063",
+            "score": -0.0168,
+            "current_capacity_ah": 96.37
+        },
+        {
+            "battery_id": "VIN_0443",
+            "score": -0.0126,
+            "current_capacity_ah": 97.46
+        },
+        {
+            "battery_id": "VIN_0092",
+            "score": -0.0101,
+            "current_capacity_ah": 95.61
+        },
+        {
+            "battery_id": "VIN_0147",
+            "score": -0.0096,
+            "current_capacity_ah": 98.72
+        },
+        {
+            "battery_id": "VIN_0188",
+            "score": -0.0092,
+            "current_capacity_ah": 100.55
+        },
+        {
+            "battery_id": "VIN_0319",
+            "score": -0.0044,
+            "current_capacity_ah": 99.35
+        }
+    ]
+}

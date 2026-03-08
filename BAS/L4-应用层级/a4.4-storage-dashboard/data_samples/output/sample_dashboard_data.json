@@ -1,0 +1,93 @@
+{
+  "station_info": {
+    "station_id": "ST_001",
+    "station_name": "ASGARD储能示范站",
+    "capacity_mwh": 10.0,
+    "power_mw": 5.0,
+    "battery_clusters": 10,
+    "update_time": "2025-03-08T12:05:00Z"
+  },
+  "power_flow": {
+    "solar_power": 7.8,
+    "grid_power": -3.6,
+    "battery_power": 4.2,
+    "load_power": 8.4,
+    "efficiency": 94.1
+  },
+  "battery_status": {
+    "avg_soc_percent": 54.1,
+    "avg_soh_percent": 98.5,
+    "avg_temperature_c": 29.2,
+    "max_temperature_c": 34.5,
+    "min_temperature_c": 24.1,
+    "available_capacity_mwh": 5.41,
+    "cluster_status": [
+      {"cluster_id": 1, "soc": 52.3, "soh": 98.8},
+      {"cluster_id": 2, "soc": 55.8, "soh": 98.2},
+      {"cluster_id": 3, "soc": 53.1, "soh": 98.9},
+      {"cluster_id": 4, "soc": 56.2, "soh": 98.1},
+      {"cluster_id": 5, "soc": 54.5, "soh": 98.6},
+      {"cluster_id": 6, "soc": 51.8, "soh": 98.4},
+      {"cluster_id": 7, "soc": 57.1, "soh": 98.7},
+      {"cluster_id": 8, "soc": 53.9, "soh": 98.3},
+      {"cluster_id": 9, "soc": 55.2, "soh": 98.5},
+      {"cluster_id": 10, "soc": 52.7, "soh": 98.6}
+    ]
+  },
+  "economic_metrics": {
+    "daily_revenue": 15230.50,
+    "cumulative_revenue": 5484250.00,
+    "cost_per_kwh": 0.82,
+    "roi": 12.8
+  },
+  "environmental_metrics": {
+    "daily_co2_reduction": 9.2,
+    "cumulative_co2_reduction": 3108.5,
+    "equivalent_trees": 15542
+  },
+  "alarms": [
+    {
+      "alarm_id": "ALM-0001",
+      "level": "warning",
+      "message": "电池簇3温度偏高",
+      "timestamp": "2025-03-08T11:30:00Z",
+      "source": "cluster_3"
+    },
+    {
+      "alarm_id": "ALM-0002",
+      "level": "info",
+      "message": "电池簇7SOC不平衡",
+      "timestamp": "2025-03-08T10:15:00Z",
+      "source": "cluster_7"
+    }
+  ],
+  "trends": {
+    "soc_trend": {
+      "timestamps": [
+        "2025-03-07T12:05:00Z",
+        "2025-03-07T13:05:00Z",
+        "2025-03-07T14:05:00Z",
+        "2025-03-08T12:05:00Z"
+      ],
+      "values": [65.2, 58.3, 52.1, 54.1]
+    },
+    "power_trend": {
+      "timestamps": [
+        "2025-03-07T12:05:00Z",
+        "2025-03-07T13:05:00Z",
+        "2025-03-07T14:05:00Z",
+        "2025-03-08T12:05:00Z"
+      ],
+      "values": [3.8, 4.5, 3.2, 4.2]
+    },
+    "temperature_trend": {
+      "timestamps": [
+        "2025-03-07T12:05:00Z",
+        "2025-03-07T13:05:00Z",
+        "2025-03-07T14:05:00Z",
+        "2025-03-08T12:05:00Z"
+      ],
+      "values": [25.3, 28.1, 30.2, 29.2]
+    }
+  }
+}

@@ -1,0 +1,287 @@
+{
+    "success": true,
+    "has_lithium_plating": true,
+    "plating_events": [
+        {
+            "stripping_end_time_s": 104.0,
+            "stripping_voltage_v": 3.333848490339468,
+            "intensity_dvdt": -1.9314371267693935e-06
+        },
+        {
+            "stripping_end_time_s": 174.0,
+            "stripping_voltage_v": 3.334225350517502,
+            "intensity_dvdt": -2.5667557599867064e-06
+        },
+        {
+            "stripping_end_time_s": 221.0,
+            "stripping_voltage_v": 3.3339835103852224,
+            "intensity_dvdt": -1.4406551428610824e-06
+        },
+        {
+            "stripping_end_time_s": 291.0,
+            "stripping_voltage_v": 3.3341531178508497,
+            "intensity_dvdt": -2.219781370334581e-06
+        },
+        {
+            "stripping_end_time_s": 360.0,
+            "stripping_voltage_v": 3.33439287413072,
+            "intensity_dvdt": -1.5754141479152737e-06
+        },
+        {
+            "stripping_end_time_s": 407.0,
+            "stripping_voltage_v": 3.334275476228163,
+            "intensity_dvdt": -3.863778796617851e-06
+        },
+        {
+            "stripping_end_time_s": 454.0,
+            "stripping_voltage_v": 3.3341959953792197,
+            "intensity_dvdt": -3.2683266516343505e-06
+        },
+        {
+            "stripping_end_time_s": 499.0,
+            "stripping_voltage_v": 3.334193390563709,
+            "intensity_dvdt": -3.638614280593728e-06
+        },
+        {
+            "stripping_end_time_s": 645.0,
+            "stripping_voltage_v": 3.3341814990146363,
+            "intensity_dvdt": -4.020907797770628e-06
+        },
+        {
+            "stripping_end_time_s": 774.0,
+            "stripping_voltage_v": 3.334284921515712,
+            "intensity_dvdt": -2.538615454949331e-06
+        },
+        {
+            "stripping_end_time_s": 831.0,
+            "stripping_voltage_v": 3.3340846451787627,
+            "intensity_dvdt": -4.918865645909362e-06
+        },
+        {
+            "stripping_end_time_s": 908.0,
+            "stripping_voltage_v": 3.3344021608642818,
+            "intensity_dvdt": -1.6381927500941543e-06
+        },
+        {
+            "stripping_end_time_s": 960.0,
+            "stripping_voltage_v": 3.334093592153779,
+            "intensity_dvdt": -6.896314381904096e-06
+        },
+        {
+            "stripping_end_time_s": 1026.0,
+            "stripping_voltage_v": 3.3341219733175653,
+            "intensity_dvdt": -3.4034914999047395e-06
+        },
+        {
+            "stripping_end_time_s": 1104.0,
+            "stripping_voltage_v": 3.3341720310765175,
+            "intensity_dvdt": 1.283797348691846e-06
+        },
+        {
+            "stripping_end_time_s": 1160.0,
+            "stripping_voltage_v": 3.3341004326258163,
+            "intensity_dvdt": -3.0750558414031803e-06
+        },
+        {
+            "stripping_end_time_s": 1195.0,
+            "stripping_voltage_v": 3.3340703526693054,
+            "intensity_dvdt": -2.781436346734774e-06
+        },
+        {
+            "stripping_end_time_s": 1272.0,
+            "stripping_voltage_v": 3.334217989082361,
+            "intensity_dvdt": -2.6802446288424686e-06
+        },
+        {
+            "stripping_end_time_s": 1319.0,
+            "stripping_voltage_v": 3.3340588461799174,
+            "intensity_dvdt": -2.705705158636915e-06
+        },
+        {
+            "stripping_end_time_s": 1367.0,
+            "stripping_voltage_v": 3.3341528686945843,
+            "intensity_dvdt": -1.5487627275383728e-06
+        },
+        {
+            "stripping_end_time_s": 1412.0,
+            "stripping_voltage_v": 3.334112165620901,
+            "intensity_dvdt": -1.0599291937354496e-06
+        },
+        {
+            "stripping_end_time_s": 1466.0,
+            "stripping_voltage_v": 3.3341846021426798,
+            "intensity_dvdt": -2.1417041698272526e-06
+        },
+        {
+            "stripping_end_time_s": 1507.0,
+            "stripping_voltage_v": 3.334188543341801,
+            "intensity_dvdt": -3.5622497070412255e-06
+        },
+        {
+            "stripping_end_time_s": 1562.0,
+            "stripping_voltage_v": 3.3341752021562705,
+            "intensity_dvdt": -1.6658312166188092e-06
+        },
+        {
+            "stripping_end_time_s": 1605.0,
+            "stripping_voltage_v": 3.3341434460576043,
+            "intensity_dvdt": -4.648936235796463e-06
+        },
+        {
+            "stripping_end_time_s": 1651.0,
+            "stripping_voltage_v": 3.334127341502575,
+            "intensity_dvdt": -1.05349517878732e-06
+        },
+        {
+            "stripping_end_time_s": 1703.0,
+            "stripping_voltage_v": 3.3342284083444063,
+            "intensity_dvdt": -3.2428175023748805e-06
+        },
+        {
+            "stripping_end_time_s": 1742.0,
+            "stripping_voltage_v": 3.3342138893292526,
+            "intensity_dvdt": -4.453424094027545e-06
+        },
+        {
+            "stripping_end_time_s": 1787.0,
+            "stripping_voltage_v": 3.334196267186056,
+            "intensity_dvdt": 1.2037734351884503e-06
+        },
+        {
+            "stripping_end_time_s": 1872.0,
+            "stripping_voltage_v": 3.334031484291766,
+            "intensity_dvdt": -6.198616880215663e-06
+        },
+        {
+            "stripping_end_time_s": 1918.0,
+            "stripping_voltage_v": 3.333923146617074,
+            "intensity_dvdt": -1.6964204750563694e-09
+        },
+        {
+            "stripping_end_time_s": 1955.0,
+            "stripping_voltage_v": 3.3343621599582596,
+            "intensity_dvdt": -2.2114402505672374e-06
+        },
+        {
+            "stripping_end_time_s": 1999.0,
+            "stripping_voltage_v": 3.334160433984851,
+            "intensity_dvdt": -2.6761949415167905e-06
+        },
+        {
+            "stripping_end_time_s": 2082.0,
+            "stripping_voltage_v": 3.3341470927993195,
+            "intensity_dvdt": -2.4156813722339693e-06
+        },
+        {
+            "stripping_end_time_s": 2123.0,
+            "stripping_voltage_v": 3.3342427688055714,
+            "intensity_dvdt": -3.875598162175943e-06
+        },
+        {
+            "stripping_end_time_s": 2159.0,
+            "stripping_voltage_v": 3.3341556773652217,
+            "intensity_dvdt": -1.5472679011550772e-06
+        },
+        {
+            "stripping_end_time_s": 2255.0,
+            "stripping_voltage_v": 3.334056377267824,
+            "intensity_dvdt": -2.277159836697342e-06
+        },
+        {
+            "stripping_end_time_s": 2336.0,
+            "stripping_voltage_v": 3.3341896985208543,
+            "intensity_dvdt": -4.323970127642397e-06
+        },
+        {
+            "stripping_end_time_s": 2380.0,
+            "stripping_voltage_v": 3.3339743142539393,
+            "intensity_dvdt": -1.6743290221241213e-06
+        },
+        {
+            "stripping_end_time_s": 2412.0,
+            "stripping_voltage_v": 3.3344087295294838,
+            "intensity_dvdt": -1.9931316412774816e-06
+        },
+        {
+            "stripping_end_time_s": 2459.0,
+            "stripping_voltage_v": 3.334064282316636,
+            "intensity_dvdt": -1.9386444734523014e-06
+        },
+        {
+            "stripping_end_time_s": 2528.0,
+            "stripping_voltage_v": 3.3342548415592006,
+            "intensity_dvdt": -2.7637874326707517e-06
+        },
+        {
+            "stripping_end_time_s": 2624.0,
+            "stripping_voltage_v": 3.33413905184709,
+            "intensity_dvdt": -2.6402423594591445e-06
+        },
+        {
+            "stripping_end_time_s": 2752.0,
+            "stripping_voltage_v": 3.3341540238736367,
+            "intensity_dvdt": -2.362884939778216e-06
+        },
+        {
+            "stripping_end_time_s": 2823.0,
+            "stripping_voltage_v": 3.3342545924029356,
+            "intensity_dvdt": -2.065693286588293e-07
+        },
+        {
+            "stripping_end_time_s": 2889.0,
+            "stripping_voltage_v": 3.3342039004280317,
+            "intensity_dvdt": -3.364552601132933e-06
+        },
+        {
+            "stripping_end_time_s": 2969.0,
+            "stripping_voltage_v": 3.334098258171129,
+            "intensity_dvdt": -1.8180922903604697e-06
+        },
+        {
+            "stripping_end_time_s": 3017.0,
+            "stripping_voltage_v": 3.334027090081251,
+            "intensity_dvdt": -1.298627350568588e-06
+        },
+        {
+            "stripping_end_time_s": 3065.0,
+            "stripping_voltage_v": 3.3340690162856954,
+            "intensity_dvdt": -6.622203165061885e-07
+        },
+        {
+            "stripping_end_time_s": 3112.0,
+            "stripping_voltage_v": 3.334070148814179,
+            "intensity_dvdt": -1.0583681003950272e-06
+        },
+        {
+            "stripping_end_time_s": 3158.0,
+            "stripping_voltage_v": 3.3340617681034037,
+            "intensity_dvdt": -2.057528572745492e-06
+        },
+        {
+            "stripping_end_time_s": 3196.0,
+            "stripping_voltage_v": 3.3341154726040725,
+            "intensity_dvdt": -3.1088554478847143e-06
+        },
+        {
+            "stripping_end_time_s": 3241.0,
+            "stripping_voltage_v": 3.334085868309524,
+            "intensity_dvdt": -1.5152033462122162e-06
+        },
+        {
+            "stripping_end_time_s": 3378.0,
+            "stripping_voltage_v": 3.3340430813834327,
+            "intensity_dvdt": -4.146469729828513e-06
+        },
+        {
+            "stripping_end_time_s": 3436.0,
+            "stripping_voltage_v": 3.3340885863778835,
+            "intensity_dvdt": -1.621528621951089e-06
+        },
+        {
+            "stripping_end_time_s": 3515.0,
+            "stripping_voltage_v": 3.3341855081654663,
+            "intensity_dvdt": -2.3537656405692554e-06
+        }
+    ],
+    "status": "DANGER"
+}

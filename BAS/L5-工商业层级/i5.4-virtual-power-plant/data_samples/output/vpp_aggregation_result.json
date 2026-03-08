@@ -1,0 +1,41 @@
+{
+  "vpp_id": "VPP_SH_001",
+  "aggregation_id": "agg_20250308_001",
+  "timestamp": "2025-03-08T10:00:00",
+  "aggregation_result": {
+    "status": "success",
+    "total_capacity_kw": 1600,
+    "available_capacity_kw": 1495,
+    "total_energy_kwh": 3200,
+    "available_energy_kwh": 2560,
+    "resource_count": 3,
+    "average_response_time_s": 1.1,
+    "aggregation_revenue_yuan_per_hour": 320
+  },
+  "market_participation": {
+    "market_type": "frequency_regulation",
+    "bid_quantity_kw": 1495,
+    "bid_price_yuan_per_kw": 80,
+    "estimated_monthly_revenue_yuan": 7200
+  },
+  "dispatch_plan": [
+    {
+      "resource_id": "ESS_PD_001",
+      "allocated_power_kw": 467,
+      "response_time_s": 1.0,
+      "status": "ready"
+    },
+    {
+      "resource_id": "ESS_PD_002",
+      "allocated_power_kw": 280,
+      "response_time_s": 1.5,
+      "status": "ready"
+    },
+    {
+      "resource_id": "ESS_PD_003",
+      "allocated_power_kw": 748,
+      "response_time_s": 0.8,
+      "status": "ready"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "optimization_id": "v2g_opt_20250308_001",
+  "vehicle_id": "EV_20250308_001",
+  "timestamp": "2025-03-08T18:00:00",
+  "schedule": [
+    {
+      "time": "2025-03-08T18:00:00",
+      "action": "charge",
+      "power_kw": 40.0,
+      "soc_after": 0.70,
+      "duration_minutes": 60
+    },
+    {
+      "time": "2025-03-08T23:00:00",
+      "action": "frequency_regulation",
+      "power_kw": 0.0,
+      "regulation_capacity_kw": 20.0,
+      "duration_minutes": 240
+    }
+  ],
+  "financial_summary": {
+    "total_revenue_yuan": 12.50,
+    "battery_degradation_cost_yuan": 1.80,
+    "net_profit_yuan": 10.70,
+    "revenue_breakdown": {
+      "frequency_regulation": 8.00,
+      "peak_shaving": 4.50
+    }
+  },
+  "battery_health": {
+    "throughput_kwh": 8.5,
+    "cycles_added": 0.14,
+    "soh_impact_percent": -0.002
+  }
+}

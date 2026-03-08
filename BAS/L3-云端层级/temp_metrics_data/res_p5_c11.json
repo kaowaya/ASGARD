@@ -1,0 +1,59 @@
+[
+    {
+        "success": true,
+        "duration_sec": 21599.0,
+        "params": {
+            "ocv_initial_v": 3.3352,
+            "polarization_a_v": 0.0001,
+            "tau_d_s": 2848.9,
+            "k_leak_v_s": 1e-08
+        },
+        "diagnostics": {
+            "has_isc": false,
+            "severity": "NORMAL",
+            "estimated_req_ohm": -1,
+            "k_leak_threshold": 2e-08
+        },
+        "segment_index": 0,
+        "start_time": "2025-12-01 04:00:00",
+        "end_time": "2025-12-01 09:59:59"
+    },
+    {
+        "success": true,
+        "duration_sec": 7199.0,
+        "params": {
+            "ocv_initial_v": 3.2984,
+            "polarization_a_v": 0.0006,
+            "tau_d_s": 10.0,
+            "k_leak_v_s": 4e-08
+        },
+        "diagnostics": {
+            "has_isc": true,
+            "severity": "WARNING",
+            "estimated_req_ohm": 26350.21,
+            "k_leak_threshold": 2e-08
+        },
+        "segment_index": 1,
+        "start_time": "2025-12-01 13:00:00",
+        "end_time": "2025-12-01 14:59:59"
+    },
+    {
+        "success": true,
+        "duration_sec": 25199.0,
+        "params": {
+            "ocv_initial_v": 2.7653,
+            "polarization_a_v": 0.0,
+            "tau_d_s": 51.1,
+            "k_leak_v_s": -0.0
+        },
+        "diagnostics": {
+            "has_isc": false,
+            "severity": "NORMAL",
+            "estimated_req_ohm": -1,
+            "k_leak_threshold": 2e-08
+        },
+        "segment_index": 2,
+        "start_time": "2025-12-01 17:00:00",
+        "end_time": "2025-12-01 23:59:59"
+    }
+]

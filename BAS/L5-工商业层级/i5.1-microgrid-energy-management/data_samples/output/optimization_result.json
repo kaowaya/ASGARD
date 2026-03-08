@@ -1,0 +1,87 @@
+{
+  "optimization_id": "opt_20250308_0001",
+  "timestamp": "2025-03-08T00:00:00",
+  "status": "success",
+  "summary": {
+    "total_cost_yuan": 2458.32,
+    "baseline_cost_yuan": 3120.50,
+    "savings_yuan": 662.18,
+    "savings_rate": 0.212,
+    "pv_self_consumption_rate": 0.85,
+    "peak_shaving_kw": 380,
+    "carbon_emission_reduction_kg": 245.8,
+    "battery_cycles": 1.2
+  },
+  "schedule": [
+    {
+      "time": "2025-03-08T00:00:00",
+      "soc": 0.30,
+      "charge_power_kw": 500.0,
+      "discharge_power_kw": 0.0,
+      "grid_import_kw": 0.0,
+      "grid_export_kw": 0.0,
+      "load_kw": 320.0,
+      "pv_kw": 0.0,
+      "price_yuan_kwh": 0.4
+    },
+    {
+      "time": "2025-03-08T00:15:00",
+      "soc": 0.34,
+      "charge_power_kw": 500.0,
+      "discharge_power_kw": 0.0,
+      "grid_import_kw": 0.0,
+      "grid_export_kw": 0.0,
+      "load_kw": 310.0,
+      "pv_kw": 0.0,
+      "price_yuan_kwh": 0.4
+    },
+    {
+      "time": "2025-03-08T08:30:00",
+      "soc": 0.90,
+      "charge_power_kw": 0.0,
+      "discharge_power_kw": 0.0,
+      "grid_import_kw": 0.0,
+      "grid_export_kw": 120.0,
+      "load_kw": 750.0,
+      "pv_kw": 980.0,
+      "price_yuan_kwh": 1.2
+    },
+    {
+      "time": "2025-03-08T14:30:00",
+      "soc": 0.35,
+      "charge_power_kw": 0.0,
+      "discharge_power_kw": 450.0,
+      "grid_import_kw": 20.0,
+      "grid_export_kw": 0.0,
+      "load_kw": 470.0,
+      "pv_kw": 0.0,
+      "price_yuan_kwh": 1.2
+    }
+  ],
+  "metrics": {
+    "energy_flow": {
+      "total_load_kwh": 15240.0,
+      "total_pv_generation_kwh": 8950.0,
+      "total_grid_import_kwh": 6290.0,
+      "total_grid_export_kwh": 850.0,
+      "total_charge_kwh": 1950.0,
+      "total_discharge_kwh": 1852.5
+    },
+    "cost_breakdown": {
+      "energy_cost_yuan": 2348.32,
+      "demand_charge_yuan": 110.0,
+      "battery_degradation_cost_yuan": 45.0
+    },
+    "performance": {
+      "optimization_time_seconds": 2.3,
+      "prediction_mape": 0.08,
+      "control_accuracy": 0.96
+    }
+  },
+  "recommendations": [
+    "建议在谷电时段（0:00-6:00）充满电池",
+    "建议在峰电时段（8:30-17:00）优先使用电池供电",
+    "当前电池SOC在峰电时段末降至35%，建议调整策略以保持20%备用容量",
+    "光伏自用率达到85%，建议增加储能容量以进一步提升至90%以上"
+  ]
+}

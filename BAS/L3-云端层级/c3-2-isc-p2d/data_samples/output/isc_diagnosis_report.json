@@ -1,0 +1,40 @@
+[
+    {
+        "success": true,
+        "duration_sec": 3599.0,
+        "params": {
+            "ocv_initial_v": 3.8,
+            "polarization_a_v": 0.1,
+            "tau_d_s": 500.1,
+            "k_leak_v_s": 1e-08
+        },
+        "diagnostics": {
+            "has_isc": false,
+            "severity": "NORMAL",
+            "estimated_req_ohm": -1,
+            "k_leak_threshold": 1e-06
+        },
+        "segment_index": 0,
+        "start_time": "2025-01-01 00:00:00",
+        "end_time": "2025-01-01 00:59:59"
+    },
+    {
+        "success": true,
+        "duration_sec": 3599.0,
+        "params": {
+            "ocv_initial_v": 3.8,
+            "polarization_a_v": 0.1,
+            "tau_d_s": 399.9,
+            "k_leak_v_s": 2e-05
+        },
+        "diagnostics": {
+            "has_isc": true,
+            "severity": "WARNING",
+            "estimated_req_ohm": 50.0,
+            "k_leak_threshold": 1e-06
+        },
+        "segment_index": 1,
+        "start_time": "2025-01-01 01:10:00",
+        "end_time": "2025-01-01 02:09:59"
+    }
+]

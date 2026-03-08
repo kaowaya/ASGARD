@@ -1,0 +1,8 @@
+{
+    "success": true,
+    "alarm_status": "CRITICAL_TR",
+    "trigger_time": "2025-01-01 12:00:40",
+    "peak_dp": 4.99,
+    "peak_voc": 2003.7,
+    "action": "Immediate High Voltage Cutoff recommended."
+}

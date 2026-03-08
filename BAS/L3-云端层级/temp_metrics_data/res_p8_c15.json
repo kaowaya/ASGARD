@@ -1,0 +1,22 @@
+{
+    "success": true,
+    "has_lithium_plating": true,
+    "plating_events": [
+        {
+            "stripping_end_time_s": 599.0,
+            "stripping_voltage_v": 3.3196856780447392,
+            "intensity_dvdt": -0.00014920322253611062
+        },
+        {
+            "stripping_end_time_s": 1128.0,
+            "stripping_voltage_v": 3.314655756642216,
+            "intensity_dvdt": -8.31148088925453e-05
+        },
+        {
+            "stripping_end_time_s": 1269.0,
+            "stripping_voltage_v": 3.336604430451362,
+            "intensity_dvdt": -8.450114010698055e-05
+        }
+    ],
+    "status": "DANGER"
+}

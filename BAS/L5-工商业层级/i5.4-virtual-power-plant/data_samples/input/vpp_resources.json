@@ -1,0 +1,45 @@
+{
+  "vpp_id": "VPP_SH_001",
+  "name": "上海浦东虚拟电站",
+  "resources": [
+    {
+      "resource_id": "ESS_PD_001",
+      "resource_type": "storage",
+      "location": {"latitude": 31.23, "longitude": 121.47},
+      "capacity_kw": 500,
+      "capacity_kwh": 1000,
+      "current_soc": 0.75,
+      "availability": 0.95,
+      "response_time_s": 1.0,
+      "owner": "Company_A"
+    },
+    {
+      "resource_id": "ESS_PD_002",
+      "resource_type": "storage",
+      "location": {"latitude": 31.24, "longitude": 121.48},
+      "capacity_kw": 300,
+      "capacity_kwh": 600,
+      "current_soc": 0.60,
+      "availability": 0.90,
+      "response_time_s": 1.5,
+      "owner": "Company_B"
+    },
+    {
+      "resource_id": "ESS_PD_003",
+      "resource_type": "storage",
+      "location": {"latitude": 31.22, "longitude": 121.46},
+      "capacity_kw": 800,
+      "capacity_kwh": 1600,
+      "current_soc": 0.85,
+      "availability": 0.98,
+      "response_time_s": 0.8,
+      "owner": "Company_C"
+    }
+  ],
+  "aggregation_target": {
+    "market": "frequency_regulation",
+    "required_capacity_kw": 1000,
+    "response_time_requirement_s": 2.0,
+    "duration_hours": 4
+  }
+}

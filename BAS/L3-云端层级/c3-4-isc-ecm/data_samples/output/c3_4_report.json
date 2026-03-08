@@ -1,0 +1,8 @@
+{
+    "success": true,
+    "median_r0_ohm": 0.0019999991326551964,
+    "diagnostics": {
+        "has_isc": false,
+        "severity": "NORMAL"
+    }
+}

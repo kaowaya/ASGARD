@@ -1,0 +1,12 @@
+{
+    "success": true,
+    "processed_points": 500,
+    "peaks_detected": 1,
+    "peak_details": [
+        {
+            "peak_id": 1,
+            "voltage_v": 3.656,
+            "dqdv_intensity": 130.105
+        }
+    ]
+}

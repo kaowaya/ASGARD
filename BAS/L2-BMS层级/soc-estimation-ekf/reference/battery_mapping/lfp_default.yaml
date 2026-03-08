@@ -1,0 +1,10 @@
+# reference/battery_mapping/lfp_default.yaml
+battery_type: LFP
+capacity_ah: 235.0
+params:
+  R0: 0.000328
+  R1: 0.00007224
+  R2: 0.0004735
+  C1: 22960.92
+  C2: 101484.95
+  dt: 1.0

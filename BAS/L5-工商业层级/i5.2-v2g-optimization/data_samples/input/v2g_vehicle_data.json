@@ -1,0 +1,29 @@
+{
+  "vehicle_id": "EV_20250308_001",
+  "battery_type": "NCM",
+  "battery_capacity_kwh": 60,
+  "max_charge_power_kw": 120,
+  "max_discharge_power_kw": 60,
+  "max_v2g_power_kw": 40,
+  "current_soc": 0.65,
+  "current_location": {
+    "latitude": 31.2304,
+    "longitude": 121.4737,
+    "address": "上海市浦东新区"
+  },
+  "connected_since": "2025-03-08T18:00:00",
+  "next_departure": "2025-03-09T08:00:00",
+  "estimated_trip_distance_km": 50,
+  "mobility_pattern": {
+    "work_days": [1, 2, 3, 4, 5],
+    "work_start_hour": 8,
+    "work_end_hour": 18,
+    "average_daily_km": 50,
+    "charging_preference": "home"
+  },
+  "v2g_services": {
+    "frequency_regulation": true,
+    "peak_shaving": true,
+    "reserve_capacity": false
+  }
+}

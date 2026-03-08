@@ -1,0 +1,13 @@
+{
+    "is_abnormal": false,
+    "risk_level": 0.2,
+    "fault_type": "Normal",
+    "confidence": 0.99,
+    "genes": {
+        "g1_voltage_entropy": 2.9182961764488495,
+        "g2_max_dTdt": 0.0,
+        "g3_current_mad": 0.8333333333333334,
+        "g4_rest_voltage_drift": 0.0
+    },
+    "diagnostics_msg": "电压分布熵偏低，一致性散开前期。"
+}

@@ -1,0 +1,12 @@
+{
+    "success": true,
+    "metrics": {
+        "voltage_entropy": 1.1621,
+        "temperature_entropy": 1.5023,
+        "total_entropy": 2.6643
+    },
+    "safety_score_0_100": 46,
+    "diagnostics": {
+        "status": "WARNING"
+    }
+}

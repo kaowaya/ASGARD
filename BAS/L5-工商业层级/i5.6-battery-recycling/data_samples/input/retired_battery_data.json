@@ -1,0 +1,36 @@
+{
+  "battery_id": "EV_BATT_RET_001",
+  "original_vehicle_id": "EV_2020_0542",
+  "battery_type": "NCM",
+  "manufacturer": "CATL",
+  "manufacturing_date": "2020-06-01",
+  "commissioning_date": "2020-08-01",
+  "retirement_date": "2025-03-01",
+  "technical_specifications": {
+    "original_capacity_kwh": 60,
+    "original_power_kw": 130,
+    "voltage_v": 400,
+    "cell_count": 96
+  },
+  "current_status": {
+    "current_capacity_kwh": 41.7,
+    "soh_percent": 69.5,
+    "total_cycles": 2850,
+    "max_discharge_power_kw": 95,
+    "internal_resistance_mohm": 45,
+    "self_discharge_rate_percent_per_month": 3.2
+  },
+  "test_results": {
+    "capacity_test_date": "2025-03-05",
+    "capacity_retention_percent": 69.5,
+    "dcr_increase_percent": 28,
+    "voltage_uniformity_percent": 95,
+    "safety_test": "Pass"
+  },
+  "usage_history": {
+    "total_distance_km": 128000,
+    "fast_charge_count": 420,
+    "extreme_temperature_exposure_hours": 180,
+    "accident_history": false
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "report_id": "CARBON_RPT_2025",
+  "station_id": "STATION_SH_001",
+  "reporting_period": {
+    "start": "2025-01-01",
+    "end": "2025-12-31"
+  },
+  "carbon_footprint_summary": {
+    "material_stage_kg_co2e": 42000,
+    "manufacturing_stage_kg_co2e": 60000,
+    "transportation_stage_kg_co2e": 5000,
+    "operational_stage_kg_co2e": 18500,
+    "recycling_stage_kg_co2e": -26000,
+    "total_emissions_kg_co2e": 99500,
+    "carbon_reduction_kg_co2e": 128000,
+    "net_carbon_kg_co2e": -28500
+  },
+  "carbon_intensity_metrics": {
+    "gross_intensity_g_kwh": 68,
+    "net_intensity_g_kwh": -19,
+    "intensity_vs_baseline_percent": -72,
+    "carbon_neutral": true
+  },
+  "reduction_breakdown": {
+    "solar_integration_kg_co2e": 95000,
+    "peak_shaving_kg_co2e": 28000,
+    "efficiency_improvement_kg_co2e": 5000
+  },
+  "esg_compliance": {
+    "iso_14064_compliant": true,
+    "iso_14067_compliant": true,
+    "verification_status": "Third_Party_Verified",
+    "carbon_neutrality_status": "Achieved"
+  },
+  "carbon_trading": {
+    "eligible_ccer_tonnes": 28.5,
+    "estimated_value_yuan": 1425,
+    "trading_status": "Ready_for_Market"
+  },
+  "recommendations": [
+    "继续保持碳中和运行",
+    "申请CCER认证",
+    "发布碳中和声明",
+    "参与碳交易市场"
+  ]
+}

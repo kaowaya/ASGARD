@@ -1,5 +1,4 @@
 """Online Planner - Runtime workflow adaptation"""
-import math
 from typing import Optional, Dict, Any
 from workflow.engine.orchestrator.online_planner_models import ReplanDecision
 from workflow.engine.workflow_context import WorkflowExecutionContext

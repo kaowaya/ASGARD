@@ -1062,13 +1062,67 @@
                 industry: "工商业储能",
                 icon: "🏭",
                 date: "2025-12",
-                results: [
-                    "识别3个潜在内短路",
-                    "析锂风险提前预警",
-                    "安全熵实时监控"
-                ],
+                description: "10MWh磷酸铁锂储能系统",
+                results: ["识别3个潜在内短路", "析锂风险提前预警", "安全熵实时监控"],
                 roi: "3个月回本",
-                description: "10MWh磷酸铁锂储能系统"
+
+                // BAS技能采用方案
+                basSkills: [
+                    { id: "C3.1", name: "内短路诊断-SOS", purpose: "实时监控内短路风险" },
+                    { id: "C3.13", name: "析锂检测", purpose: "充电时检测析锂" },
+                    { id: "C3.5", name: "安全熵评估", purpose: "整体安全状态评估" },
+                    { id: "C2.2", name: "SOH估计", purpose: "健康状态评估" }
+                ],
+
+                // 编排DAG
+                dag: {
+                    nodes: [
+                        { id: "input", name: "数据输入", category: "input" },
+                        { id: "C3.0", name: "数据净化", category: "process" },
+                        { id: "C3.1", name: "内短路诊断", category: "diagnosis" },
+                        { id: "C3.13", name: "析锂检测", category: "diagnosis" },
+                        { id: "C3.5", name: "安全熵评估", category: "assessment" },
+                        { id: "report", name: "分析报告", category: "output" }
+                    ],
+                    links: [
+                        { source: "input", target: "C3.0" },
+                        { source: "C3.0", target: "C3.1" },
+                        { source: "C3.0", target: "C3.13" },
+                        { source: "C3.1", target: "C3.5" },
+                        { source: "C3.13", target: "C3.5" },
+                        { source: "C3.5", target: "report" }
+                    ]
+                },
+
+                // 诊断结果
+                diagnosisResults: {
+                    riskLevel: "medium", // high/medium/low
+                    issuesFound: 3,
+                    keyMetrics: {
+                        safetyScore: 72,
+                        confidence: 94,
+                        batteriesAnalyzed: 120
+                    }
+                },
+
+                // 溯源分析
+                traceability: {
+                    rootCause: "3号电池簇电压异常波动，经内短路诊断确认存在微短路风险",
+                    timeline: [
+                        { date: "2025-10-15", event: "系统部署上线" },
+                        { date: "2025-11-20", event: "检测到电压异常" },
+                        { date: "2025-11-21", event: "C3.1诊断确认内短路" },
+                        { date: "2025-11-25", event: "维护更换，风险解除" }
+                    ],
+                    dataSource: "BMS实时数据，采样频率1Hz"
+                },
+
+                // AI建议
+                recommendations: [
+                    { priority: "high", text: "立即对3号电池簇进行维护检查" },
+                    { priority: "medium", text: "增加充电过程监控频率" },
+                    { priority: "low", text: "建议每月进行一次全面安全熵评估" }
+                ]
             },
             {
                 id: "fleet",
@@ -1076,13 +1130,69 @@
                 industry: "电动汽车",
                 icon: "🚚",
                 date: "2025-10",
-                results: [
-                    "SOH估计误差<2%",
-                    "剩余寿命预测准确率92%",
-                    "充电策略优化，延寿15%"
-                ],
+                description: "100台电动公交 fleet",
+                results: ["SOH估计误差<2%", "剩余寿命预测准确率92%", "充电策略优化，延寿15%"],
                 roi: "节省运营成本18%",
-                description: "100台电动公交 fleet"
+
+                // BAS技能采用方案
+                basSkills: [
+                    { id: "C2.2", name: "SOH估计", purpose: "健康状态评估" },
+                    { id: "C2.3", name: "RUL预测", purpose: "剩余使用寿命预测" },
+                    { id: "C3.13", name: "析锂检测", purpose: "充电过程析锂监控" },
+                    { id: "C4.1", name: "充电策略优化", purpose: "延长电池寿命" }
+                ],
+
+                // 编排DAG
+                dag: {
+                    nodes: [
+                        { id: "input", name: "车队数据", category: "input" },
+                        { id: "C2.0", name: "数据预处理", category: "process" },
+                        { id: "C2.2", name: "SOH估计", category: "diagnosis" },
+                        { id: "C2.3", name: "RUL预测", category: "diagnosis" },
+                        { id: "C3.13", name: "析锂检测", category: "diagnosis" },
+                        { id: "C4.1", name: "策略优化", category: "optimization" },
+                        { id: "report", name: "健康报告", category: "output" }
+                    ],
+                    links: [
+                        { source: "input", target: "C2.0" },
+                        { source: "C2.0", target: "C2.2" },
+                        { source: "C2.0", target: "C2.3" },
+                        { source: "C2.0", target: "C3.13" },
+                        { source: "C2.2", target: "C4.1" },
+                        { source: "C2.3", target: "C4.1" },
+                        { source: "C3.13", target: "C4.1" },
+                        { source: "C4.1", target: "report" }
+                    ]
+                },
+
+                // 诊断结果
+                diagnosisResults: {
+                    riskLevel: "low",
+                    issuesFound: 0,
+                    keyMetrics: {
+                        safetyScore: 88,
+                        confidence: 96,
+                        batteriesAnalyzed: 100
+                    }
+                },
+
+                // 溯源分析
+                traceability: {
+                    rootCause: "车队整体健康状况良好，部分车辆存在轻度析锂现象",
+                    timeline: [
+                        { date: "2025-08-01", event: "系统部署" },
+                        { date: "2025-09-15", event: "首次健康评估完成" },
+                        { date: "2025-10-01", event: "充电策略优化实施" }
+                    ],
+                    dataSource: "车载BMS数据，云端聚合分析"
+                },
+
+                // AI建议
+                recommendations: [
+                    { priority: "low", text: "继续保持当前充电策略" },
+                    { priority: "medium", text: "建议增加快充桩温度监控" },
+                    { priority: "low", text: "季度健康检查即可" }
+                ]
             }
         ];
 
@@ -1652,97 +1762,228 @@
                 return renderCaseList();
             }
 
+            // 风险等级颜色映射
+            const riskColors = {
+                high: '#EF4444',
+                medium: '#F59E0B',
+                low: '#10B981'
+            };
+
+            const riskLabels = {
+                high: '高风险',
+                medium: '中等风险',
+                low: '低风险'
+            };
+
             return `
                 <section class="bg-white">
-                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                         <button onclick="backToCaseList()"
                                 class="mb-8 flex items-center text-gray-600 hover:text-black transition-colors">
                             <i class="fas fa-arrow-left mr-2"></i>
                             <span>返回案例列表</span>
                         </button>
 
-                        <div class="max-w-4xl">
-                            <!-- 案例头部 -->
-                            <div class="mb-12">
-                                <div class="flex items-center gap-4 mb-4">
-                                    <span class="text-5xl">${caseItem.icon}</span>
-                                    <div>
-                                        <h1 class="text-display mb-2">${caseItem.name}</h1>
-                                        <div class="flex items-center gap-4">
-                                            <span class="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded">${caseItem.industry}</span>
-                                            <span class="text-caption text-gray-500">${caseItem.date}</span>
-                                        </div>
+                        <!-- 案例头部 -->
+                        <div class="mb-8">
+                            <div class="flex items-center gap-4 mb-4">
+                                <span class="text-5xl">${caseItem.icon}</span>
+                                <div>
+                                    <h1 class="text-display mb-2">${caseItem.name}</h1>
+                                    <div class="flex items-center gap-4">
+                                        <span class="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded">${caseItem.industry}</span>
+                                        <span class="text-caption text-gray-500">${caseItem.date}</span>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+
+                        <!-- Bento Grid 布局 -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
                             <!-- 项目背景 -->
-                            <div class="mb-12">
-                                <h2 class="text-title mb-4">项目背景</h2>
+                            <div class="bento-card">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+                                        <i class="fas fa-info-circle text-blue-500"></i>
+                                    </div>
+                                    <h2 class="text-title">项目背景</h2>
+                                </div>
                                 <p class="text-body text-gray-700">${caseItem.description}</p>
                             </div>
 
-                            <!-- 解决方案 -->
-                            <div class="mb-12">
-                                <h2 class="text-title mb-4">解决方案</h2>
-                                <div class="space-y-3">
-                                    ${caseItem.results.map(result => `
-                                        <div class="flex items-start">
-                                            <i class="fas fa-check-circle text-green-500 mr-3 mt-1"></i>
-                                            <span class="text-body text-gray-700">${result}</span>
-                                        </div>
-                                    `).join('')}
+                            <!-- 实施效果 -->
+                            <div class="bento-card">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div class="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center">
+                                        <i class="fas fa-chart-line text-green-500"></i>
+                                    </div>
+                                    <h2 class="text-title">实施效果</h2>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <p class="text-caption text-gray-500 mb-1">投资回报</p>
+                                        <p class="text-h3 font-bold text-black">${caseItem.roi}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-caption text-gray-500 mb-1">实施时间</p>
+                                        <p class="text-h3 font-bold text-black">${caseItem.date}</p>
+                                    </div>
                                 </div>
                             </div>
 
-                            <!-- 实施效果 -->
-                            <div class="mb-12">
-                                <h2 class="text-title mb-4">实施效果</h2>
-                                <div class="bg-gray-50 rounded-xl p-6">
+                            <!-- BAS采用方案 -->
+                            <div class="bento-card">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div class="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center">
+                                        <i class="fas fa-cogs text-purple-500"></i>
+                                    </div>
+                                    <h2 class="text-title">BAS采用方案</h2>
+                                </div>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-sm">
+                                        <thead>
+                                            <tr class="border-b border-gray-200">
+                                                <th class="text-left py-2 text-gray-600 font-medium">技能ID</th>
+                                                <th class="text-left py-2 text-gray-600 font-medium">技能名称</th>
+                                                <th class="text-left py-2 text-gray-600 font-medium">用途</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${caseItem.basSkills.map(skill => `
+                                                <tr class="border-b border-gray-100">
+                                                    <td class="py-2">
+                                                        <code class="px-2 py-1 bg-gray-100 rounded text-xs">${skill.id}</code>
+                                                    </td>
+                                                    <td class="py-2">${skill.name}</td>
+                                                    <td class="py-2 text-gray-600">${skill.purpose}</td>
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- 诊断结果 -->
+                            <div class="bento-card">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div class="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center">
+                                        <i class="fas fa-heartbeat text-orange-500"></i>
+                                    </div>
+                                    <h2 class="text-title">诊断结果</h2>
+                                </div>
+                                <div class="space-y-4">
                                     <div class="flex items-center justify-between">
-                                        <div>
-                                            <p class="text-caption text-gray-500 mb-1">投资回报</p>
-                                            <p class="text-h3 font-bold text-black">${caseItem.roi}</p>
+                                        <span class="text-body text-gray-700">风险等级</span>
+                                        <span class="px-3 py-1 rounded-full text-sm font-medium"
+                                              style="background-color: ${riskColors[caseItem.diagnosisResults.riskLevel]}20; color: ${riskColors[caseItem.diagnosisResults.riskLevel]}">
+                                            ${riskLabels[caseItem.diagnosisResults.riskLevel]}
+                                        </span>
+                                    </div>
+                                    <div class="grid grid-cols-3 gap-4">
+                                        <div class="text-center p-3 bg-gray-50 rounded-lg">
+                                            <p class="text-2xl font-bold text-black">${caseItem.diagnosisResults.keyMetrics.safetyScore}</p>
+                                            <p class="text-caption text-gray-500">安全评分</p>
                                         </div>
-                                        <div>
-                                            <p class="text-caption text-gray-500 mb-1">实施时间</p>
-                                            <p class="text-h3 font-bold text-black">${caseItem.date}</p>
+                                        <div class="text-center p-3 bg-gray-50 rounded-lg">
+                                            <p class="text-2xl font-bold text-black">${caseItem.diagnosisResults.keyMetrics.confidence}%</p>
+                                            <p class="text-caption text-gray-500">置信度</p>
+                                        </div>
+                                        <div class="text-center p-3 bg-gray-50 rounded-lg">
+                                            <p class="text-2xl font-bold text-black">${caseItem.diagnosisResults.keyMetrics.batteriesAnalyzed}</p>
+                                            <p class="text-caption text-gray-500">分析电池数</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- 客户评价 -->
-                            <div class="mb-12">
-                                <h2 class="text-title mb-4">客户评价</h2>
-                                <div class="bg-blue-50 rounded-xl p-6">
-                                    <p class="text-body text-gray-700 italic">
-                                        "客户对ASGARD的诊断准确性和响应速度非常满意"
-                                    </p>
+                            <!-- 编排DAG可视化 -->
+                            <div class="bento-card lg:col-span-2">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div class="w-10 h-10 rounded-lg bg-indigo-50 flex items-center justify-center">
+                                        <i class="fas fa-project-diagram text-indigo-500"></i>
+                                    </div>
+                                    <h2 class="text-title">编排流程</h2>
+                                </div>
+                                <div id="case-dag-chart" class="w-full h-[400px]"></div>
+                            </div>
+
+                            <!-- 溯源分析 -->
+                            <div class="bento-card lg:col-span-2">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div class="w-10 h-10 rounded-lg bg-red-50 flex items-center justify-center">
+                                        <i class="fas fa-search text-red-500"></i>
+                                    </div>
+                                    <h2 class="text-title">溯源分析</h2>
+                                </div>
+                                <div class="space-y-4">
+                                    <div>
+                                        <h3 class="text-body font-semibold text-gray-700 mb-2">根因分析</h3>
+                                        <p class="text-body text-gray-600">${caseItem.traceability.rootCause}</p>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-body font-semibold text-gray-700 mb-2">时间线</h3>
+                                        <div class="relative pl-6 border-l-2 border-gray-200">
+                                            ${caseItem.traceability.timeline.map((item, index) => `
+                                                <div class="mb-4 relative">
+                                                    <div class="absolute -left-[31px] w-4 h-4 rounded-full bg-indigo-500"></div>
+                                                    <p class="text-caption text-gray-500">${item.date}</p>
+                                                    <p class="text-body text-gray-700">${item.event}</p>
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-body font-semibold text-gray-700 mb-2">数据来源</h3>
+                                        <p class="text-body text-gray-600">${caseItem.traceability.dataSource}</p>
+                                    </div>
                                 </div>
                             </div>
 
-                            <!-- 操作按钮 -->
-                            <div class="flex gap-4">
-                                <button onclick="alert('PDF下载功能开发中...')"
-                                        class="btn-primary">
-                                    <i class="fas fa-file-pdf mr-2"></i>下载PDF报告
-                                </button>
+                            <!-- AI建议 -->
+                            <div class="bento-card lg:col-span-2">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div class="w-10 h-10 rounded-lg bg-yellow-50 flex items-center justify-center">
+                                        <i class="fas fa-lightbulb text-yellow-500"></i>
+                                    </div>
+                                    <h2 class="text-title">AI建议</h2>
+                                </div>
+                                <div class="space-y-3">
+                                    ${caseItem.recommendations.map(rec => {
+                                        const priorityColors = {
+                                            high: 'bg-red-50 text-red-700 border-red-200',
+                                            medium: 'bg-yellow-50 text-yellow-700 border-yellow-200',
+                                            low: 'bg-green-50 text-green-700 border-green-200'
+                                        };
+                                        const priorityLabels = {
+                                            high: '高优先级',
+                                            medium: '中优先级',
+                                            low: '低优先级'
+                                        };
+                                        return `
+                                            <div class="flex items-start gap-3 p-4 border rounded-lg">
+                                                <span class="px-2 py-1 text-xs rounded border ${priorityColors[rec.priority]}">
+                                                    ${priorityLabels[rec.priority]}
+                                                </span>
+                                                <p class="text-body text-gray-700">${rec.text}</p>
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
                             </div>
+
+                        </div>
+
+                        <!-- 操作按钮 -->
+                        <div class="mt-8 flex gap-4">
+                            <button onclick="alert('PDF下载功能开发中...')"
+                                    class="btn-primary">
+                                <i class="fas fa-file-pdf mr-2"></i>下载PDF报告
+                            </button>
                         </div>
                     </div>
                 </section>
             `;
-        }
-
-        /**
-         * 显示案例详情
-         * @param {string} caseId - 案例ID
-         */
-        function showCaseDetail(caseId) {
-            casesState.view = 'detail';
-            casesState.selectedCase = caseId;
-            renderTabContent('cases');
         }
 
         /**
@@ -1752,6 +1993,131 @@
             casesState.view = 'list';
             casesState.selectedCase = null;
             renderTabContent('cases');
+        }
+
+        /**
+         * 初始化案例详情页DAG图表
+         */
+        function initCaseDAG() {
+            const caseItem = cases.find(c => c.id === casesState.selectedCase);
+            if (!caseItem || !caseItem.dag) return;
+
+            const chartDom = document.getElementById('case-dag-chart');
+            if (!chartDom) return;
+
+            const myChart = echarts.init(chartDom);
+
+            // 节点颜色映射
+            const categoryColors = {
+                input: '#3B82F6',
+                process: '#8B5CF6',
+                diagnosis: '#F59E0B',
+                assessment: '#EF4444',
+                optimization: '#10B981',
+                output: '#6B7280'
+            };
+
+            // 构建节点数据
+            const nodes = caseItem.dag.nodes.map(node => ({
+                id: node.id,
+                name: node.name,
+                category: node.category,
+                symbolSize: 60,
+                itemStyle: {
+                    color: categoryColors[node.category] || '#6B7280'
+                },
+                label: {
+                    show: true,
+                    fontSize: 12,
+                    color: '#374151'
+                }
+            }));
+
+            // 构建连线数据
+            const links = caseItem.dag.links.map(link => ({
+                source: link.source,
+                target: link.target,
+                lineStyle: {
+                    color: '#9CA3AF',
+                    curveness: 0.2
+                }
+            }));
+
+            const option = {
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{b}'
+                },
+                series: [{
+                    type: 'graph',
+                    layout: 'none',
+                    symbolSize: 60,
+                    roam: true,
+                    label: {
+                        show: true,
+                        fontSize: 12
+                    },
+                    edgeSymbol: ['circle', 'arrow'],
+                    edgeSymbolSize: [4, 10],
+                    edgeLabel: {
+                        fontSize: 12
+                    },
+                    data: nodes,
+                    links: links,
+                    lineStyle: {
+                        opacity: 0.9,
+                        width: 2,
+                        curveness: 0.2
+                    }
+                }],
+                // 简单的布局 - 手动设置位置
+                grid: {
+                    left: '10%',
+                    right: '10%',
+                    top: '10%',
+                    bottom: '10%'
+                }
+            };
+
+            // 为节点设置位置（简单的从左到右布局）
+            const levels = {
+                input: 0,
+                process: 1,
+                diagnosis: 2,
+                assessment: 3,
+                optimization: 3,
+                output: 4
+            };
+
+            nodes.forEach((node, index) => {
+                const level = levels[node.category] || 2;
+                const nodesInLevel = nodes.filter(n => levels[n.category] === level).length;
+                const positionInLevel = nodes.filter(n => levels[n.category] === level && n.id <= node.id).length;
+
+                node.x = level * 200 + 100;
+                node.y = (positionInLevel - 1) * (300 / Math.max(nodesInLevel, 1)) + 100;
+            });
+
+            myChart.setOption(option);
+
+            // 响应式调整
+            window.addEventListener('resize', () => {
+                myChart.resize();
+            });
+        }
+
+        /**
+         * 渲染案例详情后初始化DAG
+         */
+        function showCaseDetail(caseId) {
+            casesState.view = 'detail';
+            casesState.selectedCase = caseId;
+            renderTabContent('cases');
+
+            // 等待DOM更新后初始化图表
+            setTimeout(() => {
+                initCaseDAG();
+            }, 100);
         }
 
         // ==================== Agent编排系统 ====================

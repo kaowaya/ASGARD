@@ -191,7 +191,133 @@
     <main id="tab-content"></main>
 
     <script>
-        // JavaScript逻辑将在后续添加
+        // BAS技能数据（简化版，包含核心技能）
+        const basSkills = {
+            tiers: [
+                {
+                    id: "L0",
+                    name: "基础模型层",
+                    count: 43,
+                    description: "机器学习、深度学习基础算法"
+                },
+                {
+                    id: "L1",
+                    name: "生产层级",
+                    count: 6,
+                    description: "制造质量控制技能"
+                },
+                {
+                    id: "L2",
+                    name: "BMS层级",
+                    count: 14,
+                    description: "电池管理系统技能"
+                },
+                {
+                    id: "L3",
+                    name: "云端层级",
+                    count: 19,
+                    description: "高级诊断算法"
+                },
+                {
+                    id: "L4",
+                    name: "应用层级",
+                    count: 5,
+                    description: "应用层技能"
+                },
+                {
+                    id: "L5",
+                    name: "工商业层级",
+                    count: 7,
+                    description: "工商业应用技能"
+                }
+            ],
+            skills: [
+                {
+                    id: "C3.1",
+                    name: "内短路诊断-SOS",
+                    tier: "L3",
+                    whenToUse: "需要实时安全监控，适用于储能站、电动汽车等场景",
+                    compute: "<10MHz",
+                    batteryTypes: ["LFP", "NCM", "Na-ion"],
+                    description: "基于电压熵的内短路早期诊断"
+                },
+                {
+                    id: "C3.13",
+                    name: "析锂检测",
+                    tier: "L3",
+                    whenToUse: "LFP电池充电时检测析锂风险，预防热失控",
+                    compute: "<10MHz",
+                    batteryTypes: ["LFP"],
+                    description: "基于静置电压恢复的析锂检测"
+                },
+                {
+                    id: "C3.5",
+                    name: "安全熵评估",
+                    tier: "L3",
+                    whenToUse: "评估电池包整体健康状态和安全风险",
+                    compute: "<10MHz",
+                    batteryTypes: ["LFP", "NCM"],
+                    description: "基于多特征融合的安全熵计算"
+                },
+                {
+                    id: "C3.0",
+                    name: "数据净化",
+                    tier: "L3",
+                    whenToUse: "所有分析的前置步骤，清洗噪声数据",
+                    compute: "<10MHz",
+                    batteryTypes: ["ALL"],
+                    description: "数据预处理、去噪、特征提取"
+                },
+                {
+                    id: "C3.2",
+                    name: "内短路诊断-P2D",
+                    tier: "L3",
+                    whenToUse: "需要高精度内短路诊断，算力充足",
+                    compute: ">50MHz",
+                    batteryTypes: ["LFP", "NCM"],
+                    description: "基于P2D电化学模型的内短路诊断"
+                }
+            ]
+        };
+
+        // 案例数据
+        const cases = [
+            {
+                id: "huanggang",
+                name: "皇岗储能场站",
+                industry: "工商业储能",
+                icon: "🏭",
+                date: "2025.12",
+                results: [
+                    "识别3个潜在内短路",
+                    "析锂风险提前预警",
+                    "安全熵实时监控"
+                ],
+                roi: "3个月回本",
+                description: "10MWh磷酸铁锂储能系统"
+            },
+            {
+                id: "fleet",
+                name: "某营运车辆Fleet",
+                industry: "电动汽车",
+                icon: "🚚",
+                date: "2025.10",
+                results: [
+                    "SOH估计误差<2%",
+                    "剩余寿命预测准确率92%",
+                    "充电策略优化，延寿15%"
+                ],
+                roi: "节省运营成本18%",
+                description: "100台电动公交 fleet"
+            }
+        ];
+
+        // 技术指标
+        const techSpecs = {
+            skills: 94,
+            responseTime: "<50ms",
+            docDriven: "100%"
+        };
     </script>
 </body>
 </html>

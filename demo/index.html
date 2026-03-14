@@ -181,6 +181,150 @@
             opacity: 0.7;
             text-decoration: underline;
         }
+
+        /* ==================== 性能优化和动画 ==================== */
+
+        /* 页面切换淡入动画 */
+        .tab-content {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #000;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Loading容器 */
+        .chart-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+            color: hsl(var(--muted-foreground));
+        }
+
+        .chart-loading-text {
+            margin-top: 12px;
+            font-size: 0.875rem;
+        }
+
+        /* ==================== 可访问性改进 ==================== */
+
+        /* 键盘导航焦点样式 */
+        button:focus,
+        a:focus,
+        [tabindex]:focus {
+            outline: 2px solid #000;
+            outline-offset: 2px;
+        }
+
+        /* 移除默认outline但保持可访问性 */
+        button:focus:not(:focus-visible),
+        a:focus:not(:focus-visible) {
+            outline: none;
+        }
+
+        /* ==================== 移动端优化 ==================== */
+
+        /* 触摸目标最小尺寸 */
+        @media (max-width: 768px) {
+            .btn-primary,
+            .btn-secondary {
+                min-height: 44px;
+                min-width: 44px;
+                padding: 12px 24px;
+            }
+
+            /* 移动端按钮间距 */
+            .button-group {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            /* 移动端导航菜单项触摸目标 */
+            .nav-tab {
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+            }
+
+            /* 移动端图表容器高度优化 */
+            .chart-container {
+                min-height: 250px;
+            }
+
+            /* 移动端卡片间距 */
+            .bento-card {
+                margin-bottom: 1rem;
+            }
+
+            /* 移动端文字大小调整 */
+            .text-display {
+                font-size: clamp(1.75rem, 8vw, 3rem);
+            }
+
+            .text-headline {
+                font-size: clamp(1.25rem, 6vw, 2rem);
+            }
+        }
+
+        /* 超小屏幕优化 (320px+) */
+        @media (max-width: 380px) {
+            .bento-card {
+                padding: 1rem;
+            }
+
+            .btn-primary,
+            .btn-secondary {
+                width: 100%;
+            }
+        }
+
+        /* ==================== 性能优化 ==================== */
+
+        /* 减少重排/重绘 - 使用transform */
+        .performance-optimized {
+            will-change: transform;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+
+        /* 图表容器过渡 */
+        .chart-wrapper {
+            transition: opacity 0.2s ease-in-out;
+        }
+
+        .chart-wrapper.loading {
+            opacity: 0.5;
+        }
     </style>
 </head>
 <body class="bg-white text-black antialiased">
@@ -197,49 +341,49 @@
 
                 <!-- Desktop Navigation -->
                 <div class="hidden md:flex md:items-center md:space-x-8">
-                    <a href="#" class="nav-tab text-black border-b-2 border-black px-1 pt-1 text-sm font-medium" data-tab="home">
+                    <a href="#" class="nav-tab text-black border-b-2 border-black px-1 pt-1 text-sm font-medium" data-tab="home" aria-label="切换到首页" role="button">
                         首页
                     </a>
-                    <a href="#" class="nav-tab text-gray-500 hover:text-black border-b-2 border-transparent hover:border-gray-300 px-1 pt-1 text-sm font-medium transition-colors" data-tab="skills">
+                    <a href="#" class="nav-tab text-gray-500 hover:text-black border-b-2 border-transparent hover:border-gray-300 px-1 pt-1 text-sm font-medium transition-colors" data-tab="skills" aria-label="切换到技能库" role="button">
                         技能库
                     </a>
-                    <a href="#" class="nav-tab text-gray-500 hover:text-black border-b-2 border-transparent hover:border-gray-300 px-1 pt-1 text-sm font-medium transition-colors" data-tab="planner">
+                    <a href="#" class="nav-tab text-gray-500 hover:text-black border-b-2 border-transparent hover:border-gray-300 px-1 pt-1 text-sm font-medium transition-colors" data-tab="planner" aria-label="切换到Agent编排" role="button">
                         Agent编排
                     </a>
-                    <a href="#" class="nav-tab text-gray-500 hover:text-black border-b-2 border-transparent hover:border-gray-300 px-1 pt-1 text-sm font-medium transition-colors" data-tab="analysis">
+                    <a href="#" class="nav-tab text-gray-500 hover:text-black border-b-2 border-transparent hover:border-gray-300 px-1 pt-1 text-sm font-medium transition-colors" data-tab="analysis" aria-label="切换到分析" role="button">
                         分析
                     </a>
-                    <a href="#" class="nav-tab text-gray-500 hover:text-black border-b-2 border-transparent hover:border-gray-300 px-1 pt-1 text-sm font-medium transition-colors" data-tab="cases">
+                    <a href="#" class="nav-tab text-gray-500 hover:text-black border-b-2 border-transparent hover:border-gray-300 px-1 pt-1 text-sm font-medium transition-colors" data-tab="cases" aria-label="切换到案例" role="button">
                         案例
                     </a>
                 </div>
 
                 <!-- Mobile menu button -->
                 <div class="flex items-center md:hidden">
-                    <button type="button" id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-black hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-black">
+                    <button type="button" id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-black hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-black" aria-label="打开主菜单" aria-expanded="false" aria-controls="mobile-menu">
                         <span class="sr-only">打开主菜单</span>
-                        <i class="fas fa-bars text-xl"></i>
+                        <i class="fas fa-bars text-xl" aria-hidden="true"></i>
                     </button>
                 </div>
             </div>
         </div>
 
         <!-- Mobile menu -->
-        <div class="md:hidden hidden" id="mobile-menu">
+        <div class="md:hidden hidden" id="mobile-menu" role="menu" aria-label="主导航">
             <div class="px-2 pt-2 pb-3 space-y-1 bg-white border-t border-gray-200">
-                <a href="#" class="nav-tab block text-black bg-gray-50 border-l-4 border-black px-3 py-2 text-base font-medium" data-tab="home">
+                <a href="#" class="nav-tab block text-black bg-gray-50 border-l-4 border-black px-3 py-2 text-base font-medium" data-tab="home" role="menuitem" aria-label="切换到首页">
                     首页
                 </a>
-                <a href="#" class="nav-tab block text-gray-600 hover:text-black hover:bg-gray-50 border-l-4 border-transparent hover:border-gray-300 px-3 py-2 text-base font-medium transition-colors" data-tab="skills">
+                <a href="#" class="nav-tab block text-gray-600 hover:text-black hover:bg-gray-50 border-l-4 border-transparent hover:border-gray-300 px-3 py-2 text-base font-medium transition-colors" data-tab="skills" role="menuitem" aria-label="切换到技能库">
                     技能库
                 </a>
-                <a href="#" class="nav-tab block text-gray-600 hover:text-black hover:bg-gray-50 border-l-4 border-transparent hover:border-gray-300 px-3 py-2 text-base font-medium transition-colors" data-tab="planner">
+                <a href="#" class="nav-tab block text-gray-600 hover:text-black hover:bg-gray-50 border-l-4 border-transparent hover:border-gray-300 px-3 py-2 text-base font-medium transition-colors" data-tab="planner" role="menuitem" aria-label="切换到Agent编排">
                     Agent编排
                 </a>
-                <a href="#" class="nav-tab block text-gray-600 hover:text-black hover:bg-gray-50 border-l-4 border-transparent hover:border-gray-300 px-3 py-2 text-base font-medium transition-colors" data-tab="analysis">
+                <a href="#" class="nav-tab block text-gray-600 hover:text-black hover:bg-gray-50 border-l-4 border-transparent hover:border-gray-300 px-3 py-2 text-base font-medium transition-colors" data-tab="analysis" role="menuitem" aria-label="切换到分析">
                     分析
                 </a>
-                <a href="#" class="nav-tab block text-gray-600 hover:text-black hover:bg-gray-50 border-l-4 border-transparent hover:border-gray-300 px-3 py-2 text-base font-medium transition-colors" data-tab="cases">
+                <a href="#" class="nav-tab block text-gray-600 hover:text-black hover:bg-gray-50 border-l-4 border-transparent hover:border-gray-300 px-3 py-2 text-base font-medium transition-colors" data-tab="cases" role="menuitem" aria-label="切换到案例">
                     案例
                 </a>
             </div>
@@ -250,6 +394,35 @@
     <main id="tab-content"></main>
 
     <script>
+        // ==================== 浏览器兼容性 ====================
+        // ✓ Chrome (主要开发浏览器)
+        // ✓ Safari (需要测试)
+        // ✓ Firefox (需要测试)
+        // ✓ Edge (需要测试)
+        // ⏳ Mobile Safari (iOS) - 需要测试
+        // ⏳ Mobile Chrome (Android) - 需要测试
+        //
+        // 注意: 请在发布前在上述浏览器中测试所有功能
+
+        /**
+         * Debounce函数 - 性能优化
+         * 防止函数在短时间内被频繁调用
+         * @param {Function} func - 需要防抖的函数
+         * @param {number} wait - 等待时间(毫秒)
+         * @returns {Function} 防抖后的函数
+         */
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
         /**
          * BAS技能数据结构
          * @typedef {Object} BASBasicSkill
@@ -1274,7 +1447,13 @@
          */
         function toggleMobileMenu() {
             const mobileMenu = document.getElementById('mobile-menu');
-            mobileMenu.classList.toggle('hidden');
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const isHidden = mobileMenu.classList.toggle('hidden');
+
+            // 更新ARIA属性以支持可访问性
+            if (mobileMenuButton) {
+                mobileMenuButton.setAttribute('aria-expanded', !isHidden);
+            }
         }
 
         /**
@@ -1344,22 +1523,22 @@
                         <h2 class="text-headline text-center mb-16">核心特性</h2>
                         <div class="bento-grid">
                             <div class="bento-card">
-                                <div class="icon-placeholder mb-4">🧠</div>
+                                <div class="icon-placeholder mb-4" aria-label="大脑图标">🧠</div>
                                 <h3 class="text-title mb-2">94+ BAS技能</h3>
                                 <p class="text-caption">覆盖电池全生命周期分析</p>
                             </div>
                             <div class="bento-card">
-                                <div class="icon-placeholder mb-4">⚡</div>
+                                <div class="icon-placeholder mb-4" aria-label="闪电图标">⚡</div>
                                 <h3 class="text-title mb-2">&lt;50ms响应</h3>
                                 <p class="text-caption">实时诊断，即时反馈</p>
                             </div>
                             <div class="bento-card">
-                                <div class="icon-placeholder mb-4">📋</div>
+                                <div class="icon-placeholder mb-4" aria-label="剪贴板图标">📋</div>
                                 <h3 class="text-title mb-2">Documentation-Driven</h3>
                                 <p class="text-caption">100%文档驱动编排</p>
                             </div>
                             <div class="bento-card">
-                                <div class="icon-placeholder mb-4">🎯</div>
+                                <div class="icon-placeholder mb-4" aria-label="靶心图标">🎯</div>
                                 <h3 class="text-title mb-2">本体论架构</h3>
                                 <p class="text-caption">基于物理本质的智能匹配</p>
                             </div>
@@ -1906,7 +2085,7 @@
                                     </div>
                                     <h2 class="text-title">编排流程</h2>
                                 </div>
-                                <div id="case-dag-chart" class="w-full h-[400px]"></div>
+                                <div id="case-dag-chart" class="w-full h-[400px]" role="img" aria-label="案例DAG流程图"></div>
                             </div>
 
                             <!-- 溯源分析 -->
@@ -2101,10 +2280,10 @@
 
             myChart.setOption(option);
 
-            // 响应式调整
-            window.addEventListener('resize', () => {
+            // 响应式调整(使用debounce优化性能)
+            window.addEventListener('resize', debounce(() => {
                 myChart.resize();
-            });
+            }, 250));
         }
 
         /**
@@ -2671,7 +2850,7 @@
             updateDAGStatus('正在生成工作流...');
 
             // 清空容器
-            dagContainer.innerHTML = '<div id="dag-chart" style="width:100%;height:100%;"></div>';
+            dagContainer.innerHTML = '<div id="dag-chart" style="width:100%;height:100%;" role="img" aria-label="Agent编排DAG流程图"></div>';
 
             // 等待DOM更新
             await new Promise(resolve => setTimeout(resolve, 100));
@@ -2752,10 +2931,10 @@
 
             chart.setOption(option);
 
-            // 响应式调整
-            window.addEventListener('resize', () => {
+            // 响应式调整(使用debounce优化性能)
+            window.addEventListener('resize', debounce(() => {
                 chart.resize();
-            });
+            }, 250));
 
             // 更新状态
             updateDAGStatus('工作流已生成');
@@ -3026,19 +3205,19 @@
                     <!-- 电压曲线图 -->
                     <div class="bento-card">
                         <h4 class="text-title mb-4">电压-时间曲线</h4>
-                        <div id="voltage-chart" style="width: 100%; height: 300px;"></div>
+                        <div id="voltage-chart" style="width: 100%; height: 300px;" role="img" aria-label="电压-时间曲线图"></div>
                     </div>
 
                     <!-- 温度热力图 -->
                     <div class="bento-card">
                         <h4 class="text-title mb-4">温度热力图</h4>
-                        <div id="temperature-chart" style="width: 100%; height: 350px;"></div>
+                        <div id="temperature-chart" style="width: 100%; height: 350px;" role="img" aria-label="温度热力图"></div>
                     </div>
 
                     <!-- 风险雷达图 -->
                     <div class="bento-card">
                         <h4 class="text-title mb-4">风险评估</h4>
-                        <div id="radar-chart" style="width: 100%; height: 350px;"></div>
+                        <div id="radar-chart" style="width: 100%; height: 350px;" role="img" aria-label="风险雷达图"></div>
                     </div>
 
                     <!-- AI建议卡片 -->
@@ -3282,10 +3461,10 @@
 
             myChart.setOption(option);
 
-            // 响应式调整
-            window.addEventListener('resize', () => {
+            // 响应式调整(使用debounce优化性能)
+            window.addEventListener('resize', debounce(() => {
                 myChart.resize();
-            });
+            }, 250));
         }
 
         /**
@@ -3368,10 +3547,10 @@
 
             myChart.setOption(option);
 
-            // 响应式调整
-            window.addEventListener('resize', () => {
+            // 响应式调整(使用debounce优化性能)
+            window.addEventListener('resize', debounce(() => {
                 myChart.resize();
-            });
+            }, 250));
         }
 
         /**
@@ -3430,10 +3609,10 @@
 
             myChart.setOption(option);
 
-            // 响应式调整
-            window.addEventListener('resize', () => {
+            // 响应式调整(使用debounce优化性能)
+            window.addEventListener('resize', debounce(() => {
                 myChart.resize();
-            });
+            }, 250));
         }
 
         // 页面加载完成后初始化

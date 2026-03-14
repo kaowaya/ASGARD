@@ -185,7 +185,66 @@
 </head>
 <body class="bg-white text-black antialiased">
     <!-- 导航栏 -->
-    <nav id="main-nav"></nav>
+    <nav id="main-nav" class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-xl font-bold text-black">ASGARD</h1>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex md:items-center md:space-x-8">
+                    <a href="#" class="nav-tab text-black border-b-2 border-black px-1 pt-1 text-sm font-medium" data-tab="home">
+                        首页
+                    </a>
+                    <a href="#" class="nav-tab text-gray-500 hover:text-black border-b-2 border-transparent hover:border-gray-300 px-1 pt-1 text-sm font-medium transition-colors" data-tab="skills">
+                        技能库
+                    </a>
+                    <a href="#" class="nav-tab text-gray-500 hover:text-black border-b-2 border-transparent hover:border-gray-300 px-1 pt-1 text-sm font-medium transition-colors" data-tab="planner">
+                        Agent编排
+                    </a>
+                    <a href="#" class="nav-tab text-gray-500 hover:text-black border-b-2 border-transparent hover:border-gray-300 px-1 pt-1 text-sm font-medium transition-colors" data-tab="analysis">
+                        分析
+                    </a>
+                    <a href="#" class="nav-tab text-gray-500 hover:text-black border-b-2 border-transparent hover:border-gray-300 px-1 pt-1 text-sm font-medium transition-colors" data-tab="cases">
+                        案例
+                    </a>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="flex items-center md:hidden">
+                    <button type="button" id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-black hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-black">
+                        <span class="sr-only">打开主菜单</span>
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile menu -->
+        <div class="md:hidden hidden" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 bg-white border-t border-gray-200">
+                <a href="#" class="nav-tab block text-black bg-gray-50 border-l-4 border-black px-3 py-2 text-base font-medium" data-tab="home">
+                    首页
+                </a>
+                <a href="#" class="nav-tab block text-gray-600 hover:text-black hover:bg-gray-50 border-l-4 border-transparent hover:border-gray-300 px-3 py-2 text-base font-medium transition-colors" data-tab="skills">
+                    技能库
+                </a>
+                <a href="#" class="nav-tab block text-gray-600 hover:text-black hover:bg-gray-50 border-l-4 border-transparent hover:border-gray-300 px-3 py-2 text-base font-medium transition-colors" data-tab="planner">
+                    Agent编排
+                </a>
+                <a href="#" class="nav-tab block text-gray-600 hover:text-black hover:bg-gray-50 border-l-4 border-transparent hover:border-gray-300 px-3 py-2 text-base font-medium transition-colors" data-tab="analysis">
+                    分析
+                </a>
+                <a href="#" class="nav-tab block text-gray-600 hover:text-black hover:bg-gray-50 border-l-4 border-transparent hover:border-gray-300 px-3 py-2 text-base font-medium transition-colors" data-tab="cases">
+                    案例
+                </a>
+            </div>
+        </div>
+    </nav>
 
     <!-- Tab内容容器 -->
     <main id="tab-content"></main>
@@ -330,6 +389,185 @@
             responseTime: "<50ms",
             docDriven: "100%"
         };
+
+        // ==================== 导航系统 ====================
+
+        /**
+         * 当前活动Tab
+         */
+        let currentTab = 'home';
+
+        /**
+         * 切换Tab
+         * @param {string} tabId - Tab ID
+         */
+        function switchTab(tabId) {
+            // 更新当前Tab状态
+            currentTab = tabId;
+
+            // 更新桌面端导航样式
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                const isCurrentTab = tab.dataset.tab === tabId;
+                if (tab.parentElement.classList.contains('md:flex')) {
+                    // 桌面端样式
+                    if (isCurrentTab) {
+                        tab.classList.remove('text-gray-500', 'border-transparent');
+                        tab.classList.add('text-black', 'border-black');
+                    } else {
+                        tab.classList.remove('text-black', 'border-black');
+                        tab.classList.add('text-gray-500', 'border-transparent');
+                    }
+                } else {
+                    // 移动端样式
+                    if (isCurrentTab) {
+                        tab.classList.remove('text-gray-600', 'border-transparent');
+                        tab.classList.add('text-black', 'bg-gray-50', 'border-black');
+                    } else {
+                        tab.classList.remove('text-black', 'bg-gray-50', 'border-black');
+                        tab.classList.add('text-gray-600', 'border-transparent');
+                    }
+                }
+            });
+
+            // 渲染Tab内容
+            renderTabContent(tabId);
+
+            // 关闭移动端菜单
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (!mobileMenu.classList.contains('hidden')) {
+                toggleMobileMenu();
+            }
+        }
+
+        /**
+         * 切换移动端菜单
+         */
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        }
+
+        /**
+         * 渲染Tab内容
+         * @param {string} tabId - Tab ID
+         * @returns {string} HTML内容
+         */
+        function renderTabContent(tabId) {
+            const tabContent = document.getElementById('tab-content');
+
+            switch(tabId) {
+                case 'home':
+                    tabContent.innerHTML = renderHomePage();
+                    break;
+                case 'skills':
+                    tabContent.innerHTML = '<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12"><div class="text-center"><h2 class="text-3xl font-bold mb-4">技能库</h2><p class="text-gray-600">开发中...</p></div></div>';
+                    break;
+                case 'planner':
+                    tabContent.innerHTML = '<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12"><div class="text-center"><h2 class="text-3xl font-bold mb-4">Agent编排</h2><p class="text-gray-600">开发中...</p></div></div>';
+                    break;
+                case 'analysis':
+                    tabContent.innerHTML = '<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12"><div class="text-center"><h2 class="text-3xl font-bold mb-4">分析</h2><p class="text-gray-600">开发中...</p></div></div>';
+                    break;
+                case 'cases':
+                    tabContent.innerHTML = '<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12"><div class="text-center"><h2 class="text-3xl font-bold mb-4">案例</h2><p class="text-gray-600">开发中...</p></div></div>';
+                    break;
+                default:
+                    tabContent.innerHTML = '<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12"><div class="text-center"><h2 class="text-3xl font-bold mb-4">404</h2><p class="text-gray-600">页面未找到</p></div></div>';
+            }
+        }
+
+        /**
+         * 渲染首页内容
+         * @returns {string} HTML内容
+         */
+        function renderHomePage() {
+            return `
+                <section class="bg-white">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+                        <div class="text-center">
+                            <h1 class="text-display mb-6">
+                                ASGARD
+                            </h1>
+                            <p class="text-headline mb-4">
+                                The Intelligent Battery Brain
+                            </p>
+                            <p class="text-body max-w-2xl mx-auto mb-12 text-gray-600">
+                                基于Documentation-Driven架构的电池智能分析系统<br>
+                                94+ BAS技能 · <50ms响应 · 本体论驱动
+                            </p>
+                            <div class="flex justify-center gap-4">
+                                <button class="btn-primary" onclick="switchTab('skills')">
+                                    浏览技能库
+                                </button>
+                                <button class="btn-secondary" onclick="switchTab('cases')">
+                                    查看案例
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="bg-gray-50 py-24">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <h2 class="text-headline text-center mb-16">核心特性</h2>
+                        <div class="bento-grid">
+                            <div class="bento-card">
+                                <div class="icon-placeholder mb-4">🧠</div>
+                                <h3 class="text-title mb-2">94+ BAS技能</h3>
+                                <p class="text-caption">覆盖电池全生命周期分析</p>
+                            </div>
+                            <div class="bento-card">
+                                <div class="icon-placeholder mb-4">⚡</div>
+                                <h3 class="text-title mb-2">&lt;50ms响应</h3>
+                                <p class="text-caption">实时诊断，即时反馈</p>
+                            </div>
+                            <div class="bento-card">
+                                <div class="icon-placeholder mb-4">📋</div>
+                                <h3 class="text-title mb-2">Documentation-Driven</h3>
+                                <p class="text-caption">100%文档驱动编排</p>
+                            </div>
+                            <div class="bento-card">
+                                <div class="icon-placeholder mb-4">🎯</div>
+                                <h3 class="text-title mb-2">本体论架构</h3>
+                                <p class="text-caption">基于物理本质的智能匹配</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            `;
+        }
+
+        /**
+         * 初始化导航系统
+         */
+        function initNavigation() {
+            // 事件委托处理Tab点击
+            document.addEventListener('click', function(e) {
+                const tab = e.target.closest('.nav-tab');
+                if (tab) {
+                    e.preventDefault();
+                    const tabId = tab.dataset.tab;
+                    if (tabId) {
+                        switchTab(tabId);
+                    }
+                }
+            });
+
+            // 移动端菜单按钮
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            if (mobileMenuButton) {
+                mobileMenuButton.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    toggleMobileMenu();
+                });
+            }
+
+            // 初始化首页内容
+            renderTabContent('home');
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', initNavigation);
     </script>
 </body>
 </html>

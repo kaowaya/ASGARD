@@ -1,0 +1,3621 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASGARD - The Intelligent Battery Brain</title>
+
+    <!-- Tailwind CSS Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: "hsl(var(--border))",
+                        background: "hsl(var(--background))",
+                        foreground: "hsl(var(--foreground))",
+                        muted: {
+                            DEFAULT: "hsl(var(--muted))",
+                            foreground: "hsl(var(--muted-foreground))",
+                        },
+                    },
+                    spacing: {
+                        '18': '4.5rem',
+                        '72': '18rem',
+                        '84': '21rem',
+                        '96': '24rem',
+                    },
+                    borderRadius: {
+                        'xl': '1rem',
+                        '2xl': '1.5rem',
+                    },
+                }
+            }
+        }
+    </script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- ECharts -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+
+    <style>
+        :root {
+            --background: 0 0% 100%;
+            --foreground: 0 0% 9%;
+            --muted: 0 0% 96%;
+            --muted-foreground: 0 0% 45%;
+            --border: 0 0% 91%;
+        }
+
+        /* 响应式字体 */
+        .text-display {
+            font-size: clamp(2.25rem, 5vw, 5rem);
+            font-weight: 600;
+            line-height: 1.1;
+            letter-spacing: -0.025em;
+        }
+
+        .text-headline {
+            font-size: clamp(1.75rem, 4vw, 3rem);
+            font-weight: 600;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+        }
+
+        .text-title {
+            font-size: clamp(1.125rem, 2.5vw, 1.5rem);
+            font-weight: 600;
+            line-height: 1.3;
+            letter-spacing: -0.01em;
+        }
+
+        .text-body {
+            font-size: clamp(0.875rem, 2vw, 1.125rem);
+            font-weight: 400;
+            line-height: 1.5;
+        }
+
+        .text-caption {
+            font-size: clamp(0.75rem, 1.5vw, 0.875rem);
+            font-weight: 400;
+            line-height: 1.4;
+            color: hsl(var(--muted-foreground));
+        }
+
+        /* Bento卡片 */
+        .bento-card {
+            background: white;
+            border-radius: 1.25rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            transition: all 0.3s ease;
+        }
+
+        .bento-card:hover {
+            transform: translateY(-0.5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        /* 图标占位符 */
+        .icon-placeholder {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg,
+                hsl(var(--muted)) 0%,
+                hsl(var(--background)) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        /* Bento网格 */
+        .bento-grid {
+            display: grid;
+            gap: 1.5rem;
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .bento-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.25rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .bento-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 1.5rem;
+            }
+        }
+
+        /* 按钮样式 */
+        .btn-primary {
+            background: black;
+            color: white;
+            padding: 14px 32px;
+            border-radius: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-0.5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: black;
+            border: 1px solid hsl(var(--border));
+            padding: 14px 32px;
+            border-radius: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-secondary:hover {
+            background: hsl(var(--muted));
+        }
+
+        .text-link {
+            color: black;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s ease;
+        }
+
+        .text-link:hover {
+            opacity: 0.7;
+            text-decoration: underline;
+        }
+
+        /* ==================== 性能优化和动画 ==================== */
+
+        /* 页面切换淡入动画 */
+        .tab-content {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #000;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Loading容器 */
+        .chart-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+            color: hsl(var(--muted-foreground));
+        }
+
+        .chart-loading-text {
+            margin-top: 12px;
+            font-size: 0.875rem;
+        }
+
+        /* ==================== 可访问性改进 ==================== */
+
+        /* 键盘导航焦点样式 */
+        button:focus,
+        a:focus,
+        [tabindex]:focus {
+            outline: 2px solid #000;
+            outline-offset: 2px;
+        }
+
+        /* 移除默认outline但保持可访问性 */
+        button:focus:not(:focus-visible),
+        a:focus:not(:focus-visible) {
+            outline: none;
+        }
+
+        /* ==================== 移动端优化 ==================== */
+
+        /* 触摸目标最小尺寸 */
+        @media (max-width: 768px) {
+            .btn-primary,
+            .btn-secondary {
+                min-height: 44px;
+                min-width: 44px;
+                padding: 12px 24px;
+            }
+
+            /* 移动端按钮间距 */
+            .button-group {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            /* 移动端导航菜单项触摸目标 */
+            .nav-tab {
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+            }
+
+            /* 移动端图表容器高度优化 */
+            .chart-container {
+                min-height: 250px;
+            }
+
+            /* 移动端卡片间距 */
+            .bento-card {
+                margin-bottom: 1rem;
+            }
+
+            /* 移动端文字大小调整 */
+            .text-display {
+                font-size: clamp(1.75rem, 8vw, 3rem);
+            }
+
+            .text-headline {
+                font-size: clamp(1.25rem, 6vw, 2rem);
+            }
+        }
+
+        /* 超小屏幕优化 (320px+) */
+        @media (max-width: 380px) {
+            .bento-card {
+                padding: 1rem;
+            }
+
+            .btn-primary,
+            .btn-secondary {
+                width: 100%;
+            }
+        }
+
+        /* ==================== 性能优化 ==================== */
+
+        /* 减少重排/重绘 - 使用transform */
+        .performance-optimized {
+            will-change: transform;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+
+        /* 图表容器过渡 */
+        .chart-wrapper {
+            transition: opacity 0.2s ease-in-out;
+        }
+
+        .chart-wrapper.loading {
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body class="bg-white text-black antialiased">
+    <!-- 导航栏 -->
+    <nav id="main-nav" class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-xl font-bold text-black">ASGARD</h1>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex md:items-center md:space-x-8">
+                    <a href="#" class="nav-tab text-black border-b-2 border-black px-1 pt-1 text-sm font-medium" data-tab="home" aria-label="切换到首页" role="button">
+                        首页
+                    </a>
+                    <a href="#" class="nav-tab text-gray-500 hover:text-black border-b-2 border-transparent hover:border-gray-300 px-1 pt-1 text-sm font-medium transition-colors" data-tab="skills" aria-label="切换到技能库" role="button">
+                        技能库
+                    </a>
+                    <a href="#" class="nav-tab text-gray-500 hover:text-black border-b-2 border-transparent hover:border-gray-300 px-1 pt-1 text-sm font-medium transition-colors" data-tab="planner" aria-label="切换到Agent编排" role="button">
+                        Agent编排
+                    </a>
+                    <a href="#" class="nav-tab text-gray-500 hover:text-black border-b-2 border-transparent hover:border-gray-300 px-1 pt-1 text-sm font-medium transition-colors" data-tab="analysis" aria-label="切换到分析" role="button">
+                        分析
+                    </a>
+                    <a href="#" class="nav-tab text-gray-500 hover:text-black border-b-2 border-transparent hover:border-gray-300 px-1 pt-1 text-sm font-medium transition-colors" data-tab="cases" aria-label="切换到案例" role="button">
+                        案例
+                    </a>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="flex items-center md:hidden">
+                    <button type="button" id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-black hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-black" aria-label="打开主菜单" aria-expanded="false" aria-controls="mobile-menu">
+                        <span class="sr-only">打开主菜单</span>
+                        <i class="fas fa-bars text-xl" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile menu -->
+        <div class="md:hidden hidden" id="mobile-menu" role="menu" aria-label="主导航">
+            <div class="px-2 pt-2 pb-3 space-y-1 bg-white border-t border-gray-200">
+                <a href="#" class="nav-tab block text-black bg-gray-50 border-l-4 border-black px-3 py-2 text-base font-medium" data-tab="home" role="menuitem" aria-label="切换到首页">
+                    首页
+                </a>
+                <a href="#" class="nav-tab block text-gray-600 hover:text-black hover:bg-gray-50 border-l-4 border-transparent hover:border-gray-300 px-3 py-2 text-base font-medium transition-colors" data-tab="skills" role="menuitem" aria-label="切换到技能库">
+                    技能库
+                </a>
+                <a href="#" class="nav-tab block text-gray-600 hover:text-black hover:bg-gray-50 border-l-4 border-transparent hover:border-gray-300 px-3 py-2 text-base font-medium transition-colors" data-tab="planner" role="menuitem" aria-label="切换到Agent编排">
+                    Agent编排
+                </a>
+                <a href="#" class="nav-tab block text-gray-600 hover:text-black hover:bg-gray-50 border-l-4 border-transparent hover:border-gray-300 px-3 py-2 text-base font-medium transition-colors" data-tab="analysis" role="menuitem" aria-label="切换到分析">
+                    分析
+                </a>
+                <a href="#" class="nav-tab block text-gray-600 hover:text-black hover:bg-gray-50 border-l-4 border-transparent hover:border-gray-300 px-3 py-2 text-base font-medium transition-colors" data-tab="cases" role="menuitem" aria-label="切换到案例">
+                    案例
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Tab内容容器 -->
+    <main id="tab-content"></main>
+
+    <script>
+        // ==================== 浏览器兼容性 ====================
+        // ✓ Chrome (主要开发浏览器)
+        // ✓ Safari (需要测试)
+        // ✓ Firefox (需要测试)
+        // ✓ Edge (需要测试)
+        // ⏳ Mobile Safari (iOS) - 需要测试
+        // ⏳ Mobile Chrome (Android) - 需要测试
+        //
+        // 注意: 请在发布前在上述浏览器中测试所有功能
+
+        /**
+         * Debounce函数 - 性能优化
+         * 防止函数在短时间内被频繁调用
+         * @param {Function} func - 需要防抖的函数
+         * @param {number} wait - 等待时间(毫秒)
+         * @returns {Function} 防抖后的函数
+         */
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        /**
+         * BAS技能数据结构
+         * @typedef {Object} BASBasicSkill
+         * @property {string} id - 技能ID (e.g., "C3.1")
+         * @property {string} name - 技能名称
+         * @property {string} tier - 所属层级
+         * @property {string} whenToUse - 使用场景
+         * @property {string} compute - 算力要求
+         * @property {string[]} batteryTypes - 适用电池类型
+         * @property {string} description - 技能描述
+         */
+
+        // BAS技能数据（简化版，包含核心技能）
+        const basSkills = {
+            tiers: [
+                {
+                    id: "L0",
+                    name: "基础模型层",
+                    count: 30,
+                    description: "机器学习、深度学习基础算法"
+                },
+                {
+                    id: "L1",
+                    name: "生产层级",
+                    count: 4,
+                    description: "制造质量控制技能"
+                },
+                {
+                    id: "L2",
+                    name: "BMS层级",
+                    count: 10,
+                    description: "电池管理系统技能"
+                },
+                {
+                    id: "L3",
+                    name: "云端层级",
+                    count: 15,
+                    description: "高级诊断算法"
+                },
+                {
+                    id: "L4",
+                    name: "应用层级",
+                    count: 3,
+                    description: "应用层技能"
+                },
+                {
+                    id: "L5",
+                    name: "工商业层级",
+                    count: 5,
+                    description: "工商业应用技能"
+                }
+            ],
+            skills: [
+                // ===== L0 基础模型层 (30个) =====
+                {
+                    id: "C0.1",
+                    name: "Linear Regression",
+                    tier: "L0",
+                    whenToUse: "建立电压-容量线性关系模型，用于简单的容量预测",
+                    compute: "<1MHz",
+                    batteryTypes: ["ALL"],
+                    description: "基于最小二乘法的线性回归算法，用于建立电池参数间的线性关系。模型形式为 y = wx + b，通过梯度下降或闭式解求解参数。",
+                    algorithm: "使用最小二乘法拟合：min||Xw - y||²。可添加L1/L2正则化防止过拟合。适用于建立OCV-SOC、容量-阻抗等线性关系。",
+                    references: ["[1] Hastie, T., Tibshirani, R., & Friedman, J. (2009). The Elements of Statistical Learning."]
+                },
+                {
+                    id: "C0.2",
+                    name: "Random Forest",
+                    tier: "L0",
+                    whenToUse: "多特征融合的寿命预测，需要处理非线性关系",
+                    compute: "<10MHz",
+                    batteryTypes: ["ALL"],
+                    description: "集成学习算法，通过构建多棵决策树并进行投票或平均来提高预测准确性和鲁棒性。",
+                    algorithm: "构建N棵决策树，每棵树使用bootstrap采样和特征随机选择。预测时对所有树的结果进行平均（回归）或投票（分类）。",
+                    references: ["[1] Breiman, L. (2001). Random Forests. Machine Learning, 45(1), 5-32."]
+                },
+                {
+                    id: "C0.3",
+                    name: "Support Vector Machine",
+                    tier: "L0",
+                    whenToUse: "小样本故障分类，需要高维特征空间",
+                    compute: "<10MHz",
+                    batteryTypes: ["ALL"],
+                    description: "基于统计学习理论的分类算法，通过寻找最优超平面实现数据分类。",
+                    algorithm: "优化目标：min ||w||² + C∑ξᵢ，使用核函数（RBF、多项式等）映射到高维空间。适用于故障诊断、状态分类。",
+                    references: ["[1] Cortes, C., & Vapnik, V. (1995). Support-vector networks. Machine Learning, 20(3), 273-297."]
+                },
+                {
+                    id: "C0.4",
+                    name: "XGBoost",
+                    tier: "L0",
+                    whenToUse: "高精度SOH预测，需要处理复杂特征交互",
+                    compute: "<50MHz",
+                    batteryTypes: ["ALL"],
+                    description: "梯度提升决策树算法，通过迭代添加弱学习器来提升模型性能。",
+                    algorithm: "使用二阶梯度信息优化目标函数，包含正则化项防止过拟合。支持并行计算和缺失值处理。",
+                    references: ["[1] Chen, T., & Guestrin, C. (2016). XGBoost: A scalable tree boosting system."]
+                },
+                {
+                    id: "C0.5",
+                    name: "LightGBM",
+                    tier: "L0",
+                    whenToUse: "大规模数据训练，需要更快的训练速度",
+                    compute: "<50MHz",
+                    batteryTypes: ["ALL"],
+                    description: "基于直方图的梯度提升框架，使用leaf-wise生长策略提高效率。",
+                    algorithm: "将连续特征值离散化为直方图bins，使用GOSS（基于梯度的单边采样）和EFB（互斥特征捆绑）优化训练过程。",
+                    references: ["[1] Ke, G., et al. (2017). LightGBM: A highly efficient gradient boosting decision tree."]
+                },
+                {
+                    id: "C0.6",
+                    name: "LSTM",
+                    tier: "L0",
+                    whenToUse: "时间序列预测，如SOC、SOH的动态估计",
+                    compute: "<50MHz",
+                    batteryTypes: ["ALL"],
+                    description: "长短期记忆网络，专门处理时间序列数据，能够捕捉长期依赖关系。",
+                    algorithm: "包含输入门、遗忘门、输出门和细胞状态。通过门控机制控制信息流动，解决梯度消失问题。",
+                    references: ["[1] Hochreiter, S., & Schmidhuber, J. (1997). Long Short-Term Memory. Neural Computation, 9(8), 1735-1780."]
+                },
+                {
+                    id: "C0.7",
+                    name: "GRU",
+                    tier: "L0",
+                    whenToUse: "类似LSTM但参数更少，需要更快训练速度",
+                    compute: "<50MHz",
+                    batteryTypes: ["ALL"],
+                    description: "门控循环单元，LSTM的简化版本，参数更少训练更快。",
+                    algorithm: "使用更新门和重置门，融合了LSTM的遗忘门和输入门，参数量减少约25%。",
+                    references: ["[1] Cho, K., et al. (2014). Learning phrase representations using RNN encoder-decoder."]
+                },
+                {
+                    id: "C0.8",
+                    name: "Transformer",
+                    tier: "L0",
+                    whenToUse: "需要处理长序列依赖，多变量时间序列预测",
+                    compute: ">50MHz",
+                    batteryTypes: ["ALL"],
+                    description: "基于自注意力机制的序列模型，能够并行处理长序列数据。",
+                    algorithm: "使用多头自注意力机制：Attention(Q,K,V) = softmax(QKᵀ/√d)V。位置编码提供序列顺序信息。",
+                    references: ["[1] Vaswani, A., et al. (2017). Attention is all you need. NeurIPS."]
+                },
+                {
+                    id: "C0.9",
+                    name: "CNN",
+                    tier: "L0",
+                    whenToUse: "提取充放电曲线的空间特征",
+                    compute: "<10MHz",
+                    batteryTypes: ["ALL"],
+                    description: "卷积神经网络，使用卷积核提取局部特征和模式。",
+                    algorithm: "通过卷积层、池化层和全连接层提取层级特征。1D-CNN适用于时间序列，2D-CNN可用于图像数据。",
+                    references: ["[1] LeCun, Y., et al. (1998). Gradient-based learning applied to document recognition."]
+                },
+                {
+                    id: "C0.10",
+                    name: "GNN",
+                    tier: "L0",
+                    whenToUse: "电池包层级分析，需要建模电池间连接关系",
+                    compute: ">50MHz",
+                    batteryTypes: ["ALL"],
+                    description: "图神经网络，处理图结构数据，建模电池间的拓扑关系。",
+                    algorithm: "通过消息传递机制聚合邻居节点信息。GCN、GAT、GraphSAGE等变体适用于不同场景。",
+                    references: ["[1] Scarselli, F., et al. (2009). The graph neural network model. IEEE Transactions on Neural Networks."]
+                },
+                {
+                    id: "C0.11",
+                    name: "Kalman Filter",
+                    tier: "L0",
+                    whenToUse: "动态系统状态估计，如SOC实时估计",
+                    compute: "<1MHz",
+                    batteryTypes: ["ALL"],
+                    description: "递归滤波算法，用于估计动态系统的状态，处理噪声和不确定性。",
+                    algorithm: "预测步骤：x̂ₖ₋ = A x̂ₖ₋₁ + B uₖ。更新步骤：Kₖ = Pₖ₋ Hᵀ(HPₖ₋Hᵀ + R)⁻¹，x̂ₖ = x̂ₖ₋ + Kₖ(zₖ - Hx̂ₖ₋)。",
+                    references: ["[1] Kalman, R. E. (1960). A new approach to linear filtering and prediction problems."]
+                },
+                {
+                    id: "C0.12",
+                    name: "Particle Filter",
+                    tier: "L0",
+                    whenToUse: "非线性非高斯系统，如SOC/SOH联合估计",
+                    compute: "<10MHz",
+                    batteryTypes: ["ALL"],
+                    description: "序贯蒙特卡洛方法，用粒子集合表示概率分布，适用于非线性和非高斯系统。",
+                    algorithm: "预测：采样粒子。更新：根据观测值加权粒子。重采样：保留高权重粒子。适用于复杂BMS模型。",
+                    references: ["[1] Arulampalam, M. S., et al. (2002). A tutorial on particle filters for online nonlinear/non-Gaussian Bayesian tracking."]
+                },
+                {
+                    id: "C0.13",
+                    name: "Ridge Regression",
+                    tier: "L0",
+                    whenToUse: "存在多重共线性的特征，需要正则化",
+                    compute: "<1MHz",
+                    batteryTypes: ["ALL"],
+                    description: "带L2正则化的线性回归，防止过拟合和多重共线性。",
+                    algorithm: "目标函数：min||Xw - y||² + α||w||²。闭式解：w = (XᵀX + αI)⁻¹Xᵀy。",
+                    references: ["[1] Hoerl, A. E., & Kennard, R. W. (1970). Ridge regression: Biased estimation for nonorthogonal problems."]
+                },
+                {
+                    id: "C0.14",
+                    name: "LASSO",
+                    tier: "L0",
+                    whenToUse: "特征选择，需要稀疏解",
+                    compute: "<1MHz",
+                    batteryTypes: ["ALL"],
+                    description: "带L1正则化的线性回归，能够产生稀疏解，实现特征选择。",
+                    algorithm: "目标函数：min||Xw - y||² + α||w||₁。使用坐标下降法求解，部分系数会被压缩为0。",
+                    references: ["[1] Tibshirani, R. (1996). Regression shrinkage and selection via the lasso."]
+                },
+                {
+                    id: "C0.15",
+                    name: "Elastic Net",
+                    tier: "L0",
+                    whenToUse: "特征选择且存在相关特征",
+                    compute: "<1MHz",
+                    batteryTypes: ["ALL"],
+                    description: "结合L1和L2正则化的线性回归，兼具特征选择和稳定性。",
+                    algorithm: "目标函数：min||Xw - y||² + α₁||w||₁ + α₂||w||₂²。在相关特征组中选择或排除整体。",
+                    references: ["[1] Zou, H., & Hastie, T. (2005). Regularization and variable selection via the elastic net."]
+                },
+                {
+                    id: "C0.16",
+                    name: "Gaussian Process",
+                    tier: "L0",
+                    whenToUse: "小样本回归，需要不确定性估计",
+                    compute: "<10MHz",
+                    batteryTypes: ["ALL"],
+                    description: "非参数贝叶斯方法，提供预测均值和方差，适合小样本场景。",
+                    algorithm: "定义协方差函数k(x, x')，计算核矩阵K。预测：f* = K*ᵀ(K + σ²I)⁻¹y，方差包含预测不确定性。",
+                    references: ["[1] Rasmussen, C. E., & Williams, C. K. I. (2006). Gaussian Processes for Machine Learning."]
+                },
+                {
+                    id: "C0.17",
+                    name: "Isolation Forest",
+                    tier: "L0",
+                    whenToUse: "异常检测，识别电池异常行为",
+                    compute: "<10MHz",
+                    batteryTypes: ["ALL"],
+                    description: "无监督异常检测算法，通过孤立样本识别异常点。",
+                    algorithm: "随机选择特征和分裂值构建孤立树。异常点路径短，易于被孤立。使用平均路径长度作为异常得分。",
+                    references: ["[1] Liu, F. T., et al. (2008). Isolation forest. ICDM."]
+                },
+                {
+                    id: "C0.18",
+                    name: "DBSCAN",
+                    tier: "L0",
+                    whenToUse: "密度聚类，识别电池运行模式",
+                    compute: "<10MHz",
+                    batteryTypes: ["ALL"],
+                    description: "基于密度的空间聚类算法，能够发现任意形状的簇和噪声点。",
+                    algorithm: "对于每个点，统计ε邻域内的点数。密度可达的点归为同一簇。密度低的点标记为噪声。",
+                    references: ["[1] Ester, M., et al. (1996). A density-based algorithm for discovering clusters in large spatial databases."]
+                },
+                {
+                    id: "C0.19",
+                    name: "K-Means",
+                    tier: "L0",
+                    whenToUse: "快速聚类，电池状态分类",
+                    compute: "<1MHz",
+                    batteryTypes: ["ALL"],
+                    description: "经典的K均值聚类算法，将数据分为K个簇。",
+                    algorithm: "初始化K个中心点。迭代：1)分配样本到最近中心，2)更新中心为簇内均值。收敛到局部最优。",
+                    references: ["[1] Lloyd, S. (1982). Least squares quantization in PCM."]
+                },
+                {
+                    id: "C0.20",
+                    name: "Autoencoder",
+                    tier: "L0",
+                    whenToUse: "数据压缩、特征提取、异常检测",
+                    compute: "<50MHz",
+                    batteryTypes: ["ALL"],
+                    description: "神经网络学习数据的压缩表示，输出重构输入。",
+                    algorithm: "编码器将输入x压缩为潜在表示z，解码器重构x'。训练目标：min||x - x'||²。可用于降维和异常检测。",
+                    references: ["[1] Hinton, G. E., & Salakhutdinov, R. R. (2006). Reducing the dimensionality of data with neural networks."]
+                },
+                {
+                    id: "C0.21",
+                    name: "VAE",
+                    tier: "L0",
+                    whenToUse: "生成模型，数据增强",
+                    compute: "<50MHz",
+                    batteryTypes: ["ALL"],
+                    description: "变分自编码器，学习数据的概率分布，能够生成新样本。",
+                    algorithm: "编码器输出分布参数μ和σ，采样潜在变量z。解码器重构x。损失函数：重构损失 + KL散度。",
+                    references: ["[1] Kingma, D. P., & Welling, M. (2013). Auto-encoding variational bayes. ICLR."]
+                },
+                {
+                    id: "C0.22",
+                    name: "GAN",
+                    tier: "L0",
+                    whenToUse: "数据生成，模拟电池老化数据",
+                    compute: ">50MHz",
+                    batteryTypes: ["ALL"],
+                    description: "生成对抗网络，生成器生成假数据，判别器区分真假。",
+                    algorithm: "生成器G学习生成逼真样本，判别器D学习区分真假。min_G max_D V(D,G)。训练不稳定，需要技巧调优。",
+                    references: ["[1] Goodfellow, I., et al. (2014). Generative adversarial networks. NeurIPS."]
+                },
+                {
+                    id: "C0.23",
+                    name: "Bayesian Neural Network",
+                    tier: "L0",
+                    whenToUse: "需要不确定性量化的小样本场景",
+                    compute: "<50MHz",
+                    batteryTypes: ["ALL"],
+                    description: "神经网络权重为概率分布，而非固定值，自然提供预测不确定性。",
+                    algorithm: "权重先验p(w)，似然p(y|x,w)。后验p(w|D)∝p(D|w)p(w)。使用变分推断或MCMC近似。",
+                    references: ["[1] Neal, R. M. (1996). Bayesian learning for neural networks."]
+                },
+                {
+                    id: "C0.24",
+                    name: "Attention Mechanism",
+                    tier: "L0",
+                    whenToUse: "需要关注序列中的关键信息",
+                    compute: "<10MHz",
+                    batteryTypes: ["ALL"],
+                    description: "注意力机制，动态加权输入序列的不同部分。",
+                    algorithm: "计算注意力权重：α = softmax(f(hᵢ, s))。加权求和：c = Σαᵢhᵢ。可用于时序特征提取和重要时刻识别。",
+                    references: ["[1] Bahdanau, D., et al. (2014). Neural machine translation by jointly learning to align and translate."]
+                },
+                {
+                    id: "C0.25",
+                    name: "ResNet",
+                    tier: "L0",
+                    whenToUse: "深度神经网络，需要解决梯度消失",
+                    compute: "<50MHz",
+                    batteryTypes: ["ALL"],
+                    description: "残差网络，使用跳跃连接训练深度网络。",
+                    algorithm: "块输出：y = F(x) + x。跳跃连接让梯度直接传播，缓解退化问题。可构建数百层网络。",
+                    references: ["[1] He, K., et al. (2016). Deep residual learning for image recognition. CVPR."]
+                },
+                {
+                    id: "C0.26",
+                    name: "Wavelet Transform",
+                    tier: "L0",
+                    whenToUse: "信号去噪，时频分析",
+                    compute: "<1MHz",
+                    batteryTypes: ["ALL"],
+                    description: "小波变换，提供时频局部化分析，适合处理非平稳信号。",
+                    algorithm: "连续小波变换：WT(a,b) = ∫x(t)ψ*((t-b)/a)dt。离散小波变换使用多分辨率分析。",
+                    references: ["[1] Daubechies, I. (1992). Ten lectures on wavelets."]
+                },
+                {
+                    id: "C0.27",
+                    name: "FFT",
+                    tier: "L0",
+                    whenToUse: "频域分析，信号周期性检测",
+                    compute: "<1MHz",
+                    batteryTypes: ["ALL"],
+                    description: "快速傅里叶变换，将信号从时域转换到频域。",
+                    algorithm: "分治算法计算DFT，复杂度O(N log N)。用于分析充放电频率、噪声特征等。",
+                    references: ["[1] Cooley, J. W., & Tukey, J. W. (1965). An algorithm for the machine calculation of complex Fourier series."]
+                },
+                {
+                    id: "C0.28",
+                    name: "Principal Component Analysis",
+                    tier: "L0",
+                    whenToUse: "降维，特征提取，去除多重共线性",
+                    compute: "<1MHz",
+                    batteryTypes: ["ALL"],
+                    description: "主成分分析，通过正交变换将数据转换到主成分空间。",
+                    algorithm: "计算协方差矩阵，特征分解得到主成分。选择前k个主成分解释大部分方差。",
+                    references: ["[1] Jolliffe, I. T. (2002). Principal Component Analysis."]
+                },
+                {
+                    id: "C0.29",
+                    name: "t-SNE",
+                    tier: "L0",
+                    whenToUse: "高维数据可视化，聚类验证",
+                    compute: "<10MHz",
+                    batteryTypes: ["ALL"],
+                    description: "t-分布随机邻域嵌入，将高维数据降维到2-3维可视化。",
+                    algorithm: "高维空间用高斯分布度量相似性，低维空间用t分布。最小化两个分布间的KL散度。",
+                    references: ["[1] Maaten, L. v. d., & Hinton, G. (2008). Visualizing data using t-SNE. Journal of Machine Learning Research."]
+                },
+                {
+                    id: "C0.30",
+                    name: "UMAP",
+                    tier: "L0",
+                    whenToUse: "比t-SNE更快的降维可视化",
+                    compute: "<10MHz",
+                    batteryTypes: ["ALL"],
+                    description: "统一流形逼近和投影，基于黎曼几何和代数拓扑的降维算法。",
+                    algorithm: "构建高维加权图，低维优化图布局。比t-SNE更快且保持更多全局结构。",
+                    references: ["[1] McInnes, L., et al. (2018). UMAP: Uniform manifold approximation and projection."]
+                },
+
+                // ===== L1 生产层级 (4个) =====
+                {
+                    id: "C1.1",
+                    name: "电芯一致性检测",
+                    tier: "L1",
+                    whenToUse: "生产线质量控制，筛选不合格电芯",
+                    compute: "<10MHz",
+                    batteryTypes: ["LFP", "NCM", "Na-ion"],
+                    description: "通过分析电芯充放电曲线的容量、内阻、电压平台等参数，评估电芯间的一致性。使用统计方法和机器学习识别异常电芯。",
+                    algorithm: "提取关键特征：容量、内阻、OCV、充放电曲线形状。使用3σ原则或Isolation Forest识别异常值。可结合PCA降维后聚类分析。",
+                    references: ["[1] GB/T 31484-2015 电动汽车用动力蓄电池循环寿命要求及试验方法"]
+                },
+                {
+                    id: "C1.2",
+                    name: "极片缺陷识别",
+                    tier: "L1",
+                    whenToUse: "极片生产过程中的表面缺陷检测",
+                    compute: ">50MHz",
+                    batteryTypes: ["ALL"],
+                    description: "使用计算机视觉技术检测极片表面的划痕、杂质、涂布不均等缺陷。基于深度学习的目标检测和图像分割方法。",
+                    algorithm: "使用CNN或Vision Transformer提取特征，Faster R-CNN或YOLO检测缺陷位置，U-Net进行语义分割。训练数据需要标注各类缺陷。",
+                    references: ["[1] Ronneberger, O., et al. (2015). U-Net: Convolutional networks for biomedical image segmentation. MICCAI."]
+                },
+                {
+                    id: "C1.3",
+                    name: "焊点质量评估",
+                    tier: "L1",
+                    whenToUse: "电池模组组装过程中的焊接质量检测",
+                    compute: "<10MHz",
+                    batteryTypes: ["ALL"],
+                    description: "通过X射线成像或超声检测分析焊点质量，识别虚焊、过焊等缺陷。结合图像处理和机器学习分类。",
+                    algorithm: "图像预处理：去噪、边缘检测。特征提取：焊点面积、灰度分布、形状特征。使用SVM或CNN分类焊点质量等级。",
+                    references: ["[1] GB/T 34015-2017 电动汽车用电池管理系统技术条件"]
+                },
+                {
+                    id: "C1.4",
+                    name: "模组配种优化",
+                    tier: "L1",
+                    whenToUse: "电芯组装成模组时的优化配置",
+                    compute: "<10MHz",
+                    batteryTypes: ["ALL"],
+                    description: "根据电芯的容量、内阻、电压等参数进行优化组合，使模组内电芯一致性最大化。使用组合优化和遗传算法。",
+                    algorithm: "目标：最小化模组内电芯参数方差。约束：每个模组电芯数量固定。使用遗传算法、模拟退火或贪心策略求解。可定义为二次分配问题。",
+                    references: ["[1] Zheng, Y., et al. (2021). Cell grouping method for lithium-ion battery packs based on genetic algorithm."]
+                },
+
+                // ===== L2 BMS层级 (10个) =====
+                {
+                    id: "C2.1",
+                    name: "SOC估计",
+                    tier: "L2",
+                    whenToUse: "实时估计电池剩余容量，BMS核心功能",
+                    compute: "<1MHz",
+                    batteryTypes: ["ALL"],
+                    description: "状态-of-电荷估计，反映电池剩余电量。结合安时积分、OCV校正、卡尔曼滤波等方法。",
+                    algorithm: "安时积分：SOCₜ = SOC₀ + ∫(ηI/Qₙ)dt。开路电压校正：SOC = f(OCV)。EKF/AEKF融合电流、电压、温度多信息。",
+                    references: ["[1] Plett, G. L. (2004). Extended Kalman filtering for battery management systems. JPS."]
+                },
+                {
+                    id: "C2.2",
+                    name: "SOH估计",
+                    tier: "L2",
+                    whenToUse: "评估电池健康状态和老化程度",
+                    compute: "<10MHz",
+                    batteryTypes: ["ALL"],
+                    description: "状态-of-健康估计，反映电池相对于新电池的性能。基于容量衰减、内阻增长或综合特征。",
+                    algorithm: "容量法定义：SOH = Q_current/Q_rated。阻抗法定义：SOH = R_new/R_current。使用机器学习融合充放电曲线特征、循环次数、温度等。",
+                    references: ["[1] You, G., et al. (2021). Overview of battery state-of-health estimation methods. Energies."]
+                },
+                {
+                    id: "C2.3",
+                    name: "SOP估计",
+                    tier: "L2",
+                    whenToUse: "预测电池瞬时和持续充放电功率能力",
+                    compute: "<1MHz",
+                    batteryTypes: ["ALL"],
+                    description: "状态-of-功率估计，预测电池在未来时间窗口内能持续提供的最大充放电功率。对车辆加速和回收能量至关重要。",
+                    algorithm: "基于电压约束：SOP = min(V_max - V_ocv, V_ocv - V_min)/R。使用多时间尺度预测（峰值10s，持续30s等）。结合电化学模型约束。",
+                    references: ["[1] Sun, F., et al. (2019). Battery state-of-power estimation for HEV/EV applications. JPS."]
+                },
+                {
+                    id: "C2.4",
+                    name: "均衡策略",
+                    tier: "L2",
+                    whenToUse: "电池组中单体不一致时进行主动或被动均衡",
+                    compute: "<1MHz",
+                    batteryTypes: ["ALL"],
+                    description: "通过能量转移或耗散使电池组内各单体SOC一致。包括被动均衡（电阻耗散）和主动均衡（能量转移）。",
+                    algorithm: "被动均衡：对高SOC单体放电至平均值。主动均衡：使用flyback、buck-boost等电路转移能量。基于SOC差值、电压差值或容量差值控制。",
+                    references: ["[1] Lee, Y., & Cheng, S. (2013). An intelligent battery management system for battery pack. Energies."]
+                },
+                {
+                    id: "C2.5",
+                    name: "热管理",
+                    tier: "L2",
+                    whenToUse: "控制电池温度在最佳工作范围",
+                    compute: "<10MHz",
+                    batteryTypes: ["ALL"],
+                    description: "通过液冷、风冷或相变材料控制电池温度。热模型预测温度分布，指导冷却策略。",
+                    algorithm: "集中参数热模型：C_th(dT/dt) = Q_gen - Q_diss。热生成：Q = I²R + IΔTΔS。使用卡尔曼滤波估计核心温度。分布式模型使用有限元或有限差分。",
+                    references: ["[1] Pesaran, A. A. (2002). Battery thermal management in EV and HEVs. IDA."]
+                },
+                {
+                    id: "C2.6",
+                    name: "SOE估计",
+                    tier: "L2",
+                    whenToUse: "剩余能量估计，用于续航里程预测",
+                    compute: "<1MHz",
+                    batteryTypes: ["ALL"],
+                    description: "状态-of-能量估计，反映电池剩余可用能量（Wh而非Ah）。需要考虑电压、功率效率等因素。",
+                    algorithm: "SOE = E_remaining/E_total。能量积分：E = ∫V·I·η·dt。使用等效电路模型结合查表法或神经网络预测未来放电曲线。",
+                    references: ["[1] Dong, G., et al. (2016). State of energy estimation for lithium-ion batteries. JPS."]
+                },
+                {
+                    id: "C2.7",
+                    name: "剩余寿命RUL预测",
+                    tier: "L2",
+                    whenToUse: "预测电池还能使用多少循环或时间",
+                    compute: "<10MHz",
+                    batteryTypes: ["ALL"],
+                    description: "剩余使用寿命预测，基于历史数据预测电池何时达到寿命终点（如SOH<80%）。",
+                    algorithm: "基于模型：拟合容量衰减曲线（双指数、多项式）外推。数据驱动：LSTM、Transformer等学习衰减模式。概率预测：提供RUL分布。",
+                    references: ["[1] Liu, D., et al. (2022). A review of battery RUL prediction methods. IEEE Access."]
+                },
+                {
+                    id: "C2.8",
+                    name: "参数辨识",
+                    tier: "L2",
+                    whenToUse: "在线估计电池模型参数（R、C、OCV等）",
+                    compute: "<10MHz",
+                    batteryTypes: ["ALL"],
+                    description: "实时辨识等效电路模型或电化学模型参数，用于SOC/SOH/SOP估计。",
+                    algorithm: "递推最小二乘法（RLS）：θₖ = θₖ₋₁ + Kₖ(yₖ - φₖᵀθₖ₋₁)。扩展卡尔曼滤波：将参数增广到状态向量。双卡尔曼滤波：分别估计状态和参数。",
+                    references: ["[1] Plett, G. L. (2004). Battery management system algorithms for HEV applications. VPPC."]
+                },
+                {
+                    id: "C2.9",
+                    name: "峰值功率预测",
+                    tier: "L2",
+                    whenToUse: "预测电池短期能输出的最大功率",
+                    compute: "<1MHz",
+                    batteryTypes: ["ALL"],
+                    description: "预测电池在未来Δt内可持续输出的最大功率，用于车辆加速和能量回收策略。",
+                    algorithm: "基于电压约束：P_max = min(V_max·I, V_min·I)。考虑极化电压：V_cell = OCV - IR - V_polarization。使用多时间尺度预测（2s、10s、30s等）。",
+                    references: ["[1] Xue, L., et al. (2020). Peak power prediction for lithium-ion batteries. Applied Energy."]
+                },
+                {
+                    id: "C2.10",
+                    name: "功能安全诊断",
+                    tier: "L2",
+                    whenToUse: "BMS自身的故障诊断和安全保护",
+                    compute: "<1MHz",
+                    batteryTypes: ["ALL"],
+                    description: "监测BMS硬件和软件故障，包括传感器故障、通信故障、算法异常等，符合ISO 26262功能安全标准。",
+                    algorithm: "传感器冗余校验：比较电压、温度传感器读数。信号合理性检查：范围检查、变化率检查。看门狗监控、ECC校验、CRC校验。",
+                    references: ["[1] ISO 26262:2018 Road vehicles - Functional safety"]
+                },
+
+                // ===== L3 云端层级 (15个) =====
+                {
+                    id: "C3.0",
+                    name: "数据净化",
+                    tier: "L3",
+                    whenToUse: "所有分析的前置步骤，清洗噪声数据和异常值",
+                    compute: "<10MHz",
+                    batteryTypes: ["ALL"],
+                    description: "对BMS上传的原始数据进行预处理，包括去噪、异常值处理、缺失值填充、特征提取等。",
+                    algorithm: "异常值检测：3σ原则、IQR方法、Isolation Forest。去噪：移动平均、小波变换、卡尔曼滤波。插值：线性插值、样条插值填充缺失值。",
+                    references: ["[1] Schubert, E., et al. (2015). On evaluation of outlier detection and unsupervised anomaly detection. SDM."]
+                },
+                {
+                    id: "C3.1",
+                    name: "内短路诊断-SOS",
+                    tier: "L3",
+                    whenToUse: "需要实时安全监控，适用于储能站、电动汽车等场景",
+                    compute: "<10MHz",
+                    batteryTypes: ["LFP", "NCM", "Na-ion"],
+                    description: "基于电压熵的内短路早期诊断方法，通过分析电池组内单体电压分布的熵值变化，识别内短路早期征象。",
+                    algorithm: "计算电压序列的样本熵SEntropy = -Σpᵢlog(pᵢ)，pᵢ为电压差值概率。内短路时电压异常波动导致熵值上升。设定阈值报警。可结合电压一致性分析提高准确性。",
+                    references: ["[1] Kong, D., et al. (2022). Internal short circuit diagnosis for lithium-ion batteries. eTransportation."]
+                },
+                {
+                    id: "C3.2",
+                    name: "内短路诊断-P2D",
+                    tier: "L3",
+                    whenToUse: "需要高精度内短路诊断，算力充足",
+                    compute: ">50MHz",
+                    batteryTypes: ["LFP", "NCM"],
+                    description: "基于P2D（pseudo-two-dimensional）电化学模型的内短路诊断。通过拟合充放电曲线识别内短路导致的参数异常。",
+                    algorithm: "P2D模型包含固相扩散、液相扩散、电化学反应。使用有限元或有限差分求解偏微分方程。通过参数辨识（如R_ct增长、D_s下降）识别内短路。",
+                    references: ["[1] Dao, T. S., et al. (2020). Diagnosis of internal short circuit in lithium-ion batteries using electrochemical model. JES."]
+                },
+                {
+                    id: "C3.3",
+                    name: "热失控预警",
+                    tier: "L3",
+                    whenToUse: "预测热失控风险，提前采取安全措施",
+                    compute: "<10MHz",
+                    batteryTypes: ["LFP", "NCM"],
+                    description: "综合分析温度、电压、电流等多维度特征，预测热失控发生概率。",
+                    algorithm: "提取特征：温升速率、电压波动、容量衰减率。使用XGBoost或深度学习融合多特征。输出风险等级：安全/关注/警告/危险。结合安全熵综合评估。",
+                    references: ["[1] Feng, X., et al. (2018). Thermal runaway mechanism of lithium-ion battery for electric vehicles. Joule."]
+                },
+                {
+                    id: "C3.4",
+                    name: "电池包一致性评估",
+                    tier: "L3",
+                    whenToUse: "评估电池包整体一致性，预测木桶效应",
+                    compute: "<10MHz",
+                    batteryTypes: ["ALL"],
+                    description: "分析电池包内各单体/模组的电压、SOC、容量、温度等参数的分布，评估一致性并识别落后单体。",
+                    algorithm: "统计指标：极差、方差、变异系数CV。分布拟合：正态分布检验。聚类分析：识别异常单体。一致性指数：综合多参数的一致性得分。",
+                    references: ["[1] Zheng, Y., et al. (2023). Evaluation of battery pack consistency for electric vehicles. Applied Energy."]
+                },
+                {
+                    id: "C3.5",
+                    name: "安全熵评估",
+                    tier: "L3",
+                    whenToUse: "评估电池包整体健康状态和安全风险",
+                    compute: "<10MHz",
+                    batteryTypes: ["LFP", "NCM"],
+                    description: "基于信息熵理论的多特征融合安全评估方法，量化电池系统的无序度和风险水平。",
+                    algorithm: "提取多维度特征：电压熵、温度熵、SOH分布熵。加权融合：S_total = ΣwᵢSᵢ。熵值越高表示系统越无序、风险越大。设定阈值进行安全分级。",
+                    references: ["[1] ASGARD internal documentation: 安全熵计算方法"]
+                },
+                {
+                    id: "C3.6",
+                    name: "容量衰减机制分析",
+                    tier: "L3",
+                    whenToUse: "分析电池老化主因，制定维护策略",
+                    compute: "<10MHz",
+                    batteryTypes: ["ALL"],
+                    description: "通过增量容量分析（ICA）和微分电压分析（DVA）识别容量衰减的主要机制（如SEI增长、LAM、LLI等）。",
+                    algorithm: "增量容量：dQ/dV，容量对电压的导数。微分电压：dV/dQ。峰的位置和高度对应不同的老化机制。使用高斯拟合或峰值提取量化各机制的贡献。",
+                    references: ["[1] Dubarry, M., et al. (2022). Incremental capacity analysis for battery degradation diagnosis. JPS."]
+                },
+                {
+                    id: "C3.7",
+                    name: "充电策略优化",
+                    tier: "L3",
+                    whenToUse: "缩短充电时间，减少充电老化",
+                    compute: "<50MHz",
+                    batteryTypes: ["ALL"],
+                    description: "基于电化学模型和数据驱动的方法优化充电电流曲线，平衡充电速度和电池寿命。",
+                    algorithm: "基于模型：P2D模型优化，约束负极电位避免析锂。数据驱动：强化学习学习最优策略。多目标优化：最小化充电时间、容量损失、温升。",
+                    references: ["[1] Liu, K., et al. (2022). Review of fast charging strategies for electric vehicles. Renewable and Sustainable Energy Reviews."]
+                },
+                {
+                    id: "C3.8",
+                    name: "退役电池梯次利用评估",
+                    tier: "L3",
+                    whenToUse: "评估退役动力电池是否适合梯次利用",
+                    compute: "<10MHz",
+                    batteryTypes: ["ALL"],
+                    description: "综合评估退役电池的性能、安全性、经济性，决定是否适合梯次利用到储能等场景。",
+                    algorithm: "性能评估：SOH、内阻、自放电率。安全性检查：内短路、析锂风险。经济性分析：剩余价值、改造成本。使用多准则决策或加权打分。",
+                    references: ["[1] Tong, S., et al. (2022). Assessment of second-life batteries for energy storage systems. JPS."]
+                },
+                {
+                    id: "C3.9",
+                    name: "故障诊断与根因分析",
+                    tier: "L3",
+                    whenToUse: "电池故障后定位原因，制定改进措施",
+                    compute: "<10MHz",
+                    batteryTypes: ["ALL"],
+                    description: "综合分析故障前后的数据，诊断故障类型（过充、过放、过温、内短路等）并分析根本原因。",
+                    algorithm: "故障树分析（FTA）：自顶向下追溯原因。特征工程：提取故障前征兆。分类器：Random Forest、XGBoost诊断故障类型。SHAP值分析特征重要性。",
+                    references: ["[1] Cai, L., et al. (2021). Data-driven fault diagnosis for battery systems. eTransportation."]
+                },
+                {
+                    id: "C3.10",
+                    name: "寿命预测-概率方法",
+                    tier: "L3",
+                    whenToUse: "需要预测寿命的不确定性分布",
+                    compute: "<10MHz",
+                    batteryTypes: ["ALL"],
+                    description: "使用概率模型预测电池寿命分布，提供置信区间而非点估计。",
+                    algorithm: "贝叶斯方法：使用高斯过程回归或贝叶斯神经网络，输出预测分布。蒙特卡洛模拟：考虑参数不确定性，传播到RUL预测。威布尔分布：拟合失效时间数据。",
+                    references: ["[1] Li, Y., et al. (2019). Bayesian machine learning for battery lifetime prediction. JPS."]
+                },
+                {
+                    id: "C3.11",
+                    name: "热失控传播阻断",
+                    tier: "L3",
+                    whenToUse: "电池模组中一个单体热失控后阻止传播",
+                    compute: "<10MHz",
+                    batteryTypes: ["LFP", "NCM"],
+                    description: "热失控发生时，通过主动冷却、隔热、泄压等手段阻止热蔓延到相邻电池。",
+                    algorithm: "热传播模型：预测热蔓延速度和路径。策略：启动主动液冷、关闭模组、释放灭火剂。优化：最小化影响范围、冷却剂用量、响应时间。",
+                    references: ["[1] Lopez, C. F., et al. (2022). Propagation characterization of thermal runaway in lithium-ion batteries. JPS."]
+                },
+                {
+                    id: "C3.12",
+                    name: "电池选型优化",
+                    tier: "L3",
+                    whenToUse: "为特定应用选择最优电池类型和配置",
+                    compute: "<10MHz",
+                    batteryTypes: ["ALL"],
+                    description: "根据应用需求（功率、能量、寿命、成本等）选择最合适的电池类型、容量、配置方案。",
+                    algorithm: "多目标优化：能量密度、功率密度、寿命、成本。约束：体积、重量、温度范围。使用Pareto前沿分析或加权求和。考虑全生命周期成本。",
+                    references: ["[1] Miao, Y., et al. (2019). Battery selection for electric vehicles: A multi-objective optimization approach. Applied Energy."]
+                },
+                {
+                    id: "C3.13",
+                    name: "析锂检测",
+                    tier: "L3",
+                    whenToUse: "LFP电池充电时检测析锂风险，预防热失控",
+                    compute: "<10MHz",
+                    batteryTypes: ["LFP"],
+                    description: "基于静置电压恢复的析锂检测方法。析锂发生后，静置阶段会有特征性的电压恢复曲线。",
+                    algorithm: "充电后静置，记录电压曲线。析锂特征：电压先快速上升（沉积锂回嵌），然后缓慢恢复。使用dV/dt峰值检测或曲线拟合识别析锂程度。",
+                    references: ["[1] Burns, J. C., et al. (2013). Detecting lithium plating on graphite anodes. JES."]
+                },
+                {
+                    id: "C3.14",
+                    name: "电池包数字孪生",
+                    tier: "L3",
+                    whenToUse: "实时监控和预测电池包行为，优化运行策略",
+                    compute: ">50MHz",
+                    batteryTypes: ["ALL"],
+                    description: "构建电池包的高保真虚拟模型，实时同步物理电池状态，支持预测性维护和策略优化。",
+                    algorithm: "物理模型：电化学-热-力耦合模型。数据驱动：使用实测数据校正模型参数。实时同步：卡尔曼滤波融合传感器数据。应用：预测RUL、优化充放电、故障预警。",
+                    references: ["[1] Liu, K., et al. (2021). Digital twin for battery systems: A review. Renewable and Sustainable Energy Reviews."]
+                },
+
+                // ===== L4 应用层级 (3个) =====
+                {
+                    id: "C4.1",
+                    name: "电池健康报告生成",
+                    tier: "L4",
+                    whenToUse: "为用户或运维人员生成电池健康状态报告",
+                    compute: "<10MHz",
+                    batteryTypes: ["ALL"],
+                    description: "自动生成包含SOH、RUL、一致性、安全风险等信息的可视化报告，支持周期性或事件触发。",
+                    algorithm: "数据收集：汇总历史运行数据。分析计算：调用各BAS技能获取指标。报告生成：使用模板引擎填充数据，生成图表。输出：PDF、HTML、API接口。",
+                    references: ["[1] ASGARD internal documentation: 电池健康报告模板"]
+                },
+                {
+                    id: "C4.2",
+                    name: "预警消息推送",
+                    tier: "L4",
+                    whenToUse: "异常情况发生时及时通知相关人员",
+                    compute: "<1MHz",
+                    batteryTypes: ["ALL"],
+                    description: "根据告警级别和规则，通过多渠道（短信、邮件、APP、微信等）推送预警消息。",
+                    algorithm: "告警级别：信息、警告、严重、紧急。规则引擎：条件触发、阈值触发、趋势触发。消息路由：根据级别选择接收人和推送方式。去重和聚合：避免消息轰炸。",
+                    references: ["[1] ASGARD internal documentation: 告警系统设计"]
+                },
+                {
+                    id: "C4.3",
+                    name: "维护计划推荐",
+                    tier: "L4",
+                    whenToUse: "制定电池系统维护计划，优化运维成本",
+                    compute: "<10MHz",
+                    batteryTypes: ["ALL"],
+                    description: "基于电池健康状态、故障预测、历史数据，推荐最优的维护计划和策略。",
+                    algorithm: "预测维护：基于RUL预测安排更换。预防性维护：基于趋势分析提前干预。成本优化：平衡维护成本和故障风险。调度优化：考虑人员、备件、停机时间。",
+                    references: ["[1] ASGARD internal documentation: 智能运维系统"]
+                },
+
+                // ===== L5 工商业层级 (5个) =====
+                {
+                    id: "C5.1",
+                    name: "储能容量配置优化",
+                    tier: "L5",
+                    whenToUse: "设计储能系统容量，满足应用需求并优化成本",
+                    compute: "<10MHz",
+                    batteryTypes: ["LFP", "NCM"],
+                    description: "根据负载曲线、电价、应用场景（削峰填谷、备用电源等），优化储能系统容量配置。",
+                    algorithm: "负载分析：统计历史负荷数据。仿真：模拟不同容量配置的运行效果。优化：目标函数（成本、收益、可靠性）。约束：预算、空间、寿命。使用遗传算法或线性规划求解。",
+                    references: ["[1] ASGARD internal documentation: 储能系统设计规范"]
+                },
+                {
+                    id: "C5.2",
+                    name: "峰谷套利策略",
+                    tier: "L5",
+                    whenToUse: "利用峰谷电价差套利，降低用电成本",
+                    compute: "<10MHz",
+                    batteryTypes: ["ALL"],
+                    description: "根据电价时段和负载预测，制定最优的充放电策略，实现峰谷套利。",
+                    algorithm: "输入：电价曲线、负载预测、电池状态。优化：目标函数为收益减去成本。约束：SOC范围、充放电功率、循环次数影响。使用混合整数线性规划或动态规划求解。",
+                    references: ["[1] Lin, B., et al. (2022). Optimization of battery energy storage systems for peak shaving and load shifting. Applied Energy."]
+                },
+                {
+                    id: "C5.3",
+                    name: "需量电费优化",
+                    tier: "L5",
+                    whenToUse: "降低需量电费，优化用电成本",
+                    compute: "<10MHz",
+                    batteryTypes: ["ALL"],
+                    description: "通过储能系统削峰，降低最大需量，减少需量电费。",
+                    algorithm: "需量监测：实时计算15分钟平均功率。预测：基于历史数据预测峰值时段。策略：在峰值前放电，降低从电网取电功率。优化：平衡放电收益与电池老化成本。",
+                    references: ["[1] ASGARD internal documentation: 需量管理策略"]
+                },
+                {
+                    id: "C5.4",
+                    name: "备电切换控制",
+                    tier: "L5",
+                    whenToUse: "电网停电时自动切换到电池供电",
+                    compute: "<1MHz",
+                    batteryTypes: ["ALL"],
+                    description: "检测电网故障，快速切换到电池供电，确保关键负载不间断供电。",
+                    algorithm: "电网监测：检测电压、频率异常。切换逻辑：故障判定 → 切换开关 → 启动逆变器。SOC管理：保持足够备用电量。并网/离网模式无缝切换。",
+                    references: ["[1] ASGARD internal documentation: 备电系统控制逻辑"]
+                },
+                {
+                    id: "C5.5",
+                    name: "参与电力市场辅助服务",
+                    tier: "L5",
+                    whenToUse: "储能参与调频、调峰等辅助服务获取收益",
+                    compute: "<10MHz",
+                    batteryTypes: ["LFP", "NCM"],
+                    description: "根据电力市场规则和价格信号，参与调频、备用容量等辅助服务市场。",
+                    algorithm: "市场分析：获取辅助服务价格和需求。投标策略：根据电池能力和边际利润投标。实时控制：AGC指令跟踪。收益优化：平衡能量市场和辅助服务市场收益。",
+                    references: ["[1] Krad, I., et al. (2021). Battery energy storage systems for frequency regulation. IEEE Transactions on Smart Grid."]
+                }
+            ]
+        };
+
+        // 案例数据
+        const cases = [
+            {
+                id: "huanggang",
+                name: "皇岗储能场站",
+                industry: "工商业储能",
+                icon: "🏭",
+                date: "2025-12",
+                description: "10MWh磷酸铁锂储能系统",
+                results: ["识别3个潜在内短路", "析锂风险提前预警", "安全熵实时监控"],
+                roi: "3个月回本",
+
+                // BAS技能采用方案
+                basSkills: [
+                    { id: "C3.1", name: "内短路诊断-SOS", purpose: "实时监控内短路风险" },
+                    { id: "C3.13", name: "析锂检测", purpose: "充电时检测析锂" },
+                    { id: "C3.5", name: "安全熵评估", purpose: "整体安全状态评估" },
+                    { id: "C2.2", name: "SOH估计", purpose: "健康状态评估" }
+                ],
+
+                // 编排DAG
+                dag: {
+                    nodes: [
+                        { id: "input", name: "数据输入", category: "input" },
+                        { id: "C3.0", name: "数据净化", category: "process" },
+                        { id: "C3.1", name: "内短路诊断", category: "diagnosis" },
+                        { id: "C3.13", name: "析锂检测", category: "diagnosis" },
+                        { id: "C3.5", name: "安全熵评估", category: "assessment" },
+                        { id: "report", name: "分析报告", category: "output" }
+                    ],
+                    links: [
+                        { source: "input", target: "C3.0" },
+                        { source: "C3.0", target: "C3.1" },
+                        { source: "C3.0", target: "C3.13" },
+                        { source: "C3.1", target: "C3.5" },
+                        { source: "C3.13", target: "C3.5" },
+                        { source: "C3.5", target: "report" }
+                    ]
+                },
+
+                // 诊断结果
+                diagnosisResults: {
+                    riskLevel: "medium", // high/medium/low
+                    issuesFound: 3,
+                    keyMetrics: {
+                        safetyScore: 72,
+                        confidence: 94,
+                        batteriesAnalyzed: 120
+                    }
+                },
+
+                // 溯源分析
+                traceability: {
+                    rootCause: "3号电池簇电压异常波动，经内短路诊断确认存在微短路风险",
+                    timeline: [
+                        { date: "2025-10-15", event: "系统部署上线" },
+                        { date: "2025-11-20", event: "检测到电压异常" },
+                        { date: "2025-11-21", event: "C3.1诊断确认内短路" },
+                        { date: "2025-11-25", event: "维护更换，风险解除" }
+                    ],
+                    dataSource: "BMS实时数据，采样频率1Hz"
+                },
+
+                // AI建议
+                recommendations: [
+                    { priority: "high", text: "立即对3号电池簇进行维护检查" },
+                    { priority: "medium", text: "增加充电过程监控频率" },
+                    { priority: "low", text: "建议每月进行一次全面安全熵评估" }
+                ]
+            },
+            {
+                id: "fleet",
+                name: "某营运车辆Fleet",
+                industry: "电动汽车",
+                icon: "🚚",
+                date: "2025-10",
+                description: "100台电动公交 fleet",
+                results: ["SOH估计误差<2%", "剩余寿命预测准确率92%", "充电策略优化，延寿15%"],
+                roi: "节省运营成本18%",
+
+                // BAS技能采用方案
+                basSkills: [
+                    { id: "C2.2", name: "SOH估计", purpose: "健康状态评估" },
+                    { id: "C2.3", name: "RUL预测", purpose: "剩余使用寿命预测" },
+                    { id: "C3.13", name: "析锂检测", purpose: "充电过程析锂监控" },
+                    { id: "C4.1", name: "充电策略优化", purpose: "延长电池寿命" }
+                ],
+
+                // 编排DAG
+                dag: {
+                    nodes: [
+                        { id: "input", name: "车队数据", category: "input" },
+                        { id: "C2.0", name: "数据预处理", category: "process" },
+                        { id: "C2.2", name: "SOH估计", category: "diagnosis" },
+                        { id: "C2.3", name: "RUL预测", category: "diagnosis" },
+                        { id: "C3.13", name: "析锂检测", category: "diagnosis" },
+                        { id: "C4.1", name: "策略优化", category: "optimization" },
+                        { id: "report", name: "健康报告", category: "output" }
+                    ],
+                    links: [
+                        { source: "input", target: "C2.0" },
+                        { source: "C2.0", target: "C2.2" },
+                        { source: "C2.0", target: "C2.3" },
+                        { source: "C2.0", target: "C3.13" },
+                        { source: "C2.2", target: "C4.1" },
+                        { source: "C2.3", target: "C4.1" },
+                        { source: "C3.13", target: "C4.1" },
+                        { source: "C4.1", target: "report" }
+                    ]
+                },
+
+                // 诊断结果
+                diagnosisResults: {
+                    riskLevel: "low",
+                    issuesFound: 0,
+                    keyMetrics: {
+                        safetyScore: 88,
+                        confidence: 96,
+                        batteriesAnalyzed: 100
+                    }
+                },
+
+                // 溯源分析
+                traceability: {
+                    rootCause: "车队整体健康状况良好，部分车辆存在轻度析锂现象",
+                    timeline: [
+                        { date: "2025-08-01", event: "系统部署" },
+                        { date: "2025-09-15", event: "首次健康评估完成" },
+                        { date: "2025-10-01", event: "充电策略优化实施" }
+                    ],
+                    dataSource: "车载BMS数据，云端聚合分析"
+                },
+
+                // AI建议
+                recommendations: [
+                    { priority: "low", text: "继续保持当前充电策略" },
+                    { priority: "medium", text: "建议增加快充桩温度监控" },
+                    { priority: "low", text: "季度健康检查即可" }
+                ]
+            }
+        ];
+
+        // 技术指标
+        const techSpecs = {
+            skills: 94,
+            responseTime: "<50ms",
+            docDriven: "100%"
+        };
+
+        // ==================== 导航系统 ====================
+
+        /**
+         * 当前活动Tab
+         */
+        let currentTab = 'home';
+
+        /**
+         * 技能库页面状态管理
+         */
+        const skillsState = {
+            view: 'tiers', // 'tiers' | 'tier-skills' | 'skill-detail'
+            selectedTier: null,
+            selectedSkill: null
+        };
+
+        /**
+         * 案例展示页面状态管理
+         */
+        const casesState = {
+            view: 'list', // 'list' | 'detail'
+            selectedCase: null
+        };
+
+        /**
+         * 切换Tab
+         * @param {string} tabId - Tab ID
+         */
+        function switchTab(tabId) {
+            // 更新当前Tab状态
+            currentTab = tabId;
+
+            // 更新桌面端导航样式
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                const isCurrentTab = tab.dataset.tab === tabId;
+                if (tab.parentElement.classList.contains('md:flex')) {
+                    // 桌面端样式
+                    if (isCurrentTab) {
+                        tab.classList.remove('text-gray-500', 'border-transparent');
+                        tab.classList.add('text-black', 'border-black');
+                    } else {
+                        tab.classList.remove('text-black', 'border-black');
+                        tab.classList.add('text-gray-500', 'border-transparent');
+                    }
+                } else {
+                    // 移动端样式
+                    if (isCurrentTab) {
+                        tab.classList.remove('text-gray-600', 'border-transparent');
+                        tab.classList.add('text-black', 'bg-gray-50', 'border-black');
+                    } else {
+                        tab.classList.remove('text-black', 'bg-gray-50', 'border-black');
+                        tab.classList.add('text-gray-600', 'border-transparent');
+                    }
+                }
+            });
+
+            // 渲染Tab内容
+            renderTabContent(tabId);
+
+            // 关闭移动端菜单
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (!mobileMenu.classList.contains('hidden')) {
+                toggleMobileMenu();
+            }
+        }
+
+        /**
+         * 切换移动端菜单
+         */
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const isHidden = mobileMenu.classList.toggle('hidden');
+
+            // 更新ARIA属性以支持可访问性
+            if (mobileMenuButton) {
+                mobileMenuButton.setAttribute('aria-expanded', !isHidden);
+            }
+        }
+
+        /**
+         * 渲染Tab内容
+         * @param {string} tabId - Tab ID
+         * @returns {string} HTML内容
+         */
+        function renderTabContent(tabId) {
+            const tabContent = document.getElementById('tab-content');
+
+            switch(tabId) {
+                case 'home':
+                    tabContent.innerHTML = renderHomePage();
+                    break;
+                case 'skills':
+                    tabContent.innerHTML = renderSkillsPage();
+                    break;
+                case 'planner':
+                    tabContent.innerHTML = renderPlannerPage();
+                    setTimeout(initAgentChat, 100);
+                    break;
+                case 'analysis':
+                    tabContent.innerHTML = renderAnalysisPage();
+                    setTimeout(setupDragDrop, 100);
+                    break;
+                case 'cases':
+                    tabContent.innerHTML = renderCasesPage();
+                    break;
+                default:
+                    tabContent.innerHTML = '<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12"><div class="text-center"><h2 class="text-3xl font-bold mb-4">404</h2><p class="text-gray-600">页面未找到</p></div></div>';
+            }
+        }
+
+        /**
+         * 渲染首页内容
+         * @returns {string} HTML内容
+         */
+        function renderHomePage() {
+            return `
+                <section class="bg-white">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+                        <div class="text-center">
+                            <h1 class="text-display mb-6">
+                                ASGARD
+                            </h1>
+                            <p class="text-headline mb-4">
+                                The Intelligent Battery Brain
+                            </p>
+                            <p class="text-body max-w-2xl mx-auto mb-12 text-gray-600">
+                                Agent驱动的智能编排引擎 · 94+ BAS技能 · <50ms响应 · 电化学+本体论
+                            </p>
+                            <div class="flex justify-center gap-4">
+                                <button class="btn-primary" onclick="switchTab('skills')">
+                                    浏览技能库
+                                </button>
+                                <button class="btn-secondary" onclick="switchTab('cases')">
+                                    查看案例
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="bg-gray-50 py-24">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <h2 class="text-headline text-center mb-16">核心特性</h2>
+                        <div class="bento-grid">
+                            <div class="bento-card">
+                                <div class="icon-placeholder mb-4" aria-label="大脑图标">🧠</div>
+                                <h3 class="text-title mb-2">94+ BAS技能</h3>
+                                <p class="text-caption">覆盖电池全生命周期分析</p>
+                            </div>
+                            <div class="bento-card">
+                                <div class="icon-placeholder mb-4" aria-label="闪电图标">⚡</div>
+                                <h3 class="text-title mb-2">&lt;50ms响应</h3>
+                                <p class="text-caption">实时诊断，即时反馈</p>
+                            </div>
+                            <div class="bento-card">
+                                <div class="icon-placeholder mb-4" aria-label="机器人图标">🤖</div>
+                                <h3 class="text-title mb-2">Agent智能编排</h3>
+                                <p class="text-caption">动态工作流，自动决策优化</p>
+                            </div>
+                            <div class="bento-card">
+                                <div class="icon-placeholder mb-4" aria-label="靶心图标">🎯</div>
+                                <h3 class="text-title mb-2">本体论架构</h3>
+                                <p class="text-caption">基于物理本质的智能匹配</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            `;
+        }
+
+        /**
+         * 初始化导航系统
+         */
+        function initNavigation() {
+            // 事件委托处理Tab点击
+            document.addEventListener('click', function(e) {
+                const tab = e.target.closest('.nav-tab');
+                if (tab) {
+                    e.preventDefault();
+                    const tabId = tab.dataset.tab;
+                    if (tabId) {
+                        switchTab(tabId);
+                    }
+                }
+            });
+
+            // 移动端菜单按钮
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            if (mobileMenuButton) {
+                mobileMenuButton.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    toggleMobileMenu();
+                });
+            }
+
+            // 初始化首页内容
+            renderTabContent('home');
+        }
+
+        // ==================== 技能库展示系统 ====================
+
+        /**
+         * 渲染技能库页面
+         * @returns {string} HTML内容
+         */
+        /**
+         * 渲染技能库页面
+         * @returns {string} HTML内容
+         */
+        function renderSkillsPage() {
+            if (skillsState.view === 'tiers') {
+                return renderTiersOverview();
+            } else if (skillsState.view === 'tier-skills') {
+                return renderTierSkills();
+            } else if (skillsState.view === 'skill-detail') {
+                return renderSkillDetail();
+            }
+            // Fallback for invalid state - return to overview
+            return renderTiersOverview();
+        }
+
+        /**
+         * 渲染层级概览
+         * @returns {string} HTML内容
+         */
+        function renderTiersOverview() {
+            const tiersCards = basSkills.tiers.map(tier => `
+                <div class="bento-card cursor-pointer hover:shadow-lg transition-shadow" onclick="showTierSkills('${sanitizeHtml(tier.id)}')">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-2xl font-bold text-black">${tier.id}</span>
+                        <span class="text-sm text-gray-500">${tier.count} 个技能</span>
+                    </div>
+                    <h3 class="text-title mb-2">${tier.name}</h3>
+                    <p class="text-caption text-gray-600">${tier.description}</p>
+                    <div class="mt-4 flex items-center text-sm text-gray-500">
+                        <span>点击查看详情</span>
+                        <i class="fas fa-arrow-right ml-2"></i>
+                    </div>
+                </div>
+            `).join('');
+
+            return `
+                <section class="bg-white">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+                        <div class="text-center mb-16">
+                            <h1 class="text-display mb-6">BAS技能库</h1>
+                            <p class="text-headline mb-4">67+ 电池分析技能</p>
+                            <p class="text-body max-w-2xl mx-auto text-gray-600">
+                                基于本体论架构的分层技能体系<br>
+                                覆盖电池全生命周期分析场景
+                            </p>
+                        </div>
+                        <div class="bento-grid">
+                            ${tiersCards}
+                        </div>
+                    </div>
+                </section>
+            `;
+        }
+
+        /**
+         * 渲染特定层级的技能
+         * @returns {string} HTML内容
+         */
+        function renderTierSkills() {
+            const tier = basSkills.tiers.find(t => t.id === skillsState.selectedTier);
+            if (!tier) {
+                skillsState.view = 'tiers';
+                return renderTiersOverview();
+            }
+
+            const tierSkills = basSkills.skills.filter(skill => skill.tier === tier.id);
+
+            const skillCards = tierSkills.length > 0 ? tierSkills.map(skill => `
+                <div class="bento-card cursor-pointer hover:shadow-lg transition-shadow" onclick="showSkillDetail('${sanitizeHtml(skill.id)}')">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-lg font-bold text-black">${skill.id}</span>
+                        <span class="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded">${skill.tier}</span>
+                    </div>
+                    <h3 class="text-title mb-3">${skill.name}</h3>
+
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-xs text-gray-500 mb-1">使用场景</p>
+                            <p class="text-caption text-gray-700">${skill.whenToUse}</p>
+                        </div>
+
+                        <div class="flex gap-4">
+                            <div>
+                                <p class="text-xs text-gray-500 mb-1">算力要求</p>
+                                <p class="text-caption font-medium">${skill.compute}</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500 mb-1">电池类型</p>
+                                <p class="text-caption font-medium">${skill.batteryTypes.join(', ')}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center text-sm text-gray-500">
+                        <span>点击查看详情</span>
+                        <i class="fas fa-arrow-right ml-2"></i>
+                    </div>
+                </div>
+            `).join('') : `
+                <div class="col-span-full text-center py-12">
+                    <p class="text-gray-500">该层级暂无技能示例</p>
+                </div>
+            `;
+
+            return `
+                <section class="bg-white">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+                        <button onclick="backToTiers()" class="mb-8 flex items-center text-gray-600 hover:text-black transition-colors">
+                            <i class="fas fa-arrow-left mr-2"></i>
+                            <span>返回层级概览</span>
+                        </button>
+
+                        <div class="mb-12">
+                            <div class="flex items-center gap-4 mb-4">
+                                <span class="text-3xl font-bold text-black">${tier.id}</span>
+                                <h1 class="text-display">${tier.name}</h1>
+                            </div>
+                            <p class="text-body text-gray-600 mb-2">${tier.description}</p>
+                            <p class="text-caption text-gray-500">共 ${tierSkills.length} 个技能</p>
+                        </div>
+
+                        <div class="bento-grid">
+                            ${skillCards}
+                        </div>
+                    </div>
+                </section>
+            `;
+        }
+
+        /**
+         * 显示特定层级的技能
+         * @param {string} tierId - 层级ID
+         */
+        function showTierSkills(tierId) {
+            skillsState.view = 'tier-skills';
+            skillsState.selectedTier = tierId;
+            renderTabContent('skills');
+        }
+
+        /**
+         * 返回层级概览
+         */
+        function backToTiers() {
+            skillsState.view = 'tiers';
+            skillsState.selectedTier = null;
+            renderTabContent('skills');
+        }
+
+        /**
+         * 显示技能详情页
+         * @param {string} skillId - 技能ID
+         */
+        function showSkillDetail(skillId) {
+            skillsState.view = 'skill-detail';
+            skillsState.selectedSkill = skillId;
+            renderTabContent('skills');
+        }
+
+        /**
+         * 返回层级技能列表
+         */
+        function backToTierSkills() {
+            skillsState.view = 'tier-skills';
+            skillsState.selectedSkill = null;
+            renderTabContent('skills');
+        }
+
+        /**
+         * 渲染技能详情页
+         * @returns {string} HTML内容
+         */
+        function renderSkillDetail() {
+            const skill = basSkills.skills.find(s => s.id === skillsState.selectedSkill);
+            const tier = basSkills.tiers.find(t => t.id === skill?.tier);
+
+            if (!skill || !tier) {
+                skillsState.view = 'tiers';
+                skillsState.selectedSkill = null;
+                return renderTiersOverview();
+            }
+
+            return `
+                <section class="bg-white">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+                        <button onclick="backToTierSkills()" class="mb-8 flex items-center text-gray-600 hover:text-black transition-colors">
+                            <i class="fas fa-arrow-left mr-2"></i>
+                            <span>返回${tier.name}技能列表</span>
+                        </button>
+
+                        <div class="bento-card max-w-4xl mx-auto">
+                            <!-- Header -->
+                            <div class="border-b border-gray-200 pb-6 mb-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center gap-4">
+                                        <span class="text-2xl font-bold text-black">${skill.id}</span>
+                                        <span class="text-sm px-3 py-1 bg-gray-100 text-gray-700 rounded-full">${skill.tier}</span>
+                                    </div>
+                                </div>
+                                <h1 class="text-display mb-2">${skill.name}</h1>
+                                <p class="text-body text-gray-600">${tier.description}</p>
+                            </div>
+
+                            <!-- Content -->
+                            <div class="space-y-8">
+                                <!-- When to Use -->
+                                <div>
+                                    <h2 class="text-title mb-3 flex items-center">
+                                        <i class="fas fa-bullseye text-gray-400 mr-2"></i>
+                                        使用场景
+                                    </h2>
+                                    <p class="text-body text-gray-700 leading-relaxed">${skill.whenToUse}</p>
+                                </div>
+
+                                <!-- Description -->
+                                <div>
+                                    <h2 class="text-title mb-3 flex items-center">
+                                        <i class="fas fa-info-circle text-gray-400 mr-2"></i>
+                                        功能描述
+                                    </h2>
+                                    <p class="text-body text-gray-700 leading-relaxed">${skill.description}</p>
+                                </div>
+
+                                <!-- Algorithm -->
+                                <div>
+                                    <h2 class="text-title mb-3 flex items-center">
+                                        <i class="fas fa-cogs text-gray-400 mr-2"></i>
+                                        算法原理
+                                    </h2>
+                                    <div class="bg-gray-50 rounded-lg p-4">
+                                        <p class="text-body text-gray-700 leading-relaxed font-mono text-sm">${skill.algorithm}</p>
+                                    </div>
+                                </div>
+
+                                <!-- Technical Specs -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <h2 class="text-title mb-3 flex items-center">
+                                            <i class="fas fa-microchip text-gray-400 mr-2"></i>
+                                            算力要求
+                                        </h2>
+                                        <div class="bg-gray-50 rounded-lg p-4">
+                                            <p class="text-caption font-medium text-gray-900">${skill.compute}</p>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <h2 class="text-title mb-3 flex items-center">
+                                            <i class="fas fa-battery-full text-gray-400 mr-2"></i>
+                                            适用电池
+                                        </h2>
+                                        <div class="flex flex-wrap gap-2">
+                                            ${skill.batteryTypes.map(type => `
+                                                <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">${type}</span>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- References -->
+                                <div>
+                                    <h2 class="text-title mb-3 flex items-center">
+                                        <i class="fas fa-book text-gray-400 mr-2"></i>
+                                        参考文献
+                                    </h2>
+                                    <div class="space-y-2">
+                                        ${skill.references.map(ref => `
+                                            <p class="text-caption text-gray-600 bg-gray-50 rounded-lg p-3">${ref}</p>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            `;
+        }
+
+        // ==================== 案例展示系统 ====================
+
+        /**
+         * Sanitize input for safe use in HTML attributes
+         * @param {string} str - Input string
+         * @returns {string} Sanitized string with escaped single quotes
+         */
+        function sanitizeHtml(str) {
+            return str.replace(/'/g, '&#39;');
+        }
+
+        /**
+         * 渲染案例展示页面
+         * @returns {string} HTML内容
+         */
+        function renderCasesPage() {
+            if (casesState.view === 'detail') {
+                return renderCaseDetail();
+            }
+            // Fallback for invalid state - return to list
+            return renderCaseList();
+        }
+
+        /**
+         * 渲染案例列表视图
+         * @returns {string} HTML内容
+         */
+        function renderCaseList() {
+            const caseCards = cases.map(caseItem => `
+                <div class="bento-card cursor-pointer hover:shadow-lg transition-shadow"
+                     onclick="showCaseDetail('${sanitizeHtml(caseItem.id)}')">
+                    <div class="flex items-start justify-between mb-4">
+                        <span class="text-4xl">${caseItem.icon}</span>
+                        <span class="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded">${caseItem.industry}</span>
+                    </div>
+                    <h3 class="text-title mb-4">${caseItem.name}</h3>
+                    <p class="text-caption text-gray-500 mb-4">${caseItem.date}</p>
+
+                    <div class="space-y-2 mb-4">
+                        ${caseItem.results.slice(0, 2).map(result => `
+                            <div class="flex items-start">
+                                <span class="text-gray-400 mr-2">•</span>
+                                <span class="text-caption text-gray-700">${result}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div class="pt-4 border-t border-gray-100">
+                        <p class="text-caption font-medium text-black">${caseItem.roi}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            return `
+                <section class="bg-white">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+                        <div class="mb-12">
+                            <h1 class="text-display mb-4">成功案例</h1>
+                            <p class="text-body text-gray-600 max-w-2xl">
+                                ASGARD已成功应用于多个工商业储能和电动汽车项目，
+                                为客户提供精准的电池诊断和优化建议。
+                            </p>
+                        </div>
+
+                        <div class="bento-grid">
+                            ${caseCards}
+                        </div>
+                    </div>
+                </section>
+            `;
+        }
+
+        /**
+         * 渲染案例详情视图
+         * @returns {string} HTML内容
+         */
+        function renderCaseDetail() {
+            const caseItem = cases.find(c => c.id === casesState.selectedCase);
+            if (!caseItem) {
+                return renderCaseList();
+            }
+
+            // 风险等级颜色映射
+            const riskColors = {
+                high: '#EF4444',
+                medium: '#F59E0B',
+                low: '#10B981'
+            };
+
+            const riskLabels = {
+                high: '高风险',
+                medium: '中等风险',
+                low: '低风险'
+            };
+
+            return `
+                <section class="bg-white">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                        <button onclick="backToCaseList()"
+                                class="mb-8 flex items-center text-gray-600 hover:text-black transition-colors">
+                            <i class="fas fa-arrow-left mr-2"></i>
+                            <span>返回案例列表</span>
+                        </button>
+
+                        <!-- 案例头部 -->
+                        <div class="mb-8">
+                            <div class="flex items-center gap-4 mb-4">
+                                <span class="text-5xl">${caseItem.icon}</span>
+                                <div>
+                                    <h1 class="text-display mb-2">${caseItem.name}</h1>
+                                    <div class="flex items-center gap-4">
+                                        <span class="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded">${caseItem.industry}</span>
+                                        <span class="text-caption text-gray-500">${caseItem.date}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bento Grid 布局 -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+                            <!-- 项目背景 -->
+                            <div class="bento-card">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+                                        <i class="fas fa-info-circle text-blue-500"></i>
+                                    </div>
+                                    <h2 class="text-title">项目背景</h2>
+                                </div>
+                                <p class="text-body text-gray-700">${caseItem.description}</p>
+                            </div>
+
+                            <!-- 实施效果 -->
+                            <div class="bento-card">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div class="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center">
+                                        <i class="fas fa-chart-line text-green-500"></i>
+                                    </div>
+                                    <h2 class="text-title">实施效果</h2>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <p class="text-caption text-gray-500 mb-1">投资回报</p>
+                                        <p class="text-h3 font-bold text-black">${caseItem.roi}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-caption text-gray-500 mb-1">实施时间</p>
+                                        <p class="text-h3 font-bold text-black">${caseItem.date}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- BAS采用方案 -->
+                            <div class="bento-card">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div class="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center">
+                                        <i class="fas fa-cogs text-purple-500"></i>
+                                    </div>
+                                    <h2 class="text-title">BAS采用方案</h2>
+                                </div>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-sm">
+                                        <thead>
+                                            <tr class="border-b border-gray-200">
+                                                <th class="text-left py-2 text-gray-600 font-medium">技能ID</th>
+                                                <th class="text-left py-2 text-gray-600 font-medium">技能名称</th>
+                                                <th class="text-left py-2 text-gray-600 font-medium">用途</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${caseItem.basSkills.map(skill => `
+                                                <tr class="border-b border-gray-100">
+                                                    <td class="py-2">
+                                                        <code class="px-2 py-1 bg-gray-100 rounded text-xs">${skill.id}</code>
+                                                    </td>
+                                                    <td class="py-2">${skill.name}</td>
+                                                    <td class="py-2 text-gray-600">${skill.purpose}</td>
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- 诊断结果 -->
+                            <div class="bento-card">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div class="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center">
+                                        <i class="fas fa-heartbeat text-orange-500"></i>
+                                    </div>
+                                    <h2 class="text-title">诊断结果</h2>
+                                </div>
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-body text-gray-700">风险等级</span>
+                                        <span class="px-3 py-1 rounded-full text-sm font-medium"
+                                              style="background-color: ${riskColors[caseItem.diagnosisResults.riskLevel]}20; color: ${riskColors[caseItem.diagnosisResults.riskLevel]}">
+                                            ${riskLabels[caseItem.diagnosisResults.riskLevel]}
+                                        </span>
+                                    </div>
+                                    <div class="grid grid-cols-3 gap-4">
+                                        <div class="text-center p-3 bg-gray-50 rounded-lg">
+                                            <p class="text-2xl font-bold text-black">${caseItem.diagnosisResults.keyMetrics.safetyScore}</p>
+                                            <p class="text-caption text-gray-500">安全评分</p>
+                                        </div>
+                                        <div class="text-center p-3 bg-gray-50 rounded-lg">
+                                            <p class="text-2xl font-bold text-black">${caseItem.diagnosisResults.keyMetrics.confidence}%</p>
+                                            <p class="text-caption text-gray-500">置信度</p>
+                                        </div>
+                                        <div class="text-center p-3 bg-gray-50 rounded-lg">
+                                            <p class="text-2xl font-bold text-black">${caseItem.diagnosisResults.keyMetrics.batteriesAnalyzed}</p>
+                                            <p class="text-caption text-gray-500">分析电池数</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 编排DAG可视化 -->
+                            <div class="bento-card lg:col-span-2">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div class="w-10 h-10 rounded-lg bg-indigo-50 flex items-center justify-center">
+                                        <i class="fas fa-project-diagram text-indigo-500"></i>
+                                    </div>
+                                    <h2 class="text-title">编排流程</h2>
+                                </div>
+                                <div id="case-dag-chart" class="w-full h-[400px]" role="img" aria-label="案例DAG流程图"></div>
+                            </div>
+
+                            <!-- 溯源分析 -->
+                            <div class="bento-card lg:col-span-2">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div class="w-10 h-10 rounded-lg bg-red-50 flex items-center justify-center">
+                                        <i class="fas fa-search text-red-500"></i>
+                                    </div>
+                                    <h2 class="text-title">溯源分析</h2>
+                                </div>
+                                <div class="space-y-4">
+                                    <div>
+                                        <h3 class="text-body font-semibold text-gray-700 mb-2">根因分析</h3>
+                                        <p class="text-body text-gray-600">${caseItem.traceability.rootCause}</p>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-body font-semibold text-gray-700 mb-2">时间线</h3>
+                                        <div class="relative pl-6 border-l-2 border-gray-200">
+                                            ${caseItem.traceability.timeline.map((item, index) => `
+                                                <div class="mb-4 relative">
+                                                    <div class="absolute -left-[31px] w-4 h-4 rounded-full bg-indigo-500"></div>
+                                                    <p class="text-caption text-gray-500">${item.date}</p>
+                                                    <p class="text-body text-gray-700">${item.event}</p>
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-body font-semibold text-gray-700 mb-2">数据来源</h3>
+                                        <p class="text-body text-gray-600">${caseItem.traceability.dataSource}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- AI建议 -->
+                            <div class="bento-card lg:col-span-2">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div class="w-10 h-10 rounded-lg bg-yellow-50 flex items-center justify-center">
+                                        <i class="fas fa-lightbulb text-yellow-500"></i>
+                                    </div>
+                                    <h2 class="text-title">AI建议</h2>
+                                </div>
+                                <div class="space-y-3">
+                                    ${caseItem.recommendations.map(rec => {
+                                        const priorityColors = {
+                                            high: 'bg-red-50 text-red-700 border-red-200',
+                                            medium: 'bg-yellow-50 text-yellow-700 border-yellow-200',
+                                            low: 'bg-green-50 text-green-700 border-green-200'
+                                        };
+                                        const priorityLabels = {
+                                            high: '高优先级',
+                                            medium: '中优先级',
+                                            low: '低优先级'
+                                        };
+                                        return `
+                                            <div class="flex items-start gap-3 p-4 border rounded-lg">
+                                                <span class="px-2 py-1 text-xs rounded border ${priorityColors[rec.priority]}">
+                                                    ${priorityLabels[rec.priority]}
+                                                </span>
+                                                <p class="text-body text-gray-700">${rec.text}</p>
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- 操作按钮 -->
+                        <div class="mt-8 flex gap-4">
+                            <button onclick="alert('PDF下载功能开发中...')"
+                                    class="btn-primary">
+                                <i class="fas fa-file-pdf mr-2"></i>下载PDF报告
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            `;
+        }
+
+        /**
+         * 返回案例列表
+         */
+        function backToCaseList() {
+            casesState.view = 'list';
+            casesState.selectedCase = null;
+            renderTabContent('cases');
+        }
+
+        /**
+         * 初始化案例详情页DAG图表
+         */
+        function initCaseDAG() {
+            const caseItem = cases.find(c => c.id === casesState.selectedCase);
+            if (!caseItem || !caseItem.dag) return;
+
+            const chartDom = document.getElementById('case-dag-chart');
+            if (!chartDom) return;
+
+            const myChart = echarts.init(chartDom);
+
+            // 节点颜色映射
+            const categoryColors = {
+                input: '#3B82F6',
+                process: '#8B5CF6',
+                diagnosis: '#F59E0B',
+                assessment: '#EF4444',
+                optimization: '#10B981',
+                output: '#6B7280'
+            };
+
+            // 构建节点数据
+            const nodes = caseItem.dag.nodes.map(node => ({
+                id: node.id,
+                name: node.name,
+                category: node.category,
+                symbolSize: 60,
+                itemStyle: {
+                    color: categoryColors[node.category] || '#6B7280'
+                },
+                label: {
+                    show: true,
+                    fontSize: 12,
+                    color: '#374151'
+                }
+            }));
+
+            // 构建连线数据
+            const links = caseItem.dag.links.map(link => ({
+                source: link.source,
+                target: link.target,
+                lineStyle: {
+                    color: '#9CA3AF',
+                    curveness: 0.2
+                }
+            }));
+
+            const option = {
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{b}'
+                },
+                series: [{
+                    type: 'graph',
+                    layout: 'none',
+                    symbolSize: 60,
+                    roam: true,
+                    label: {
+                        show: true,
+                        fontSize: 12
+                    },
+                    edgeSymbol: ['circle', 'arrow'],
+                    edgeSymbolSize: [4, 10],
+                    edgeLabel: {
+                        fontSize: 12
+                    },
+                    data: nodes,
+                    links: links,
+                    lineStyle: {
+                        opacity: 0.9,
+                        width: 2,
+                        curveness: 0.2
+                    }
+                }],
+                // 简单的布局 - 手动设置位置
+                grid: {
+                    left: '10%',
+                    right: '10%',
+                    top: '10%',
+                    bottom: '10%'
+                }
+            };
+
+            // 为节点设置位置（简单的从左到右布局）
+            const levels = {
+                input: 0,
+                process: 1,
+                diagnosis: 2,
+                assessment: 3,
+                optimization: 3,
+                output: 4
+            };
+
+            nodes.forEach((node, index) => {
+                const level = levels[node.category] || 2;
+                const nodesInLevel = nodes.filter(n => levels[n.category] === level).length;
+                const positionInLevel = nodes.filter(n => levels[n.category] === level && n.id <= node.id).length;
+
+                node.x = level * 200 + 100;
+                node.y = (positionInLevel - 1) * (300 / Math.max(nodesInLevel, 1)) + 100;
+            });
+
+            myChart.setOption(option);
+
+            // 响应式调整(使用debounce优化性能)
+            window.addEventListener('resize', debounce(() => {
+                myChart.resize();
+            }, 250));
+        }
+
+        /**
+         * 渲染案例详情后初始化DAG
+         */
+        function showCaseDetail(caseId) {
+            casesState.view = 'detail';
+            casesState.selectedCase = caseId;
+            renderTabContent('cases');
+
+            // 等待DOM更新后初始化图表
+            setTimeout(() => {
+                initCaseDAG();
+            }, 100);
+        }
+
+        // ==================== Agent编排系统 ====================
+
+        /**
+         * Agent状态管理
+         */
+        const agentState = {
+            messages: [],
+            workflow: null,
+            isProcessing: false,
+            currentDAGChart: null
+        };
+
+        /**
+         * 示例需求
+         */
+        const examplePrompts = [
+            {
+                title: "内短路诊断",
+                prompt: "我的储能站有3个电池簇最近电压异常，可能存在内短路风险，帮我诊断一下"
+            },
+            {
+                title: "析锂检测",
+                prompt: "昨晚快速充电后，部分电池包静置电压恢复较慢，是否有析锂风险？"
+            },
+            {
+                title: "安全评估",
+                prompt: "我想全面评估一下整个储能系统的安全状态，生成一份报告"
+            },
+            {
+                title: "SOH分析",
+                prompt: "这批电池运行了2年，帮我分析一下健康状态和剩余寿命"
+            }
+        ];
+
+        /**
+         * 渲染Agent编排页面
+         * @returns {string} HTML内容
+         */
+        function renderPlannerPage() {
+            return `
+                <div class="h-[calc(100vh-64px)] flex flex-col bg-gray-50">
+                    <!-- 页面标题栏 -->
+                    <div class="bg-white border-b border-gray-200 px-6 py-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h2 class="text-2xl font-bold text-black">Agent智能编排</h2>
+                                <p class="text-sm text-gray-600 mt-1">描述您的需求，AI将自动编排BAS技能生成分析方案</p>
+                            </div>
+                            <button onclick="loadExamplePrompt()" class="btn-secondary text-sm">
+                                <i class="fas fa-magic mr-2"></i>加载示例需求
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 主内容区 - 左右分栏 -->
+                    <div class="flex-1 flex overflow-hidden">
+                        <!-- 左栏：对话区 (45%) -->
+                        <div class="w-full lg:w-[45%] flex flex-col border-r border-gray-200 bg-white">
+                            <!-- 对话历史 -->
+                            <div id="chat-history" class="flex-1 overflow-y-auto px-6 py-4 space-y-6">
+                                <!-- 欢迎消息 -->
+                                <div class="flex items-start space-x-3">
+                                    <div class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-robot text-white text-sm"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="bg-gray-50 rounded-2xl rounded-tl-sm px-4 py-3">
+                                            <p class="text-sm text-gray-800">
+                                                您好！我是ASGARD智能编排助手。我可以帮您：
+                                            </p>
+                                            <ul class="text-sm text-gray-600 mt-2 space-y-1">
+                                                <li>• 诊断电池安全风险（内短路、析锂等）</li>
+                                                <li>• 评估电池健康状态（SOH、RUL）</li>
+                                                <li>• 生成分析报告和优化建议</li>
+                                            </ul>
+                                            <p class="text-sm text-gray-800 mt-3">
+                                                请描述您的需求，我会自动匹配最合适的BAS技能进行分析。
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 输入区 -->
+                            <div class="border-t border-gray-200 p-4 bg-white flex-shrink-0">
+                                <div class="flex items-end space-x-3">
+                                    <textarea
+                                        id="user-input"
+                                        class="flex-1 resize-none rounded-xl border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        rows="2"
+                                        placeholder="描述您的电池分析需求..."
+                                        onkeydown="handleInputKeydown(event)"
+                                    ></textarea>
+                                    <button
+                                        id="send-button"
+                                        onclick="sendMessage()"
+                                        class="flex-shrink-0 bg-black text-white px-5 py-3 rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 右栏：DAG可视化 (55%) -->
+                        <div class="hidden lg:flex flex-col w-[55%] bg-gray-50">
+                            <!-- DAG标题栏 -->
+                            <div class="bg-white border-b border-gray-200 px-6 py-4">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-lg font-semibold text-black">
+                                        <i class="fas fa-project-diagram mr-2 text-blue-500"></i>
+                                        工作流可视化
+                                    </h3>
+                                    <div id="dag-status" class="text-sm text-gray-500">
+                                        等待输入...
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- DAG容器 -->
+                            <div class="flex-1 p-6">
+                                <div id="dag-container" class="w-full h-full bg-white rounded-xl border border-gray-200 flex items-center justify-center">
+                                    <div class="text-center text-gray-400">
+                                        <i class="fas fa-diagram-project text-6xl mb-4"></i>
+                                        <p class="text-lg">工作流将在此处生成</p>
+                                        <p class="text-sm mt-2">描述您的需求后，系统将自动编排BAS技能</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        /**
+         * 初始化Agent聊天
+         */
+        function initAgentChat() {
+            const userInput = document.getElementById('user-input');
+            if (userInput) {
+                userInput.focus();
+            }
+        }
+
+        /**
+         * 处理输入框键盘事件
+         * @param {KeyboardEvent} event
+         */
+        function handleInputKeydown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        /**
+         * 发送消息
+         */
+        function sendMessage() {
+            const userInput = document.getElementById('user-input');
+            const sendButton = document.getElementById('send-button');
+            const message = userInput.value.trim();
+
+            if (!message || agentState.isProcessing) {
+                return;
+            }
+
+            // 添加用户消息
+            addMessage('user', message);
+
+            // 清空输入框
+            userInput.value = '';
+
+            // 禁用发送按钮
+            sendButton.disabled = true;
+
+            // 开始处理
+            agentState.isProcessing = true;
+
+            // 模拟Agent响应
+            setTimeout(() => {
+                simulateAgentResponse(message);
+            }, 500);
+        }
+
+        /**
+         * 添加消息到历史
+         * @param {string} role - 'user' | 'agent'
+         * @param {string} content - 消息内容
+         * @param {Object} metadata - 元数据（如workflow、reasoning）
+         */
+        function addMessage(role, content, metadata = {}) {
+            const chatHistory = document.getElementById('chat-history');
+            const messageObj = { role, content, ...metadata };
+            agentState.messages.push(messageObj);
+
+            const messageHtml = role === 'user'
+                ? renderUserMessage(content)
+                : renderAgentMessage(content, metadata);
+
+            chatHistory.insertAdjacentHTML('beforeend', messageHtml);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+
+        /**
+         * 渲染用户消息
+         * @param {string} content
+         * @returns {string} HTML
+         */
+        function renderUserMessage(content) {
+            return `
+                <div class="flex items-start space-x-3 justify-end">
+                    <div class="max-w-[80%]">
+                        <div class="bg-black text-white rounded-2xl rounded-tr-sm px-4 py-3">
+                            <p class="text-sm">${escapeHtml(content)}</p>
+                        </div>
+                    </div>
+                    <div class="flex-shrink-0 w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-gray-600 text-sm"></i>
+                    </div>
+                </div>
+            `;
+        }
+
+        /**
+         * 渲染Agent消息
+         * @param {string} content
+         * @param {Object} metadata
+         * @returns {string} HTML
+         */
+        function renderAgentMessage(content, metadata = {}) {
+            const hasReasoning = metadata.reasoning || metadata.workflow;
+            const reasoningHtml = hasReasoning ? `
+                <div class="mt-3 border-t border-gray-200 pt-3">
+                    <button
+                        onclick="toggleReasoning(this)"
+                        class="flex items-center text-xs text-gray-600 hover:text-black transition-colors"
+                    >
+                        <i class="fas fa-chevron-right mr-2 transition-transform"></i>
+                        <span>查看推理过程</span>
+                    </button>
+                    <div class="reasoning-content hidden mt-3 space-y-3">
+                        ${metadata.reasoning ? `
+                            <div class="bg-blue-50 rounded-lg px-3 py-2">
+                                <p class="text-xs font-semibold text-blue-900 mb-2">🧠 思考过程</p>
+                                <p class="text-xs text-blue-800 whitespace-pre-wrap">${escapeHtml(metadata.reasoning)}</p>
+                            </div>
+                        ` : ''}
+                        ${metadata.workflow ? `
+                            <div class="bg-green-50 rounded-lg px-3 py-2">
+                                <p class="text-xs font-semibold text-green-900 mb-2">⚡ 工作流编排</p>
+                                <p class="text-xs text-green-800">${escapeHtml(metadata.workflow)}</p>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            ` : '';
+
+            return `
+                <div class="flex items-start space-x-3">
+                    <div class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                        <i class="fas fa-robot text-white text-sm"></i>
+                    </div>
+                    <div class="flex-1 max-w-[85%]">
+                        <div class="bg-gray-50 rounded-2xl rounded-tl-sm px-4 py-3">
+                            <div class="message-content text-sm text-gray-800"></div>
+                            ${reasoningHtml}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        /**
+         * 切换推理过程显示
+         * @param {HTMLElement} button
+         */
+        function toggleReasoning(button) {
+            const content = button.nextElementSibling;
+            const icon = button.querySelector('i');
+            const text = button.querySelector('span');
+
+            content.classList.toggle('hidden');
+            icon.classList.toggle('rotate-90');
+            text.textContent = content.classList.contains('hidden') ? '查看推理过程' : '隐藏推理过程';
+        }
+
+        /**
+         * 模拟Agent响应
+         * @param {string} userMessage
+         */
+        async function simulateAgentResponse(userMessage) {
+            // 分析用户意图
+            const intent = analyzeIntent(userMessage);
+
+            // 生成思考过程
+            const reasoning = generateReasoning(userMessage, intent);
+
+            // 生成工作流描述
+            const workflow = generateWorkflow(intent);
+
+            // 生成响应文本
+            const response = generateResponse(userMessage, intent);
+
+            // 添加Agent消息（先显示思考过程）
+            const chatHistory = document.getElementById('chat-history');
+            const messageId = 'agent-' + Date.now();
+            const messageHtml = renderAgentMessage('', { reasoning, workflow });
+            chatHistory.insertAdjacentHTML('beforeend', messageHtml);
+
+            // 找到消息内容容器并实现打字机效果
+            const messageContainer = chatHistory.lastElementChild;
+            const contentDiv = messageContainer.querySelector('.message-content');
+
+            // 打字机效果
+            await typeWriter(contentDiv, response);
+
+            // 生成DAG
+            await generateMockDAG(intent);
+
+            // 更新状态
+            updateDAGStatus('分析完成');
+
+            // 恢复发送按钮
+            const sendButton = document.getElementById('send-button');
+            sendButton.disabled = false;
+            agentState.isProcessing = false;
+
+            // 滚动到底部
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+
+        /**
+         * 分析用户意图
+         * @param {string} message
+         * @returns {Object} 意图对象
+         */
+        function analyzeIntent(message) {
+            const lowerMsg = message.toLowerCase();
+
+            if (lowerMsg.includes('内短路') || lowerMsg.includes('短路')) {
+                return {
+                    type: 'internal_short',
+                    skills: ['C3.1', 'C3.2', 'C3.0'],
+                    priority: 'high',
+                    description: '内短路诊断'
+                };
+            } else if (lowerMsg.includes('析锂') || lowerMsg.includes('锂析出')) {
+                return {
+                    type: 'lithium_plating',
+                    skills: ['C3.13', 'C3.0'],
+                    priority: 'high',
+                    description: '析锂检测'
+                };
+            } else if (lowerMsg.includes('安全') || lowerMsg.includes('评估') || lowerMsg.includes('报告')) {
+                return {
+                    type: 'safety_assessment',
+                    skills: ['C3.5', 'C3.1', 'C3.13', 'C3.0'],
+                    priority: 'medium',
+                    description: '安全评估'
+                };
+            } else if (lowerMsg.includes('soh') || lowerMsg.includes('健康') || lowerMsg.includes('寿命')) {
+                return {
+                    type: 'soh_analysis',
+                    skills: ['C3.5', 'C3.0'],
+                    priority: 'medium',
+                    description: '健康状态分析'
+                };
+            } else {
+                return {
+                    type: 'general',
+                    skills: ['C3.0', 'C3.5'],
+                    priority: 'low',
+                    description: '综合分析'
+                };
+            }
+        }
+
+        /**
+         * 生成思考过程
+         * @param {string} userMessage
+         * @param {Object} intent
+         * @returns {string}
+         */
+        function generateReasoning(userMessage, intent) {
+            return `1. 分析用户需求：${userMessage}
+
+2. 识别场景特征：
+   - 问题类型：${intent.description}
+   - 优先级：${intent.priority}
+   - 电池类型：LFP (假设)
+
+3. 匹配BAS技能：
+   ✓ C3.0 - 数据净化（前置处理）
+   ✓ ${intent.skills.filter(s => s !== 'C3.0').join(' → ')}
+
+4. 生成执行计划：
+   步骤1：数据清洗和去噪
+   步骤2：加载对应诊断模型
+   步骤3：计算安全指标
+   步骤4：生成分析报告
+
+5. 预计响应时间：< 2秒`;
+        }
+
+        /**
+         * 生成工作流描述
+         * @param {Object} intent
+         * @returns {string}
+         */
+        function generateWorkflow(intent) {
+            const skillNames = {
+                'C3.0': '数据净化',
+                'C3.1': '内短路诊断-SOS',
+                'C3.2': '内短路诊断-P2D',
+                'C3.13': '析锂检测',
+                'C3.5': '安全熵评估'
+            };
+
+            return intent.skills.map(skillId => {
+                return `• ${skillId}: ${skillNames[skillId] || '未知技能'}`;
+            }).join('\n');
+        }
+
+        /**
+         * 生成响应文本
+         * @param {string} userMessage
+         * @param {Object} intent
+         * @returns {string}
+         */
+        function generateResponse(userMessage, intent) {
+            const responses = {
+                'internal_short': `我已经理解您的需求。针对**内短路诊断**，我将为您执行以下分析：
+
+**分析方案：**
+1. 首先使用【C3.0 数据净化】清洗异常数据
+2. 应用【C3.1 内短路诊断-SOS】进行快速筛查
+3. 如需更高精度，可启用【C3.2 内短路诊断-P2D】深度分析
+
+**预期结果：**
+- 识别潜在内短路电池单体
+- 计算内短路严重程度
+- 提供安全预警建议
+
+右侧工作流图已生成，您可以查看完整的技能编排流程。`,
+                'lithium_plating': `收到！针对**析锂检测**需求，我将为您：
+
+**检测方案：**
+1. 【C3.0 数据净化】处理充电数据
+2. 【C3.13 析锂检测】分析静置电压恢复特性
+3. 评估析锂风险等级
+
+**关键指标：**
+- 析锂程度（轻微/中度/严重）
+- 受影响电池单体编号
+- 充电策略调整建议
+
+工作流已在右侧可视化展示。`,
+                'safety_assessment': `好的，我将为您生成**全面的安全评估报告**：
+
+**评估维度：**
+1. 数据质量检查（C3.0）
+2. 内短路风险筛查（C3.1）
+3. 析锂风险检测（C3.13）
+4. 安全熵综合评估（C3.5）
+
+**报告包含：**
+- 整体安全评分
+- 风险点定位
+- 趋势分析
+- 维护建议
+
+完整工作流已生成，请查看右侧DAG图。`,
+                'soh_analysis': `我将为您分析**电池健康状态**：
+
+**分析方案：**
+1. 数据预处理（C3.0）
+2. SOH估算
+3. 安全熵评估（C3.5）
+4. 衰减趋势分析
+
+**输出结果：**
+- 当前SOH值
+- 剩余使用寿命预测
+- 衰减速率评估
+- 延寿建议
+
+工作流已生成！`,
+                'general': `我理解您的需求。让我先对数据进行综合分析：
+
+**分析计划：**
+1. 数据清洗和特征提取
+2. 多维度健康评估
+3. 异常检测
+
+我会根据数据特征动态调整分析方案。工作流已在右侧展示。`
+            };
+
+            return responses[intent.type] || responses['general'];
+        }
+
+        /**
+         * 打字机效果
+         * @param {HTMLElement} element
+         * @param {string} text
+         * @param {number} speed
+         */
+        async function typeWriter(element, text, speed = 20) {
+            const formattedText = text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\n/g, '<br>');
+
+            element.innerHTML = '';
+            let i = 0;
+
+            return new Promise(resolve => {
+                const timer = setInterval(() => {
+                    if (i < formattedText.length) {
+                        // 处理HTML标签
+                        if (formattedText.charAt(i) === '<') {
+                            const closeIndex = formattedText.indexOf('>', i);
+                            element.innerHTML += formattedText.substring(i, closeIndex + 1);
+                            i = closeIndex + 1;
+                        } else {
+                            element.innerHTML += formattedText.charAt(i);
+                            i++;
+                        }
+                    } else {
+                        clearInterval(timer);
+                        resolve();
+                    }
+                }, speed);
+            });
+        }
+
+        /**
+         * 生成模拟DAG
+         * @param {Object} intent
+         */
+        async function generateMockDAG(intent) {
+            const dagContainer = document.getElementById('dag-container');
+            const dagStatus = document.getElementById('dag-status');
+
+            if (!dagContainer) return;
+
+            // 更新状态
+            updateDAGStatus('正在生成工作流...');
+
+            // 清空容器
+            dagContainer.innerHTML = '<div id="dag-chart" style="width:100%;height:100%;" role="img" aria-label="Agent编排DAG流程图"></div>';
+
+            // 等待DOM更新
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            // 初始化ECharts
+            const chart = echarts.init(document.getElementById('dag-chart'));
+            agentState.currentDAGChart = chart;
+
+            // 生成DAG数据
+            const dagData = generateDAGData(intent);
+
+            // 配置项
+            const option = {
+                tooltip: {
+                    trigger: 'item',
+                    formatter: params => {
+                        if (params.dataType === 'node') {
+                            const node = params.data;
+                            return `
+                                <div style="padding: 8px;">
+                                    <strong>${node.name}</strong><br/>
+                                    <span style="color: #666; font-size: 12px;">${node.description || ''}</span>
+                                </div>
+                            `;
+                        }
+                        return params.name;
+                    }
+                },
+                animationDurationUpdate: 1500,
+                animationEasingUpdate: 'quinticInOut',
+                series: [{
+                    type: 'graph',
+                    layout: 'none',
+                    symbolSize: 80,
+                    roam: true,
+                    label: {
+                        show: true,
+                        fontSize: 12,
+                        formatter: params => {
+                            // 简化节点名称显示
+                            const nameMap = {
+                                '数据输入': '输入',
+                                'C3.0': '净化',
+                                'C3.1': '内短路',
+                                'C3.2': 'P2D',
+                                'C3.13': '析锂',
+                                'C3.5': '安全熵',
+                                '分析报告': '报告'
+                            };
+                            return nameMap[params.name] || params.name;
+                        }
+                    },
+                    edgeSymbol: ['circle', 'arrow'],
+                    edgeSymbolSize: [4, 10],
+                    edgeLabel: {
+                        fontSize: 12
+                    },
+                    data: dagData.nodes,
+                    links: dagData.links,
+                    lineStyle: {
+                        opacity: 0.9,
+                        width: 2,
+                        curveness: 0
+                    },
+                    itemStyle: {
+                        borderColor: '#fff',
+                        borderWidth: 2,
+                        shadowBlur: 10,
+                        shadowColor: 'rgba(0, 0, 0, 0.3)'
+                    },
+                    emphasis: {
+                        lineStyle: {
+                            width: 4
+                        }
+                    }
+                }]
+            };
+
+            chart.setOption(option);
+
+            // 响应式调整(使用debounce优化性能)
+            window.addEventListener('resize', debounce(() => {
+                chart.resize();
+            }, 250));
+
+            // 更新状态
+            updateDAGStatus('工作流已生成');
+        }
+
+        /**
+         * 生成DAG数据
+         * @param {Object} intent
+         * @returns {Object}
+         */
+        function generateDAGData(intent) {
+            const skillColors = {
+                '数据输入': '#94a3b8',
+                'C3.0': '#3b82f6',
+                'C3.1': '#ef4444',
+                'C3.2': '#f97316',
+                'C3.13': '#8b5cf6',
+                'C3.5': '#10b981',
+                '分析报告': '#06b6d4'
+            };
+
+            const skillDescriptions = {
+                '数据输入': '上传电池数据',
+                'C3.0': '数据清洗去噪',
+                'C3.1': '内短路SOS诊断',
+                'C3.2': 'P2D模型诊断',
+                'C3.13': '析锂风险检测',
+                'C3.5': '安全熵评估',
+                '分析报告': '生成分析报告'
+            };
+
+            // 根据意图生成不同的DAG
+            let nodes = [];
+            let links = [];
+
+            // 输入节点
+            nodes.push({
+                id: 'input',
+                name: '数据输入',
+                x: 100,
+                y: 300,
+                itemStyle: { color: skillColors['数据输入'] },
+                description: skillDescriptions['数据输入']
+            });
+
+            // 技能节点
+            const skillX = { 'C3.0': 300, 'C3.1': 500, 'C3.2': 500, 'C3.13': 500, 'C3.5': 700 };
+
+            intent.skills.forEach((skillId, index) => {
+                nodes.push({
+                    id: skillId,
+                    name: skillId,
+                    x: skillX[skillId] || 300 + index * 200,
+                    y: 300 + (index % 2 === 0 ? 100 : -100),
+                    itemStyle: { color: skillColors[skillId] },
+                    description: skillDescriptions[skillId]
+                });
+            });
+
+            // 输出节点
+            nodes.push({
+                id: 'output',
+                name: '分析报告',
+                x: 900,
+                y: 300,
+                itemStyle: { color: skillColors['分析报告'] },
+                description: skillDescriptions['分析报告']
+            });
+
+            // 连接关系
+            links.push({ source: 'input', target: 'C3.0' });
+
+            const mainSkill = intent.skills.find(s => s !== 'C3.0');
+            if (mainSkill) {
+                links.push({ source: 'C3.0', target: mainSkill });
+                links.push({ source: mainSkill, target: 'C3.5' });
+            }
+
+            links.push({ source: 'C3.5', target: 'output' });
+
+            return { nodes, links };
+        }
+
+        /**
+         * 更新DAG状态
+         * @param {string} status
+         */
+        function updateDAGStatus(status) {
+            const dagStatus = document.getElementById('dag-status');
+            if (dagStatus) {
+                dagStatus.textContent = status;
+            }
+        }
+
+        /**
+         * 加载示例需求
+         */
+        function loadExamplePrompt() {
+            const randomIndex = Math.floor(Math.random() * examplePrompts.length);
+            const example = examplePrompts[randomIndex];
+
+            const userInput = document.getElementById('user-input');
+            if (userInput) {
+                userInput.value = example.prompt;
+                userInput.focus();
+            }
+        }
+
+        /**
+         * HTML转义
+         * @param {string} text
+         * @returns {string}
+         */
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ==================== 数据分析页面 ====================
+
+        /**
+         * Mock分析数据
+         * @type {Object}
+         */
+        const mockAnalysisData = {
+            voltage: [
+                { time: '00:00', cell1: 3.65, cell2: 3.64, cell3: 3.66, cell4: 3.63, cell5: 3.65, cell6: 3.64, cell7: 3.66, cell8: 3.65 },
+                { time: '01:00', cell1: 3.62, cell2: 3.61, cell3: 3.63, cell4: 3.60, cell5: 3.62, cell6: 3.61, cell7: 3.63, cell8: 3.62 },
+                { time: '02:00', cell1: 3.58, cell2: 3.57, cell3: 3.59, cell4: 3.56, cell5: 3.58, cell6: 3.57, cell7: 3.59, cell8: 3.58 },
+                { time: '03:00', cell1: 3.55, cell2: 3.54, cell3: 3.56, cell4: 3.53, cell5: 3.55, cell6: 3.54, cell7: 3.56, cell8: 3.55 },
+                { time: '04:00', cell1: 3.52, cell2: 3.51, cell3: 3.53, cell4: 3.50, cell5: 3.52, cell6: 3.51, cell7: 3.53, cell8: 3.52 },
+                { time: '05:00', cell1: 3.50, cell2: 3.49, cell3: 3.51, cell4: 3.48, cell5: 3.50, cell6: 3.49, cell7: 3.51, cell8: 3.50 },
+                { time: '06:00', cell1: 3.48, cell2: 3.47, cell3: 3.49, cell4: 3.46, cell5: 3.48, cell6: 3.47, cell7: 3.49, cell8: 3.48 },
+                { time: '07:00', cell1: 3.50, cell2: 3.49, cell3: 3.51, cell4: 3.48, cell5: 3.50, cell6: 3.49, cell7: 3.51, cell8: 3.50 },
+                { time: '08:00', cell1: 3.55, cell2: 3.54, cell3: 3.56, cell4: 3.53, cell5: 3.55, cell6: 3.54, cell7: 3.56, cell8: 3.55 },
+                { time: '09:00', cell1: 3.60, cell2: 3.59, cell3: 3.61, cell4: 3.58, cell5: 3.60, cell6: 3.59, cell7: 3.61, cell8: 3.60 },
+                { time: '10:00', cell1: 3.65, cell2: 3.64, cell3: 3.66, cell4: 3.63, cell5: 3.65, cell6: 3.64, cell7: 3.66, cell8: 3.65 },
+                { time: '11:00', cell1: 3.68, cell2: 3.67, cell3: 3.69, cell4: 3.66, cell5: 3.68, cell6: 3.67, cell7: 3.69, cell8: 3.68 }
+            ],
+            temperature: [
+                { time: '00:00', cell1: 25, cell2: 26, cell3: 24, cell4: 27, cell5: 25, cell6: 26, cell7: 24, cell8: 25 },
+                { time: '01:00', cell1: 26, cell2: 27, cell3: 25, cell4: 28, cell5: 26, cell6: 27, cell7: 25, cell8: 26 },
+                { time: '02:00', cell1: 27, cell2: 28, cell3: 26, cell4: 29, cell5: 27, cell6: 28, cell7: 26, cell8: 27 },
+                { time: '03:00', cell1: 28, cell2: 29, cell3: 27, cell4: 30, cell5: 28, cell6: 29, cell7: 27, cell8: 28 },
+                { time: '04:00', cell1: 29, cell2: 30, cell3: 28, cell4: 31, cell5: 29, cell6: 30, cell7: 28, cell8: 29 },
+                { time: '05:00', cell1: 30, cell2: 31, cell3: 29, cell4: 32, cell5: 30, cell6: 31, cell7: 29, cell8: 30 },
+                { time: '06:00', cell1: 31, cell2: 32, cell3: 30, cell4: 33, cell5: 31, cell6: 32, cell7: 30, cell8: 31 },
+                { time: '07:00', cell1: 30, cell2: 31, cell3: 29, cell4: 32, cell5: 30, cell6: 31, cell7: 29, cell8: 30 },
+                { time: '08:00', cell1: 29, cell2: 30, cell3: 28, cell4: 31, cell5: 29, cell6: 30, cell7: 28, cell8: 29 },
+                { time: '09:00', cell1: 28, cell2: 29, cell3: 27, cell4: 30, cell5: 28, cell6: 29, cell7: 27, cell8: 28 },
+                { time: '10:00', cell1: 27, cell2: 28, cell3: 26, cell4: 29, cell5: 27, cell6: 28, cell7: 26, cell8: 27 },
+                { time: '11:00', cell1: 26, cell2: 27, cell3: 25, cell4: 28, cell5: 26, cell6: 27, cell7: 25, cell8: 26 }
+            ],
+            risk: {
+                internalShort: 75,
+                lithiumPlating: 60,
+                health: 85,
+                safetyEntropy: 70,
+                degradation: 50
+            },
+            summary: {
+                riskLevel: 'medium',
+                confidence: 92,
+                analysisTime: new Date().toISOString()
+            },
+            recommendations: [
+                { priority: 'high', text: '检测到3号电池存在内短路风险，建议立即检查' },
+                { priority: 'medium', text: '建议降低充电功率至0.5C，以减少析锂风险' },
+                { priority: 'medium', text: '4号电池温度偏高，需关注散热系统' },
+                { priority: 'low', text: '定期监测电压一致性，保持均衡' }
+            ]
+        };
+
+        /**
+         * 渲染数据分析页面
+         * @returns {string} HTML内容
+         */
+        function renderAnalysisPage() {
+            return `
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <div class="flex flex-col lg:flex-row gap-6">
+                        <!-- 左栏：数据上传区 -->
+                        <div class="w-full lg:w-2/5">
+                            ${renderUploadArea()}
+                        </div>
+
+                        <!-- 右栏：可视化展示区 -->
+                        <div class="w-full lg:w-3/5">
+                            ${renderVisualizationArea()}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        /**
+         * 渲染数据上传区域
+         * @returns {string} HTML内容
+         */
+        function renderUploadArea() {
+            return `
+                <div class="bento-card h-full">
+                    <h3 class="text-title mb-6">数据上传</h3>
+
+                    <!-- 拖拽上传区 -->
+                    <div id="upload-dropzone"
+                         class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer transition-all duration-200 hover:border-blue-400 hover:bg-blue-50">
+                        <i class="fas fa-cloud-upload-alt text-5xl text-gray-400 mb-4"></i>
+                        <p class="text-body mb-2">拖拽CSV文件到此处</p>
+                        <p class="text-caption">或</p>
+                        <button id="select-file-btn" class="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                            选择文件
+                        </button>
+                        <input type="file" id="file-input" accept=".csv" class="hidden">
+                    </div>
+
+                    <!-- 操作按钮 -->
+                    <div class="mt-6 space-y-3">
+                        <button id="load-example-btn"
+                                class="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all shadow-md hover:shadow-lg">
+                            <i class="fas fa-database mr-2"></i>
+                            使用示例数据
+                        </button>
+                    </div>
+
+                    <!-- 上传状态 -->
+                    <div id="upload-status" class="mt-6 hidden">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-caption">上传进度</span>
+                            <span id="upload-percentage" class="text-caption">0%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div id="upload-progress" class="bg-blue-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                        <p id="upload-filename" class="text-caption mt-2 text-gray-600"></p>
+                    </div>
+                </div>
+            `;
+        }
+
+        /**
+         * 渲染可视化展示区域
+         * @returns {string} HTML内容
+         */
+        function renderVisualizationArea() {
+            return `
+                <div class="space-y-6">
+                    <!-- 诊断摘要卡片 -->
+                    <div id="summary-card" class="bento-card hidden">
+                        <div class="flex flex-wrap items-center justify-between gap-4">
+                            <div class="flex items-center gap-4">
+                                <div id="risk-badge" class="px-4 py-2 rounded-lg font-semibold">
+                                    风险等级
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-caption">置信度</p>
+                                    <p id="confidence-value" class="text-title font-bold">--%</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-caption">分析时间</p>
+                                <p id="analysis-time" class="text-body">--</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 电压曲线图 -->
+                    <div class="bento-card">
+                        <h4 class="text-title mb-4">电压-时间曲线</h4>
+                        <div id="voltage-chart" style="width: 100%; height: 300px;" role="img" aria-label="电压-时间曲线图"></div>
+                    </div>
+
+                    <!-- 温度热力图 -->
+                    <div class="bento-card">
+                        <h4 class="text-title mb-4">温度热力图</h4>
+                        <div id="temperature-chart" style="width: 100%; height: 350px;" role="img" aria-label="温度热力图"></div>
+                    </div>
+
+                    <!-- 风险雷达图 -->
+                    <div class="bento-card">
+                        <h4 class="text-title mb-4">风险评估</h4>
+                        <div id="radar-chart" style="width: 100%; height: 350px;" role="img" aria-label="风险雷达图"></div>
+                    </div>
+
+                    <!-- AI建议卡片 -->
+                    <div id="recommendations-card" class="bento-card hidden">
+                        <h4 class="text-title mb-4">
+                            <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
+                            AI建议
+                        </h4>
+                        <div id="recommendations-list" class="space-y-3">
+                            <!-- 建议列表将动态插入 -->
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        /**
+         * 设置拖拽上传功能
+         */
+        function setupDragDrop() {
+            const dropzone = document.getElementById('upload-dropzone');
+            const fileInput = document.getElementById('file-input');
+            const selectFileBtn = document.getElementById('select-file-btn');
+            const loadExampleBtn = document.getElementById('load-example-btn');
+
+            if (!dropzone) return;
+
+            // 拖拽事件处理
+            dropzone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropzone.classList.add('border-blue-500', 'bg-blue-50');
+            });
+
+            dropzone.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                dropzone.classList.remove('border-blue-500', 'bg-blue-50');
+            });
+
+            dropzone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropzone.classList.remove('border-blue-500', 'bg-blue-50');
+
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFileUpload(files[0]);
+                }
+            });
+
+            // 文件选择按钮
+            if (selectFileBtn) {
+                selectFileBtn.addEventListener('click', () => {
+                    fileInput.click();
+                });
+            }
+
+            // 文件输入变化
+            if (fileInput) {
+                fileInput.addEventListener('change', (e) => {
+                    if (e.target.files.length > 0) {
+                        handleFileUpload(e.target.files[0]);
+                    }
+                });
+            }
+
+            // 加载示例数据按钮
+            if (loadExampleBtn) {
+                loadExampleBtn.addEventListener('click', loadExampleData);
+            }
+        }
+
+        /**
+         * 处理文件上传
+         * @param {File} file - 上传的文件
+         */
+        function handleFileUpload(file) {
+            const uploadStatus = document.getElementById('upload-status');
+            const uploadProgress = document.getElementById('upload-progress');
+            const uploadPercentage = document.getElementById('upload-percentage');
+            const uploadFilename = document.getElementById('upload-filename');
+
+            // 显示上传状态
+            uploadStatus.classList.remove('hidden');
+            uploadFilename.textContent = file.name;
+
+            // 模拟上传进度
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 10;
+                uploadProgress.style.width = progress + '%';
+                uploadPercentage.textContent = progress + '%';
+
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    // 加载示例数据（实际应用中应解析CSV）
+                    setTimeout(() => {
+                        loadExampleData();
+                    }, 500);
+                }
+            }, 200);
+        }
+
+        /**
+         * 加载示例数据并渲染图表
+         */
+        function loadExampleData() {
+            // 显示诊断摘要
+            renderSummaryCard(mockAnalysisData.summary);
+
+            // 显示AI建议
+            renderRecommendationsCard(mockAnalysisData.recommendations);
+
+            // 初始化图表
+            initVoltageChart(mockAnalysisData.voltage);
+            initTemperatureChart(mockAnalysisData.temperature);
+            initRadarChart(mockAnalysisData.risk);
+        }
+
+        /**
+         * 渲染诊断摘要卡片
+         * @param {Object} summary - 诊断摘要数据
+         */
+        function renderSummaryCard(summary) {
+            const summaryCard = document.getElementById('summary-card');
+            const riskBadge = document.getElementById('risk-badge');
+            const confidenceValue = document.getElementById('confidence-value');
+            const analysisTime = document.getElementById('analysis-time');
+
+            if (!summaryCard) return;
+
+            summaryCard.classList.remove('hidden');
+
+            // 设置风险等级颜色
+            const riskColors = {
+                high: 'bg-red-100 text-red-700',
+                medium: 'bg-yellow-100 text-yellow-700',
+                low: 'bg-green-100 text-green-700'
+            };
+
+            const riskLabels = {
+                high: '高风险',
+                medium: '中风险',
+                low: '低风险'
+            };
+
+            riskBadge.className = `px-4 py-2 rounded-lg font-semibold ${riskColors[summary.riskLevel]}`;
+            riskBadge.textContent = riskLabels[summary.riskLevel];
+
+            confidenceValue.textContent = summary.confidence + '%';
+            analysisTime.textContent = new Date(summary.analysisTime).toLocaleString('zh-CN');
+        }
+
+        /**
+         * 渲染AI建议卡片
+         * @param {Array} recommendations - 建议列表
+         */
+        function renderRecommendationsCard(recommendations) {
+            const recommendationsCard = document.getElementById('recommendations-card');
+            const recommendationsList = document.getElementById('recommendations-list');
+
+            if (!recommendationsCard || !recommendationsList) return;
+
+            recommendationsCard.classList.remove('hidden');
+
+            const priorityColors = {
+                high: 'border-red-400 bg-red-50',
+                medium: 'border-yellow-400 bg-yellow-50',
+                low: 'border-green-400 bg-green-50'
+            };
+
+            const priorityLabels = {
+                high: '高',
+                medium: '中',
+                low: '低'
+            };
+
+            recommendationsList.innerHTML = recommendations.map(rec => `
+                <div class="flex items-start gap-3 p-3 border-l-4 rounded-r-lg ${priorityColors[rec.priority]}">
+                    <span class="px-2 py-1 text-xs font-semibold rounded bg-white">
+                        ${priorityLabels[rec.priority]}
+                    </span>
+                    <p class="text-body flex-1">${rec.text}</p>
+                </div>
+            `).join('');
+        }
+
+        /**
+         * 初始化电压曲线图
+         * @param {Array} data - 电压数据
+         */
+        function initVoltageChart(data) {
+            const chartDom = document.getElementById('voltage-chart');
+            if (!chartDom) return;
+
+            const myChart = echarts.init(chartDom);
+
+            const times = data.map(d => d.time);
+            const cellKeys = Object.keys(data[0]).filter(k => k !== 'time');
+
+            const series = cellKeys.map(cell => ({
+                name: cell,
+                type: 'line',
+                data: data.map(d => d[cell]),
+                smooth: true,
+                symbol: 'none',
+                lineStyle: {
+                    width: 2
+                }
+            }));
+
+            const option = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'cross'
+                    }
+                },
+                legend: {
+                    data: cellKeys,
+                    bottom: 0
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '15%',
+                    top: '10%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: times,
+                    name: '时间'
+                },
+                yAxis: {
+                    type: 'value',
+                    name: '电压 (V)',
+                    min: 3.4,
+                    max: 3.8
+                },
+                series: series
+            };
+
+            myChart.setOption(option);
+
+            // 响应式调整(使用debounce优化性能)
+            window.addEventListener('resize', debounce(() => {
+                myChart.resize();
+            }, 250));
+        }
+
+        /**
+         * 初始化温度热力图
+         * @param {Array} data - 温度数据
+         */
+        function initTemperatureChart(data) {
+            const chartDom = document.getElementById('temperature-chart');
+            if (!chartDom) return;
+
+            const myChart = echarts.init(chartDom);
+
+            const times = data.map(d => d.time);
+            const cellKeys = Object.keys(data[0]).filter(k => k !== 'time');
+
+            // 转换数据格式为热力图所需格式
+            const heatmapData = [];
+            data.forEach((d, i) => {
+                cellKeys.forEach((cell, j) => {
+                    heatmapData.push([j, i, d[cell]]);
+                });
+            });
+
+            const option = {
+                tooltip: {
+                    position: 'top',
+                    formatter: function(params) {
+                        return `电池${cellKeys[params.data[0]]}<br/>时间: ${times[params.data[1]]}<br/>温度: ${params.data[2]}°C`;
+                    }
+                },
+                grid: {
+                    left: '10%',
+                    right: '5%',
+                    bottom: '10%',
+                    top: '10%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: cellKeys,
+                    name: '电池编号',
+                    splitArea: {
+                        show: true
+                    }
+                },
+                yAxis: {
+                    type: 'category',
+                    data: times,
+                    name: '时间',
+                    splitArea: {
+                        show: true
+                    }
+                },
+                visualMap: {
+                    min: 20,
+                    max: 35,
+                    calculable: true,
+                    orient: 'horizontal',
+                    left: 'center',
+                    bottom: '0%',
+                    inRange: {
+                        color: ['#50a3ba', '#eac736', '#d94e5d']
+                    },
+                    text: ['高温', '低温']
+                },
+                series: [{
+                    type: 'heatmap',
+                    data: heatmapData,
+                    label: {
+                        show: false
+                    },
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }]
+            };
+
+            myChart.setOption(option);
+
+            // 响应式调整(使用debounce优化性能)
+            window.addEventListener('resize', debounce(() => {
+                myChart.resize();
+            }, 250));
+        }
+
+        /**
+         * 初始化风险雷达图
+         * @param {Object} risk - 风险数据
+         */
+        function initRadarChart(risk) {
+            const chartDom = document.getElementById('radar-chart');
+            if (!chartDom) return;
+
+            const myChart = echarts.init(chartDom);
+
+            const option = {
+                tooltip: {},
+                legend: {
+                    data: ['风险评估'],
+                    bottom: 0
+                },
+                radar: {
+                    indicator: [
+                        { name: '内短路风险', max: 100 },
+                        { name: '析锂风险', max: 100 },
+                        { name: '健康状态', max: 100 },
+                        { name: '安全熵', max: 100 },
+                        { name: '衰减速率', max: 100 }
+                    ],
+                    radius: '65%',
+                    splitNumber: 5,
+                    name: {
+                        textStyle: {
+                            fontSize: 14
+                        }
+                    }
+                },
+                series: [{
+                    name: '风险评估',
+                    type: 'radar',
+                    data: [{
+                        value: [
+                            risk.internalShort,
+                            risk.lithiumPlating,
+                            risk.health,
+                            risk.safetyEntropy,
+                            risk.degradation
+                        ],
+                        name: '风险评估',
+                        areaStyle: {
+                            opacity: 0.3
+                        },
+                        lineStyle: {
+                            width: 2
+                        }
+                    }]
+                }]
+            };
+
+            myChart.setOption(option);
+
+            // 响应式调整(使用debounce优化性能)
+            window.addEventListener('resize', debounce(() => {
+                myChart.resize();
+            }, 250));
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', initNavigation);
+    </script>
+</body>
+</html>

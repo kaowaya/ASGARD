@@ -5,6 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ASGARD - The Intelligent Battery Brain</title>
 
+    <!-- Tailwind CSS Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: "hsl(var(--border))",
+                        background: "hsl(var(--background))",
+                        foreground: "hsl(var(--foreground))",
+                        muted: {
+                            DEFAULT: "hsl(var(--muted))",
+                            foreground: "hsl(var(--muted-foreground))",
+                        },
+                    },
+                    spacing: {
+                        '18': '4.5rem',
+                        '72': '18rem',
+                        '84': '21rem',
+                        '96': '24rem',
+                    },
+                    borderRadius: {
+                        'xl': '1rem',
+                        '2xl': '1.5rem',
+                    },
+                }
+            }
+        }
+    </script>
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -15,7 +44,143 @@
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
 
     <style>
-        /* 自定义样式将在后续添加 */
+        :root {
+            --background: 0 0% 100%;
+            --foreground: 0 0% 9%;
+            --muted: 0 0% 96%;
+            --muted-foreground: 0 0% 45%;
+            --border: 0 0% 91%;
+        }
+
+        /* 响应式字体 */
+        .text-display {
+            font-size: clamp(2.25rem, 5vw, 5rem);
+            font-weight: 600;
+            line-height: 1.1;
+            letter-spacing: -0.025em;
+        }
+
+        .text-headline {
+            font-size: clamp(1.75rem, 4vw, 3rem);
+            font-weight: 600;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+        }
+
+        .text-title {
+            font-size: clamp(1.125rem, 2.5vw, 1.5rem);
+            font-weight: 600;
+            line-height: 1.3;
+            letter-spacing: -0.01em;
+        }
+
+        .text-body {
+            font-size: clamp(0.875rem, 2vw, 1.125rem);
+            font-weight: 400;
+            line-height: 1.5;
+        }
+
+        .text-caption {
+            font-size: clamp(0.75rem, 1.5vw, 0.875rem);
+            font-weight: 400;
+            line-height: 1.4;
+            color: hsl(var(--muted-foreground));
+        }
+
+        /* Bento卡片 */
+        .bento-card {
+            background: white;
+            border-radius: 1.25rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            transition: all 0.3s ease;
+        }
+
+        .bento-card:hover {
+            transform: translateY(-0.5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        /* 图标占位符 */
+        .icon-placeholder {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg,
+                hsl(var(--muted)) 0%,
+                hsl(var(--background)) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        /* Bento网格 */
+        .bento-grid {
+            display: grid;
+            gap: 1.5rem;
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .bento-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.25rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .bento-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 1.5rem;
+            }
+        }
+
+        /* 按钮样式 */
+        .btn-primary {
+            background: black;
+            color: white;
+            padding: 14px 32px;
+            border-radius: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-0.5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: black;
+            border: 1px solid hsl(var(--border));
+            padding: 14px 32px;
+            border-radius: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-secondary:hover {
+            background: hsl(var(--muted));
+        }
+
+        .text-link {
+            color: black;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s ease;
+        }
+
+        .text-link:hover {
+            opacity: 0.7;
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body class="bg-white text-black antialiased">

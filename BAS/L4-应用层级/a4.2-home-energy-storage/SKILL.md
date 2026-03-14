@@ -153,7 +153,7 @@ SOC_min_reserve: 最小备用SOC（通常20-30%）
 | solar_consumption | float | 光伏自用率 (%) |
 | backup_status | object | 备用状态 |
 
-## 使用场景
+## When to use this skill
 
 ### 场景1：日常经济运行
 - 目标：最小化电费

@@ -123,7 +123,7 @@ subject to:
 | battery_degradation | float | 电池老化增量 |
 | recommendations | object | 优化建议 |
 
-## 使用场景
+## When to use this skill
 
 ### 场景1：家用充电优化
 - 参数：7kW慢充，峰谷电价

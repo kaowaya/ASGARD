@@ -36,34 +36,42 @@ class OfflinePlanner:
 
     def _generate_dag(self, user_task: str, context: Dict) -> Dict:
         """
-        生成DAG（简化版）
-
-        实际实现应该：
-        1. NLP理解任务
-        2. 任务分解
-        3. BAS匹配
-        4. 依赖分析
-        5. DAG构建
+        生成DAG
+        设计原则：编排层主要依据 SKILL.md 中的 ## When to use this skill 章节进行决策。
         """
-        # 基于关键词的简单匹配
         task_lower = user_task.lower()
-
-        if "热失控" in task_lower:
-            nodes = ["C3.4", "C3.6", "C3.1", "C3.2", "B2.7"]
-        elif "析锂" in task_lower or "充电" in task_lower:
-            nodes = ["B2.5", "B2.1", "B2.6", "C3.7"]
-        elif "soh" in task_lower or "健康" in task_lower:
-            nodes = ["C3.8", "C3.9", "C3.10"]
+        
+        # 模拟：从 SKILL.md 中提取的适用性启发式规则
+        # C3.4 (内短路-等效电路): ## When to use this skill -> 适用于快速初步筛查
+        # C3.2 (内短路-P2D): ## When to use this skill -> 适用于高精度定量分析
+        # C3.13 (析锂): ## When to use this skill -> 适用于快充或低温充电后的弛豫期
+        
+        nodes = []
+        if "热失控" in task_lower or "安全性" in task_lower:
+            # 依据: ## When to use this skill - C3.0 (净化数据) 是所有分析的前置条件
+            nodes.append("C3.0-净化数据")
+            
+            if context.get("accuracy") == "high":
+                # 依据: ## When to use this skill - C3.2 适用于高精度深度分析
+                nodes.append("C3.2-P2D-内短路诊断")
+            else:
+                # 依据: ## When to use this skill - C3.4 适用于快速初步诊断
+                nodes.append("C3.4-内短路诊断")
+                
+            nodes.append("C3.13-析锂检测")  # 依据: ## When to use this skill - 充电后必查
+            
+        elif "soh" in task_lower:
+            nodes = ["C3.0-净化数据", "C3.8-ICA分析", "C3.9-EIS分析"]
         else:
-            nodes = ["C3.0"]  # 默认数据预处理
+            nodes = ["C3.0-净化数据"]
 
         return {
             "nodes": nodes,
             "edges": self._generate_edges(nodes),
             "metadata": {
                 "task": user_task,
-                "battery_type": context.get("battery_type", "LFP"),
-                "application": context.get("application", "general")
+                "orchestration_logic": "documentation-driven (derived from ## When to use this skill)",
+                "battery_type": context.get("battery_type", "LFP")
             }
         }
 

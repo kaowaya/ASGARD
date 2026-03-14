@@ -8,9 +8,9 @@ class OnlinePlanner:
     Online Planner for autonomous runtime workflow adaptation
 
     Responsibilities:
-    - Handle node failures (retry, replace, escalate)
+    - Handle node failures (retry, replace, escalate) based on ## When to use this skill
     - Optimize performance (parameter tuning, node replacement)
-    - Maintain accuracy (switch to higher-accuracy models)
+    - Maintain accuracy (switch to higher-accuracy models as referenced in Skill docs)
     - Escalate to Agent when unable to handle
 
     Design goal: 80% of issues handled autonomously in <50ms

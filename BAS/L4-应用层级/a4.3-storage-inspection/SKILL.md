@@ -185,7 +185,7 @@ def detect_audio_anomaly(audio):
 | inspection_route | array | 巡检路径 |
 | recommended_actions | array | 建议处理措施 |
 
-## 使用场景
+## When to use this skill
 
 ### 场景1：日常例行巡检
 - 频率：每日/每周

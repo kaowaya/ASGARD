@@ -1,10 +1,21 @@
-# ASGARD 产品Demo
+# ASGARD Product Demo
 
-## 运行方式
+[English] | [简体中文](README_CN.md)
 
-直接用浏览器打开 `index.html` 即可，无需服务器。
+> Frontend demonstration of ASGARD's core capabilities: Agent orchestration, BAS skills, and intelligent data analysis.
 
-## 技术栈
+## Quick Start
+
+Open `index.html` directly in your browser. No server required.
+
+## What You'll See
+
+- **Agent Orchestration**: Conversational AI interface for workflow design
+- **DAG Visualization**: Real-time workflow visualization
+- **BAS Skills Library**: 94+ battery analysis skills
+- **Data Analysis**: Interactive ECharts visualizations
+
+## Tech Stack
 
 - HTML5
 - JavaScript ES6+
@@ -12,17 +23,22 @@
 - ECharts (CDN)
 - Font Awesome (CDN)
 
-## 开发
+## Development
 
 ```bash
-# 使用Python启动简单HTTP服务器（可选）
+# Optional: Start HTTP server
 python -m http.server 8000
 ```
 
-## 浏览器兼容性
+## Browser Compatibility
 
 - Chrome/Edge 90+
 - Safari 14+
 - Firefox 88+
-- 移动端Safari iOS 14+
-- 移动端Chrome Android 10+
+- Mobile Safari iOS 14+
+- Mobile Chrome Android 10+
+
+## Documentation
+
+- [Implementation Plan](../docs/plans/2026-03-14-asgardo-demo-implementation.md)
+- [Design Document](../docs/plans/2026-03-14-asgardo-demo-design.md)

@@ -730,6 +730,15 @@
         // ==================== 案例展示系统 ====================
 
         /**
+         * Sanitize input for safe use in HTML attributes
+         * @param {string} str - Input string
+         * @returns {string} Sanitized string with escaped single quotes
+         */
+        function sanitizeHtml(str) {
+            return str.replace(/'/g, '&#39;');
+        }
+
+        /**
          * 渲染案例展示页面
          * @returns {string} HTML内容
          */
@@ -737,6 +746,7 @@
             if (casesState.view === 'detail') {
                 return renderCaseDetail();
             }
+            // Fallback for invalid state - return to list
             return renderCaseList();
         }
 
@@ -747,7 +757,7 @@
         function renderCaseList() {
             const caseCards = cases.map(caseItem => `
                 <div class="bento-card cursor-pointer hover:shadow-lg transition-shadow"
-                     onclick="showCaseDetail('${caseItem.id}')">
+                     onclick="showCaseDetail('${sanitizeHtml(caseItem.id)}')">
                     <div class="flex items-start justify-between mb-4">
                         <span class="text-4xl">${caseItem.icon}</span>
                         <span class="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded">${caseItem.industry}</span>

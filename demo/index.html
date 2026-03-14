@@ -587,6 +587,8 @@
             } else if (skillsState.view === 'tier-skills') {
                 return renderTierSkills();
             }
+            // Fallback for invalid state - return to overview
+            return renderTiersOverview();
         }
 
         /**

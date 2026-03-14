@@ -406,6 +406,14 @@
         };
 
         /**
+         * 案例展示页面状态管理
+         */
+        const casesState = {
+            view: 'list', // 'list' | 'detail'
+            selectedCase: null
+        };
+
+        /**
          * 切换Tab
          * @param {string} tabId - Tab ID
          */
@@ -478,7 +486,7 @@
                     tabContent.innerHTML = '<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12"><div class="text-center"><h2 class="text-3xl font-bold mb-4">分析</h2><p class="text-gray-600">开发中...</p></div></div>';
                     break;
                 case 'cases':
-                    tabContent.innerHTML = '<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12"><div class="text-center"><h2 class="text-3xl font-bold mb-4">案例</h2><p class="text-gray-600">开发中...</p></div></div>';
+                    tabContent.innerHTML = renderCasesPage();
                     break;
                 default:
                     tabContent.innerHTML = '<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12"><div class="text-center"><h2 class="text-3xl font-bold mb-4">404</h2><p class="text-gray-600">页面未找到</p></div></div>';
@@ -717,6 +725,180 @@
             skillsState.view = 'tiers';
             skillsState.selectedTier = null;
             renderTabContent('skills');
+        }
+
+        // ==================== 案例展示系统 ====================
+
+        /**
+         * 渲染案例展示页面
+         * @returns {string} HTML内容
+         */
+        function renderCasesPage() {
+            if (casesState.view === 'detail') {
+                return renderCaseDetail();
+            }
+            return renderCaseList();
+        }
+
+        /**
+         * 渲染案例列表视图
+         * @returns {string} HTML内容
+         */
+        function renderCaseList() {
+            const caseCards = cases.map(caseItem => `
+                <div class="bento-card cursor-pointer hover:shadow-lg transition-shadow"
+                     onclick="showCaseDetail('${caseItem.id}')">
+                    <div class="flex items-start justify-between mb-4">
+                        <span class="text-4xl">${caseItem.icon}</span>
+                        <span class="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded">${caseItem.industry}</span>
+                    </div>
+                    <h3 class="text-title mb-3">${caseItem.name}</h3>
+                    <p class="text-caption text-gray-500 mb-4">${caseItem.date}</p>
+
+                    <div class="space-y-2 mb-4">
+                        ${caseItem.results.slice(0, 2).map(result => `
+                            <div class="flex items-start">
+                                <span class="text-gray-400 mr-2">•</span>
+                                <span class="text-caption text-gray-700">${result}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div class="pt-4 border-t border-gray-100">
+                        <p class="text-caption font-medium text-black">${caseItem.roi}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            return `
+                <section class="bg-white">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+                        <div class="mb-12">
+                            <h1 class="text-display mb-4">成功案例</h1>
+                            <p class="text-body text-gray-600 max-w-2xl">
+                                ASGARD已成功应用于多个工商业储能和电动汽车项目，
+                                为客户提供精准的电池诊断和优化建议。
+                            </p>
+                        </div>
+
+                        <div class="bento-grid">
+                            ${caseCards}
+                        </div>
+                    </div>
+                </section>
+            `;
+        }
+
+        /**
+         * 渲染案例详情视图
+         * @returns {string} HTML内容
+         */
+        function renderCaseDetail() {
+            const caseItem = cases.find(c => c.id === casesState.selectedCase);
+            if (!caseItem) {
+                return renderCaseList();
+            }
+
+            return `
+                <section class="bg-white">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+                        <button onclick="backToCaseList()"
+                                class="mb-8 flex items-center text-gray-600 hover:text-black transition-colors">
+                            <i class="fas fa-arrow-left mr-2"></i>
+                            <span>返回案例列表</span>
+                        </button>
+
+                        <div class="max-w-4xl">
+                            <!-- 案例头部 -->
+                            <div class="mb-12">
+                                <div class="flex items-center gap-4 mb-4">
+                                    <span class="text-5xl">${caseItem.icon}</span>
+                                    <div>
+                                        <h1 class="text-display mb-2">${caseItem.name}</h1>
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded">${caseItem.industry}</span>
+                                            <span class="text-caption text-gray-500">${caseItem.date}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 项目背景 -->
+                            <div class="mb-12">
+                                <h2 class="text-title mb-4">项目背景</h2>
+                                <p class="text-body text-gray-700">${caseItem.description}</p>
+                            </div>
+
+                            <!-- 解决方案 -->
+                            <div class="mb-12">
+                                <h2 class="text-title mb-4">解决方案</h2>
+                                <div class="space-y-3">
+                                    ${caseItem.results.map(result => `
+                                        <div class="flex items-start">
+                                            <i class="fas fa-check-circle text-green-500 mr-3 mt-1"></i>
+                                            <span class="text-body text-gray-700">${result}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+
+                            <!-- 实施效果 -->
+                            <div class="mb-12">
+                                <h2 class="text-title mb-4">实施效果</h2>
+                                <div class="bg-gray-50 rounded-xl p-6">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-caption text-gray-500 mb-1">投资回报</p>
+                                            <p class="text-h3 font-bold text-black">${caseItem.roi}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-caption text-gray-500 mb-1">实施时间</p>
+                                            <p class="text-h3 font-bold text-black">${caseItem.date}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 客户评价 -->
+                            <div class="mb-12">
+                                <h2 class="text-title mb-4">客户评价</h2>
+                                <div class="bg-blue-50 rounded-xl p-6">
+                                    <p class="text-body text-gray-700 italic">
+                                        "客户对ASGARD的诊断准确性和响应速度非常满意"
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- 操作按钮 -->
+                            <div class="flex gap-4">
+                                <button onclick="alert('PDF下载功能开发中...')"
+                                        class="btn-primary">
+                                    <i class="fas fa-file-pdf mr-2"></i>下载PDF报告
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            `;
+        }
+
+        /**
+         * 显示案例详情
+         * @param {string} caseId - 案例ID
+         */
+        function showCaseDetail(caseId) {
+            casesState.view = 'detail';
+            casesState.selectedCase = caseId;
+            renderTabContent('cases');
+        }
+
+        /**
+         * 返回案例列表
+         */
+        function backToCaseList() {
+            casesState.view = 'list';
+            casesState.selectedCase = null;
+            renderTabContent('cases');
         }
 
         // ==================== Agent编排系统 ====================

@@ -398,6 +398,14 @@
         let currentTab = 'home';
 
         /**
+         * 技能库页面状态管理
+         */
+        const skillsState = {
+            view: 'tiers', // 'tiers' | 'tier-skills'
+            selectedTier: null
+        };
+
+        /**
          * 切换Tab
          * @param {string} tabId - Tab ID
          */
@@ -460,7 +468,7 @@
                     tabContent.innerHTML = renderHomePage();
                     break;
                 case 'skills':
-                    tabContent.innerHTML = '<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12"><div class="text-center"><h2 class="text-3xl font-bold mb-4">技能库</h2><p class="text-gray-600">开发中...</p></div></div>';
+                    tabContent.innerHTML = renderSkillsPage();
                     break;
                 case 'planner':
                     tabContent.innerHTML = renderPlannerPage();
@@ -565,6 +573,148 @@
 
             // 初始化首页内容
             renderTabContent('home');
+        }
+
+        // ==================== 技能库展示系统 ====================
+
+        /**
+         * 渲染技能库页面
+         * @returns {string} HTML内容
+         */
+        function renderSkillsPage() {
+            if (skillsState.view === 'tiers') {
+                return renderTiersOverview();
+            } else if (skillsState.view === 'tier-skills') {
+                return renderTierSkills();
+            }
+        }
+
+        /**
+         * 渲染层级概览
+         * @returns {string} HTML内容
+         */
+        function renderTiersOverview() {
+            const tiersCards = basSkills.tiers.map(tier => `
+                <div class="bento-card cursor-pointer hover:shadow-lg transition-shadow" onclick="showTierSkills('${tier.id}')">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-2xl font-bold text-black">${tier.id}</span>
+                        <span class="text-sm text-gray-500">${tier.count} 个技能</span>
+                    </div>
+                    <h3 class="text-title mb-2">${tier.name}</h3>
+                    <p class="text-caption text-gray-600">${tier.description}</p>
+                    <div class="mt-4 flex items-center text-sm text-gray-500">
+                        <span>点击查看详情</span>
+                        <i class="fas fa-arrow-right ml-2"></i>
+                    </div>
+                </div>
+            `).join('');
+
+            return `
+                <section class="bg-white">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+                        <div class="text-center mb-16">
+                            <h1 class="text-display mb-6">BAS技能库</h1>
+                            <p class="text-headline mb-4">94+ 电池分析技能</p>
+                            <p class="text-body max-w-2xl mx-auto text-gray-600">
+                                基于本体论架构的分层技能体系<br>
+                                覆盖电池全生命周期分析场景
+                            </p>
+                        </div>
+                        <div class="bento-grid">
+                            ${tiersCards}
+                        </div>
+                    </div>
+                </section>
+            `;
+        }
+
+        /**
+         * 渲染特定层级的技能
+         * @returns {string} HTML内容
+         */
+        function renderTierSkills() {
+            const tier = basSkills.tiers.find(t => t.id === skillsState.selectedTier);
+            if (!tier) {
+                skillsState.view = 'tiers';
+                return renderTiersOverview();
+            }
+
+            const tierSkills = basSkills.skills.filter(skill => skill.tier === tier.id);
+
+            const skillCards = tierSkills.length > 0 ? tierSkills.map(skill => `
+                <div class="bento-card">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-lg font-bold text-black">${skill.id}</span>
+                        <span class="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded">${skill.tier}</span>
+                    </div>
+                    <h3 class="text-title mb-3">${skill.name}</h3>
+
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-xs text-gray-500 mb-1">使用场景</p>
+                            <p class="text-caption text-gray-700">${skill.whenToUse}</p>
+                        </div>
+
+                        <div class="flex gap-4">
+                            <div>
+                                <p class="text-xs text-gray-500 mb-1">算力要求</p>
+                                <p class="text-caption font-medium">${skill.compute}</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500 mb-1">电池类型</p>
+                                <p class="text-caption font-medium">${skill.batteryTypes.join(', ')}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('') : `
+                <div class="col-span-full text-center py-12">
+                    <p class="text-gray-500">该层级暂无技能示例</p>
+                </div>
+            `;
+
+            return `
+                <section class="bg-white">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+                        <button onclick="backToTiers()" class="mb-8 flex items-center text-gray-600 hover:text-black transition-colors">
+                            <i class="fas fa-arrow-left mr-2"></i>
+                            <span>返回层级概览</span>
+                        </button>
+
+                        <div class="mb-12">
+                            <div class="flex items-center gap-4 mb-4">
+                                <span class="text-3xl font-bold text-black">${tier.id}</span>
+                                <h1 class="text-display">${tier.name}</h1>
+                            </div>
+                            <p class="text-body text-gray-600 mb-2">${tier.description}</p>
+                            <p class="text-caption text-gray-500">共 ${tier.count} 个技能 · 显示 ${tierSkills.length} 个示例</p>
+                        </div>
+
+                        <div class="bento-grid">
+                            ${skillCards}
+                        </div>
+                    </div>
+                </section>
+            `;
+        }
+
+        /**
+         * 显示特定层级的技能
+         * @param {string} tierId - 层级ID
+         */
+        function showTierSkills(tierId) {
+            skillsState.view = 'tier-skills';
+            skillsState.selectedTier = tierId;
+            renderTabContent('skills');
+        }
+
+        /**
+         * 返回层级概览
+         */
+        function backToTiers() {
+            skillsState.view = 'tiers';
+            skillsState.selectedTier = null;
+            renderTabContent('skills');
         }
 
         // ==================== Agent编排系统 ====================

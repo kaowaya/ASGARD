@@ -55,5 +55,8 @@ temp/
 # Claude Code
 .claude/
 
+# Git Worktrees
+.worktrees/
+
 # Resource files
 资源/

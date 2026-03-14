@@ -463,7 +463,8 @@
                     tabContent.innerHTML = '<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12"><div class="text-center"><h2 class="text-3xl font-bold mb-4">技能库</h2><p class="text-gray-600">开发中...</p></div></div>';
                     break;
                 case 'planner':
-                    tabContent.innerHTML = '<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12"><div class="text-center"><h2 class="text-3xl font-bold mb-4">Agent编排</h2><p class="text-gray-600">开发中...</p></div></div>';
+                    tabContent.innerHTML = renderPlannerPage();
+                    setTimeout(initAgentChat, 100);
                     break;
                 case 'analysis':
                     tabContent.innerHTML = '<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12"><div class="text-center"><h2 class="text-3xl font-bold mb-4">分析</h2><p class="text-gray-600">开发中...</p></div></div>';
@@ -564,6 +565,760 @@
 
             // 初始化首页内容
             renderTabContent('home');
+        }
+
+        // ==================== Agent编排系统 ====================
+
+        /**
+         * Agent状态管理
+         */
+        const agentState = {
+            messages: [],
+            workflow: null,
+            isProcessing: false,
+            currentDAGChart: null
+        };
+
+        /**
+         * 示例需求
+         */
+        const examplePrompts = [
+            {
+                title: "内短路诊断",
+                prompt: "我的储能站有3个电池簇最近电压异常，可能存在内短路风险，帮我诊断一下"
+            },
+            {
+                title: "析锂检测",
+                prompt: "昨晚快速充电后，部分电池包静置电压恢复较慢，是否有析锂风险？"
+            },
+            {
+                title: "安全评估",
+                prompt: "我想全面评估一下整个储能系统的安全状态，生成一份报告"
+            },
+            {
+                title: "SOH分析",
+                prompt: "这批电池运行了2年，帮我分析一下健康状态和剩余寿命"
+            }
+        ];
+
+        /**
+         * 渲染Agent编排页面
+         * @returns {string} HTML内容
+         */
+        function renderPlannerPage() {
+            return `
+                <div class="h-screen flex flex-col bg-gray-50">
+                    <!-- 页面标题栏 -->
+                    <div class="bg-white border-b border-gray-200 px-6 py-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h2 class="text-2xl font-bold text-black">Agent智能编排</h2>
+                                <p class="text-sm text-gray-600 mt-1">描述您的需求，AI将自动编排BAS技能生成分析方案</p>
+                            </div>
+                            <button onclick="loadExamplePrompt()" class="btn-secondary text-sm">
+                                <i class="fas fa-magic mr-2"></i>加载示例需求
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 主内容区 - 左右分栏 -->
+                    <div class="flex-1 flex overflow-hidden">
+                        <!-- 左栏：对话区 (45%) -->
+                        <div class="w-full lg:w-[45%] flex flex-col border-r border-gray-200 bg-white">
+                            <!-- 对话历史 -->
+                            <div id="chat-history" class="flex-1 overflow-y-auto px-6 py-4 space-y-6">
+                                <!-- 欢迎消息 -->
+                                <div class="flex items-start space-x-3">
+                                    <div class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-robot text-white text-sm"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="bg-gray-50 rounded-2xl rounded-tl-sm px-4 py-3">
+                                            <p class="text-sm text-gray-800">
+                                                您好！我是ASGARD智能编排助手。我可以帮您：
+                                            </p>
+                                            <ul class="text-sm text-gray-600 mt-2 space-y-1">
+                                                <li>• 诊断电池安全风险（内短路、析锂等）</li>
+                                                <li>• 评估电池健康状态（SOH、RUL）</li>
+                                                <li>• 生成分析报告和优化建议</li>
+                                            </ul>
+                                            <p class="text-sm text-gray-800 mt-3">
+                                                请描述您的需求，我会自动匹配最合适的BAS技能进行分析。
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 输入区 -->
+                            <div class="border-t border-gray-200 p-4 bg-white">
+                                <div class="flex items-end space-x-3">
+                                    <textarea
+                                        id="user-input"
+                                        class="flex-1 resize-none rounded-xl border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        rows="2"
+                                        placeholder="描述您的电池分析需求..."
+                                        onkeydown="handleInputKeydown(event)"
+                                    ></textarea>
+                                    <button
+                                        id="send-button"
+                                        onclick="sendMessage()"
+                                        class="flex-shrink-0 bg-black text-white px-5 py-3 rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 右栏：DAG可视化 (55%) -->
+                        <div class="hidden lg:flex flex-col w-[55%] bg-gray-50">
+                            <!-- DAG标题栏 -->
+                            <div class="bg-white border-b border-gray-200 px-6 py-4">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-lg font-semibold text-black">
+                                        <i class="fas fa-project-diagram mr-2 text-blue-500"></i>
+                                        工作流可视化
+                                    </h3>
+                                    <div id="dag-status" class="text-sm text-gray-500">
+                                        等待输入...
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- DAG容器 -->
+                            <div class="flex-1 p-6">
+                                <div id="dag-container" class="w-full h-full bg-white rounded-xl border border-gray-200 flex items-center justify-center">
+                                    <div class="text-center text-gray-400">
+                                        <i class="fas fa-diagram-project text-6xl mb-4"></i>
+                                        <p class="text-lg">工作流将在此处生成</p>
+                                        <p class="text-sm mt-2">描述您的需求后，系统将自动编排BAS技能</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        /**
+         * 初始化Agent聊天
+         */
+        function initAgentChat() {
+            const userInput = document.getElementById('user-input');
+            if (userInput) {
+                userInput.focus();
+            }
+        }
+
+        /**
+         * 处理输入框键盘事件
+         * @param {KeyboardEvent} event
+         */
+        function handleInputKeydown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        /**
+         * 发送消息
+         */
+        function sendMessage() {
+            const userInput = document.getElementById('user-input');
+            const sendButton = document.getElementById('send-button');
+            const message = userInput.value.trim();
+
+            if (!message || agentState.isProcessing) {
+                return;
+            }
+
+            // 添加用户消息
+            addMessage('user', message);
+
+            // 清空输入框
+            userInput.value = '';
+
+            // 禁用发送按钮
+            sendButton.disabled = true;
+
+            // 开始处理
+            agentState.isProcessing = true;
+
+            // 模拟Agent响应
+            setTimeout(() => {
+                simulateAgentResponse(message);
+            }, 500);
+        }
+
+        /**
+         * 添加消息到历史
+         * @param {string} role - 'user' | 'agent'
+         * @param {string} content - 消息内容
+         * @param {Object} metadata - 元数据（如workflow、reasoning）
+         */
+        function addMessage(role, content, metadata = {}) {
+            const chatHistory = document.getElementById('chat-history');
+            const messageObj = { role, content, ...metadata };
+            agentState.messages.push(messageObj);
+
+            const messageHtml = role === 'user'
+                ? renderUserMessage(content)
+                : renderAgentMessage(content, metadata);
+
+            chatHistory.insertAdjacentHTML('beforeend', messageHtml);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+
+        /**
+         * 渲染用户消息
+         * @param {string} content
+         * @returns {string} HTML
+         */
+        function renderUserMessage(content) {
+            return `
+                <div class="flex items-start space-x-3 justify-end">
+                    <div class="max-w-[80%]">
+                        <div class="bg-black text-white rounded-2xl rounded-tr-sm px-4 py-3">
+                            <p class="text-sm">${escapeHtml(content)}</p>
+                        </div>
+                    </div>
+                    <div class="flex-shrink-0 w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-gray-600 text-sm"></i>
+                    </div>
+                </div>
+            `;
+        }
+
+        /**
+         * 渲染Agent消息
+         * @param {string} content
+         * @param {Object} metadata
+         * @returns {string} HTML
+         */
+        function renderAgentMessage(content, metadata = {}) {
+            const hasReasoning = metadata.reasoning || metadata.workflow;
+            const reasoningHtml = hasReasoning ? `
+                <div class="mt-3 border-t border-gray-200 pt-3">
+                    <button
+                        onclick="toggleReasoning(this)"
+                        class="flex items-center text-xs text-gray-600 hover:text-black transition-colors"
+                    >
+                        <i class="fas fa-chevron-right mr-2 transition-transform"></i>
+                        <span>查看推理过程</span>
+                    </button>
+                    <div class="reasoning-content hidden mt-3 space-y-3">
+                        ${metadata.reasoning ? `
+                            <div class="bg-blue-50 rounded-lg px-3 py-2">
+                                <p class="text-xs font-semibold text-blue-900 mb-2">🧠 思考过程</p>
+                                <p class="text-xs text-blue-800 whitespace-pre-wrap">${escapeHtml(metadata.reasoning)}</p>
+                            </div>
+                        ` : ''}
+                        ${metadata.workflow ? `
+                            <div class="bg-green-50 rounded-lg px-3 py-2">
+                                <p class="text-xs font-semibold text-green-900 mb-2">⚡ 工作流编排</p>
+                                <p class="text-xs text-green-800">${escapeHtml(metadata.workflow)}</p>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            ` : '';
+
+            return `
+                <div class="flex items-start space-x-3">
+                    <div class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                        <i class="fas fa-robot text-white text-sm"></i>
+                    </div>
+                    <div class="flex-1 max-w-[85%]">
+                        <div class="bg-gray-50 rounded-2xl rounded-tl-sm px-4 py-3">
+                            <div class="message-content text-sm text-gray-800"></div>
+                            ${reasoningHtml}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        /**
+         * 切换推理过程显示
+         * @param {HTMLElement} button
+         */
+        function toggleReasoning(button) {
+            const content = button.nextElementSibling;
+            const icon = button.querySelector('i');
+            const text = button.querySelector('span');
+
+            content.classList.toggle('hidden');
+            icon.classList.toggle('rotate-90');
+            text.textContent = content.classList.contains('hidden') ? '查看推理过程' : '隐藏推理过程';
+        }
+
+        /**
+         * 模拟Agent响应
+         * @param {string} userMessage
+         */
+        async function simulateAgentResponse(userMessage) {
+            // 分析用户意图
+            const intent = analyzeIntent(userMessage);
+
+            // 生成思考过程
+            const reasoning = generateReasoning(userMessage, intent);
+
+            // 生成工作流描述
+            const workflow = generateWorkflow(intent);
+
+            // 生成响应文本
+            const response = generateResponse(userMessage, intent);
+
+            // 添加Agent消息（先显示思考过程）
+            const chatHistory = document.getElementById('chat-history');
+            const messageId = 'agent-' + Date.now();
+            const messageHtml = renderAgentMessage('', { reasoning, workflow });
+            chatHistory.insertAdjacentHTML('beforeend', messageHtml);
+
+            // 找到消息内容容器并实现打字机效果
+            const messageContainer = chatHistory.lastElementChild;
+            const contentDiv = messageContainer.querySelector('.message-content');
+
+            // 打字机效果
+            await typeWriter(contentDiv, response);
+
+            // 生成DAG
+            await generateMockDAG(intent);
+
+            // 更新状态
+            updateDAGStatus('分析完成');
+
+            // 恢复发送按钮
+            const sendButton = document.getElementById('send-button');
+            sendButton.disabled = false;
+            agentState.isProcessing = false;
+
+            // 滚动到底部
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+
+        /**
+         * 分析用户意图
+         * @param {string} message
+         * @returns {Object} 意图对象
+         */
+        function analyzeIntent(message) {
+            const lowerMsg = message.toLowerCase();
+
+            if (lowerMsg.includes('内短路') || lowerMsg.includes('短路')) {
+                return {
+                    type: 'internal_short',
+                    skills: ['C3.1', 'C3.2', 'C3.0'],
+                    priority: 'high',
+                    description: '内短路诊断'
+                };
+            } else if (lowerMsg.includes('析锂') || lowerMsg.includes('锂析出')) {
+                return {
+                    type: 'lithium_plating',
+                    skills: ['C3.13', 'C3.0'],
+                    priority: 'high',
+                    description: '析锂检测'
+                };
+            } else if (lowerMsg.includes('安全') || lowerMsg.includes('评估') || lowerMsg.includes('报告')) {
+                return {
+                    type: 'safety_assessment',
+                    skills: ['C3.5', 'C3.1', 'C3.13', 'C3.0'],
+                    priority: 'medium',
+                    description: '安全评估'
+                };
+            } else if (lowerMsg.includes('soh') || lowerMsg.includes('健康') || lowerMsg.includes('寿命')) {
+                return {
+                    type: 'soh_analysis',
+                    skills: ['C3.5', 'C3.0'],
+                    priority: 'medium',
+                    description: '健康状态分析'
+                };
+            } else {
+                return {
+                    type: 'general',
+                    skills: ['C3.0', 'C3.5'],
+                    priority: 'low',
+                    description: '综合分析'
+                };
+            }
+        }
+
+        /**
+         * 生成思考过程
+         * @param {string} userMessage
+         * @param {Object} intent
+         * @returns {string}
+         */
+        function generateReasoning(userMessage, intent) {
+            return `1. 分析用户需求：${userMessage}
+
+2. 识别场景特征：
+   - 问题类型：${intent.description}
+   - 优先级：${intent.priority}
+   - 电池类型：LFP (假设)
+
+3. 匹配BAS技能：
+   ✓ C3.0 - 数据净化（前置处理）
+   ✓ ${intent.skills.filter(s => s !== 'C3.0').join(' → ')}
+
+4. 生成执行计划：
+   步骤1：数据清洗和去噪
+   步骤2：加载对应诊断模型
+   步骤3：计算安全指标
+   步骤4：生成分析报告
+
+5. 预计响应时间：< 2秒`;
+        }
+
+        /**
+         * 生成工作流描述
+         * @param {Object} intent
+         * @returns {string}
+         */
+        function generateWorkflow(intent) {
+            const skillNames = {
+                'C3.0': '数据净化',
+                'C3.1': '内短路诊断-SOS',
+                'C3.2': '内短路诊断-P2D',
+                'C3.13': '析锂检测',
+                'C3.5': '安全熵评估'
+            };
+
+            return intent.skills.map(skillId => {
+                return `• ${skillId}: ${skillNames[skillId] || '未知技能'}`;
+            }).join('\n');
+        }
+
+        /**
+         * 生成响应文本
+         * @param {string} userMessage
+         * @param {Object} intent
+         * @returns {string}
+         */
+        function generateResponse(userMessage, intent) {
+            const responses = {
+                'internal_short': `我已经理解您的需求。针对**内短路诊断**，我将为您执行以下分析：
+
+**分析方案：**
+1. 首先使用【C3.0 数据净化】清洗异常数据
+2. 应用【C3.1 内短路诊断-SOS】进行快速筛查
+3. 如需更高精度，可启用【C3.2 内短路诊断-P2D】深度分析
+
+**预期结果：**
+- 识别潜在内短路电池单体
+- 计算内短路严重程度
+- 提供安全预警建议
+
+右侧工作流图已生成，您可以查看完整的技能编排流程。`,
+                'lithium_plating': `收到！针对**析锂检测**需求，我将为您：
+
+**检测方案：**
+1. 【C3.0 数据净化】处理充电数据
+2. 【C3.13 析锂检测】分析静置电压恢复特性
+3. 评估析锂风险等级
+
+**关键指标：**
+- 析锂程度（轻微/中度/严重）
+- 受影响电池单体编号
+- 充电策略调整建议
+
+工作流已在右侧可视化展示。`,
+                'safety_assessment': `好的，我将为您生成**全面的安全评估报告**：
+
+**评估维度：**
+1. 数据质量检查（C3.0）
+2. 内短路风险筛查（C3.1）
+3. 析锂风险检测（C3.13）
+4. 安全熵综合评估（C3.5）
+
+**报告包含：**
+- 整体安全评分
+- 风险点定位
+- 趋势分析
+- 维护建议
+
+完整工作流已生成，请查看右侧DAG图。`,
+                'soh_analysis': `我将为您分析**电池健康状态**：
+
+**分析方案：**
+1. 数据预处理（C3.0）
+2. SOH估算
+3. 安全熵评估（C3.5）
+4. 衰减趋势分析
+
+**输出结果：**
+- 当前SOH值
+- 剩余使用寿命预测
+- 衰减速率评估
+- 延寿建议
+
+工作流已生成！`,
+                'general': `我理解您的需求。让我先对数据进行综合分析：
+
+**分析计划：**
+1. 数据清洗和特征提取
+2. 多维度健康评估
+3. 异常检测
+
+我会根据数据特征动态调整分析方案。工作流已在右侧展示。`
+            };
+
+            return responses[intent.type] || responses['general'];
+        }
+
+        /**
+         * 打字机效果
+         * @param {HTMLElement} element
+         * @param {string} text
+         * @param {number} speed
+         */
+        async function typeWriter(element, text, speed = 20) {
+            const formattedText = text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\n/g, '<br>');
+
+            element.innerHTML = '';
+            let i = 0;
+
+            return new Promise(resolve => {
+                const timer = setInterval(() => {
+                    if (i < formattedText.length) {
+                        // 处理HTML标签
+                        if (formattedText.charAt(i) === '<') {
+                            const closeIndex = formattedText.indexOf('>', i);
+                            element.innerHTML += formattedText.substring(i, closeIndex + 1);
+                            i = closeIndex + 1;
+                        } else {
+                            element.innerHTML += formattedText.charAt(i);
+                            i++;
+                        }
+                    } else {
+                        clearInterval(timer);
+                        resolve();
+                    }
+                }, speed);
+            });
+        }
+
+        /**
+         * 生成模拟DAG
+         * @param {Object} intent
+         */
+        async function generateMockDAG(intent) {
+            const dagContainer = document.getElementById('dag-container');
+            const dagStatus = document.getElementById('dag-status');
+
+            if (!dagContainer) return;
+
+            // 更新状态
+            updateDAGStatus('正在生成工作流...');
+
+            // 清空容器
+            dagContainer.innerHTML = '<div id="dag-chart" style="width:100%;height:100%;"></div>';
+
+            // 等待DOM更新
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            // 初始化ECharts
+            const chart = echarts.init(document.getElementById('dag-chart'));
+            agentState.currentDAGChart = chart;
+
+            // 生成DAG数据
+            const dagData = generateDAGData(intent);
+
+            // 配置项
+            const option = {
+                tooltip: {
+                    trigger: 'item',
+                    formatter: params => {
+                        if (params.dataType === 'node') {
+                            const node = params.data;
+                            return `
+                                <div style="padding: 8px;">
+                                    <strong>${node.name}</strong><br/>
+                                    <span style="color: #666; font-size: 12px;">${node.description || ''}</span>
+                                </div>
+                            `;
+                        }
+                        return params.name;
+                    }
+                },
+                animationDurationUpdate: 1500,
+                animationEasingUpdate: 'quinticInOut',
+                series: [{
+                    type: 'graph',
+                    layout: 'none',
+                    symbolSize: 80,
+                    roam: true,
+                    label: {
+                        show: true,
+                        fontSize: 12,
+                        formatter: params => {
+                            // 简化节点名称显示
+                            const nameMap = {
+                                '数据输入': '输入',
+                                'C3.0': '净化',
+                                'C3.1': '内短路',
+                                'C3.2': 'P2D',
+                                'C3.13': '析锂',
+                                'C3.5': '安全熵',
+                                '分析报告': '报告'
+                            };
+                            return nameMap[params.name] || params.name;
+                        }
+                    },
+                    edgeSymbol: ['circle', 'arrow'],
+                    edgeSymbolSize: [4, 10],
+                    edgeLabel: {
+                        fontSize: 12
+                    },
+                    data: dagData.nodes,
+                    links: dagData.links,
+                    lineStyle: {
+                        opacity: 0.9,
+                        width: 2,
+                        curveness: 0
+                    },
+                    itemStyle: {
+                        borderColor: '#fff',
+                        borderWidth: 2,
+                        shadowBlur: 10,
+                        shadowColor: 'rgba(0, 0, 0, 0.3)'
+                    },
+                    emphasis: {
+                        lineStyle: {
+                            width: 4
+                        }
+                    }
+                }]
+            };
+
+            chart.setOption(option);
+
+            // 响应式调整
+            window.addEventListener('resize', () => {
+                chart.resize();
+            });
+
+            // 更新状态
+            updateDAGStatus('工作流已生成');
+        }
+
+        /**
+         * 生成DAG数据
+         * @param {Object} intent
+         * @returns {Object}
+         */
+        function generateDAGData(intent) {
+            const skillColors = {
+                '数据输入': '#94a3b8',
+                'C3.0': '#3b82f6',
+                'C3.1': '#ef4444',
+                'C3.2': '#f97316',
+                'C3.13': '#8b5cf6',
+                'C3.5': '#10b981',
+                '分析报告': '#06b6d4'
+            };
+
+            const skillDescriptions = {
+                '数据输入': '上传电池数据',
+                'C3.0': '数据清洗去噪',
+                'C3.1': '内短路SOS诊断',
+                'C3.2': 'P2D模型诊断',
+                'C3.13': '析锂风险检测',
+                'C3.5': '安全熵评估',
+                '分析报告': '生成分析报告'
+            };
+
+            // 根据意图生成不同的DAG
+            let nodes = [];
+            let links = [];
+
+            // 输入节点
+            nodes.push({
+                id: 'input',
+                name: '数据输入',
+                x: 100,
+                y: 300,
+                itemStyle: { color: skillColors['数据输入'] },
+                description: skillDescriptions['数据输入']
+            });
+
+            // 技能节点
+            const skillX = { 'C3.0': 300, 'C3.1': 500, 'C3.2': 500, 'C3.13': 500, 'C3.5': 700 };
+
+            intent.skills.forEach((skillId, index) => {
+                nodes.push({
+                    id: skillId,
+                    name: skillId,
+                    x: skillX[skillId] || 300 + index * 200,
+                    y: 300 + (index % 2 === 0 ? 100 : -100),
+                    itemStyle: { color: skillColors[skillId] },
+                    description: skillDescriptions[skillId]
+                });
+            });
+
+            // 输出节点
+            nodes.push({
+                id: 'output',
+                name: '分析报告',
+                x: 900,
+                y: 300,
+                itemStyle: { color: skillColors['分析报告'] },
+                description: skillDescriptions['分析报告']
+            });
+
+            // 连接关系
+            links.push({ source: 'input', target: 'C3.0' });
+
+            const mainSkill = intent.skills.find(s => s !== 'C3.0');
+            if (mainSkill) {
+                links.push({ source: 'C3.0', target: mainSkill });
+                links.push({ source: mainSkill, target: 'C3.5' });
+            }
+
+            links.push({ source: 'C3.5', target: 'output' });
+
+            return { nodes, links };
+        }
+
+        /**
+         * 更新DAG状态
+         * @param {string} status
+         */
+        function updateDAGStatus(status) {
+            const dagStatus = document.getElementById('dag-status');
+            if (dagStatus) {
+                dagStatus.textContent = status;
+            }
+        }
+
+        /**
+         * 加载示例需求
+         */
+        function loadExamplePrompt() {
+            const randomIndex = Math.floor(Math.random() * examplePrompts.length);
+            const example = examplePrompts[randomIndex];
+
+            const userInput = document.getElementById('user-input');
+            if (userInput) {
+                userInput.value = example.prompt;
+                userInput.focus();
+            }
+        }
+
+        /**
+         * HTML转义
+         * @param {string} text
+         * @returns {string}
+         */
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
 
         // 页面加载完成后初始化

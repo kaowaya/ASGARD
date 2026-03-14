@@ -191,6 +191,18 @@
     <main id="tab-content"></main>
 
     <script>
+        /**
+         * BAS技能数据结构
+         * @typedef {Object} BASBasicSkill
+         * @property {string} id - 技能ID (e.g., "C3.1")
+         * @property {string} name - 技能名称
+         * @property {string} tier - 所属层级
+         * @property {string} whenToUse - 使用场景
+         * @property {string} compute - 算力要求
+         * @property {string[]} batteryTypes - 适用电池类型
+         * @property {string} description - 技能描述
+         */
+
         // BAS技能数据（简化版，包含核心技能）
         const basSkills = {
             tiers: [
@@ -287,7 +299,7 @@
                 name: "皇岗储能场站",
                 industry: "工商业储能",
                 icon: "🏭",
-                date: "2025.12",
+                date: "2025-12",
                 results: [
                     "识别3个潜在内短路",
                     "析锂风险提前预警",
@@ -301,7 +313,7 @@
                 name: "某营运车辆Fleet",
                 industry: "电动汽车",
                 icon: "🚚",
-                date: "2025.10",
+                date: "2025-10",
                 results: [
                     "SOH估计误差<2%",
                     "剩余寿命预测准确率92%",

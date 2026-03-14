@@ -1297,7 +1297,8 @@
                     setTimeout(initAgentChat, 100);
                     break;
                 case 'analysis':
-                    tabContent.innerHTML = '<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12"><div class="text-center"><h2 class="text-3xl font-bold mb-4">分析</h2><p class="text-gray-600">开发中...</p></div></div>';
+                    tabContent.innerHTML = renderAnalysisPage();
+                    setTimeout(setupDragDrop, 100);
                     break;
                 case 'cases':
                     tabContent.innerHTML = renderCasesPage();
@@ -2872,6 +2873,567 @@
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
+        }
+
+        // ==================== 数据分析页面 ====================
+
+        /**
+         * Mock分析数据
+         * @type {Object}
+         */
+        const mockAnalysisData = {
+            voltage: [
+                { time: '00:00', cell1: 3.65, cell2: 3.64, cell3: 3.66, cell4: 3.63, cell5: 3.65, cell6: 3.64, cell7: 3.66, cell8: 3.65 },
+                { time: '01:00', cell1: 3.62, cell2: 3.61, cell3: 3.63, cell4: 3.60, cell5: 3.62, cell6: 3.61, cell7: 3.63, cell8: 3.62 },
+                { time: '02:00', cell1: 3.58, cell2: 3.57, cell3: 3.59, cell4: 3.56, cell5: 3.58, cell6: 3.57, cell7: 3.59, cell8: 3.58 },
+                { time: '03:00', cell1: 3.55, cell2: 3.54, cell3: 3.56, cell4: 3.53, cell5: 3.55, cell6: 3.54, cell7: 3.56, cell8: 3.55 },
+                { time: '04:00', cell1: 3.52, cell2: 3.51, cell3: 3.53, cell4: 3.50, cell5: 3.52, cell6: 3.51, cell7: 3.53, cell8: 3.52 },
+                { time: '05:00', cell1: 3.50, cell2: 3.49, cell3: 3.51, cell4: 3.48, cell5: 3.50, cell6: 3.49, cell7: 3.51, cell8: 3.50 },
+                { time: '06:00', cell1: 3.48, cell2: 3.47, cell3: 3.49, cell4: 3.46, cell5: 3.48, cell6: 3.47, cell7: 3.49, cell8: 3.48 },
+                { time: '07:00', cell1: 3.50, cell2: 3.49, cell3: 3.51, cell4: 3.48, cell5: 3.50, cell6: 3.49, cell7: 3.51, cell8: 3.50 },
+                { time: '08:00', cell1: 3.55, cell2: 3.54, cell3: 3.56, cell4: 3.53, cell5: 3.55, cell6: 3.54, cell7: 3.56, cell8: 3.55 },
+                { time: '09:00', cell1: 3.60, cell2: 3.59, cell3: 3.61, cell4: 3.58, cell5: 3.60, cell6: 3.59, cell7: 3.61, cell8: 3.60 },
+                { time: '10:00', cell1: 3.65, cell2: 3.64, cell3: 3.66, cell4: 3.63, cell5: 3.65, cell6: 3.64, cell7: 3.66, cell8: 3.65 },
+                { time: '11:00', cell1: 3.68, cell2: 3.67, cell3: 3.69, cell4: 3.66, cell5: 3.68, cell6: 3.67, cell7: 3.69, cell8: 3.68 }
+            ],
+            temperature: [
+                { time: '00:00', cell1: 25, cell2: 26, cell3: 24, cell4: 27, cell5: 25, cell6: 26, cell7: 24, cell8: 25 },
+                { time: '01:00', cell1: 26, cell2: 27, cell3: 25, cell4: 28, cell5: 26, cell6: 27, cell7: 25, cell8: 26 },
+                { time: '02:00', cell1: 27, cell2: 28, cell3: 26, cell4: 29, cell5: 27, cell6: 28, cell7: 26, cell8: 27 },
+                { time: '03:00', cell1: 28, cell2: 29, cell3: 27, cell4: 30, cell5: 28, cell6: 29, cell7: 27, cell8: 28 },
+                { time: '04:00', cell1: 29, cell2: 30, cell3: 28, cell4: 31, cell5: 29, cell6: 30, cell7: 28, cell8: 29 },
+                { time: '05:00', cell1: 30, cell2: 31, cell3: 29, cell4: 32, cell5: 30, cell6: 31, cell7: 29, cell8: 30 },
+                { time: '06:00', cell1: 31, cell2: 32, cell3: 30, cell4: 33, cell5: 31, cell6: 32, cell7: 30, cell8: 31 },
+                { time: '07:00', cell1: 30, cell2: 31, cell3: 29, cell4: 32, cell5: 30, cell6: 31, cell7: 29, cell8: 30 },
+                { time: '08:00', cell1: 29, cell2: 30, cell3: 28, cell4: 31, cell5: 29, cell6: 30, cell7: 28, cell8: 29 },
+                { time: '09:00', cell1: 28, cell2: 29, cell3: 27, cell4: 30, cell5: 28, cell6: 29, cell7: 27, cell8: 28 },
+                { time: '10:00', cell1: 27, cell2: 28, cell3: 26, cell4: 29, cell5: 27, cell6: 28, cell7: 26, cell8: 27 },
+                { time: '11:00', cell1: 26, cell2: 27, cell3: 25, cell4: 28, cell5: 26, cell6: 27, cell7: 25, cell8: 26 }
+            ],
+            risk: {
+                internalShort: 75,
+                lithiumPlating: 60,
+                health: 85,
+                safetyEntropy: 70,
+                degradation: 50
+            },
+            summary: {
+                riskLevel: 'medium',
+                confidence: 92,
+                analysisTime: new Date().toISOString()
+            },
+            recommendations: [
+                { priority: 'high', text: '检测到3号电池存在内短路风险，建议立即检查' },
+                { priority: 'medium', text: '建议降低充电功率至0.5C，以减少析锂风险' },
+                { priority: 'medium', text: '4号电池温度偏高，需关注散热系统' },
+                { priority: 'low', text: '定期监测电压一致性，保持均衡' }
+            ]
+        };
+
+        /**
+         * 渲染数据分析页面
+         * @returns {string} HTML内容
+         */
+        function renderAnalysisPage() {
+            return `
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <div class="flex flex-col lg:flex-row gap-6">
+                        <!-- 左栏：数据上传区 -->
+                        <div class="w-full lg:w-2/5">
+                            ${renderUploadArea()}
+                        </div>
+
+                        <!-- 右栏：可视化展示区 -->
+                        <div class="w-full lg:w-3/5">
+                            ${renderVisualizationArea()}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        /**
+         * 渲染数据上传区域
+         * @returns {string} HTML内容
+         */
+        function renderUploadArea() {
+            return `
+                <div class="bento-card h-full">
+                    <h3 class="text-title mb-6">数据上传</h3>
+
+                    <!-- 拖拽上传区 -->
+                    <div id="upload-dropzone"
+                         class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer transition-all duration-200 hover:border-blue-400 hover:bg-blue-50">
+                        <i class="fas fa-cloud-upload-alt text-5xl text-gray-400 mb-4"></i>
+                        <p class="text-body mb-2">拖拽CSV文件到此处</p>
+                        <p class="text-caption">或</p>
+                        <button id="select-file-btn" class="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                            选择文件
+                        </button>
+                        <input type="file" id="file-input" accept=".csv" class="hidden">
+                    </div>
+
+                    <!-- 操作按钮 -->
+                    <div class="mt-6 space-y-3">
+                        <button id="load-example-btn"
+                                class="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all shadow-md hover:shadow-lg">
+                            <i class="fas fa-database mr-2"></i>
+                            使用示例数据
+                        </button>
+                    </div>
+
+                    <!-- 上传状态 -->
+                    <div id="upload-status" class="mt-6 hidden">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-caption">上传进度</span>
+                            <span id="upload-percentage" class="text-caption">0%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div id="upload-progress" class="bg-blue-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                        <p id="upload-filename" class="text-caption mt-2 text-gray-600"></p>
+                    </div>
+                </div>
+            `;
+        }
+
+        /**
+         * 渲染可视化展示区域
+         * @returns {string} HTML内容
+         */
+        function renderVisualizationArea() {
+            return `
+                <div class="space-y-6">
+                    <!-- 诊断摘要卡片 -->
+                    <div id="summary-card" class="bento-card hidden">
+                        <div class="flex flex-wrap items-center justify-between gap-4">
+                            <div class="flex items-center gap-4">
+                                <div id="risk-badge" class="px-4 py-2 rounded-lg font-semibold">
+                                    风险等级
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-caption">置信度</p>
+                                    <p id="confidence-value" class="text-title font-bold">--%</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-caption">分析时间</p>
+                                <p id="analysis-time" class="text-body">--</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 电压曲线图 -->
+                    <div class="bento-card">
+                        <h4 class="text-title mb-4">电压-时间曲线</h4>
+                        <div id="voltage-chart" style="width: 100%; height: 300px;"></div>
+                    </div>
+
+                    <!-- 温度热力图 -->
+                    <div class="bento-card">
+                        <h4 class="text-title mb-4">温度热力图</h4>
+                        <div id="temperature-chart" style="width: 100%; height: 350px;"></div>
+                    </div>
+
+                    <!-- 风险雷达图 -->
+                    <div class="bento-card">
+                        <h4 class="text-title mb-4">风险评估</h4>
+                        <div id="radar-chart" style="width: 100%; height: 350px;"></div>
+                    </div>
+
+                    <!-- AI建议卡片 -->
+                    <div id="recommendations-card" class="bento-card hidden">
+                        <h4 class="text-title mb-4">
+                            <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
+                            AI建议
+                        </h4>
+                        <div id="recommendations-list" class="space-y-3">
+                            <!-- 建议列表将动态插入 -->
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        /**
+         * 设置拖拽上传功能
+         */
+        function setupDragDrop() {
+            const dropzone = document.getElementById('upload-dropzone');
+            const fileInput = document.getElementById('file-input');
+            const selectFileBtn = document.getElementById('select-file-btn');
+            const loadExampleBtn = document.getElementById('load-example-btn');
+
+            if (!dropzone) return;
+
+            // 拖拽事件处理
+            dropzone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropzone.classList.add('border-blue-500', 'bg-blue-50');
+            });
+
+            dropzone.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                dropzone.classList.remove('border-blue-500', 'bg-blue-50');
+            });
+
+            dropzone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropzone.classList.remove('border-blue-500', 'bg-blue-50');
+
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFileUpload(files[0]);
+                }
+            });
+
+            // 文件选择按钮
+            if (selectFileBtn) {
+                selectFileBtn.addEventListener('click', () => {
+                    fileInput.click();
+                });
+            }
+
+            // 文件输入变化
+            if (fileInput) {
+                fileInput.addEventListener('change', (e) => {
+                    if (e.target.files.length > 0) {
+                        handleFileUpload(e.target.files[0]);
+                    }
+                });
+            }
+
+            // 加载示例数据按钮
+            if (loadExampleBtn) {
+                loadExampleBtn.addEventListener('click', loadExampleData);
+            }
+        }
+
+        /**
+         * 处理文件上传
+         * @param {File} file - 上传的文件
+         */
+        function handleFileUpload(file) {
+            const uploadStatus = document.getElementById('upload-status');
+            const uploadProgress = document.getElementById('upload-progress');
+            const uploadPercentage = document.getElementById('upload-percentage');
+            const uploadFilename = document.getElementById('upload-filename');
+
+            // 显示上传状态
+            uploadStatus.classList.remove('hidden');
+            uploadFilename.textContent = file.name;
+
+            // 模拟上传进度
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 10;
+                uploadProgress.style.width = progress + '%';
+                uploadPercentage.textContent = progress + '%';
+
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    // 加载示例数据（实际应用中应解析CSV）
+                    setTimeout(() => {
+                        loadExampleData();
+                    }, 500);
+                }
+            }, 200);
+        }
+
+        /**
+         * 加载示例数据并渲染图表
+         */
+        function loadExampleData() {
+            // 显示诊断摘要
+            renderSummaryCard(mockAnalysisData.summary);
+
+            // 显示AI建议
+            renderRecommendationsCard(mockAnalysisData.recommendations);
+
+            // 初始化图表
+            initVoltageChart(mockAnalysisData.voltage);
+            initTemperatureChart(mockAnalysisData.temperature);
+            initRadarChart(mockAnalysisData.risk);
+        }
+
+        /**
+         * 渲染诊断摘要卡片
+         * @param {Object} summary - 诊断摘要数据
+         */
+        function renderSummaryCard(summary) {
+            const summaryCard = document.getElementById('summary-card');
+            const riskBadge = document.getElementById('risk-badge');
+            const confidenceValue = document.getElementById('confidence-value');
+            const analysisTime = document.getElementById('analysis-time');
+
+            if (!summaryCard) return;
+
+            summaryCard.classList.remove('hidden');
+
+            // 设置风险等级颜色
+            const riskColors = {
+                high: 'bg-red-100 text-red-700',
+                medium: 'bg-yellow-100 text-yellow-700',
+                low: 'bg-green-100 text-green-700'
+            };
+
+            const riskLabels = {
+                high: '高风险',
+                medium: '中风险',
+                low: '低风险'
+            };
+
+            riskBadge.className = `px-4 py-2 rounded-lg font-semibold ${riskColors[summary.riskLevel]}`;
+            riskBadge.textContent = riskLabels[summary.riskLevel];
+
+            confidenceValue.textContent = summary.confidence + '%';
+            analysisTime.textContent = new Date(summary.analysisTime).toLocaleString('zh-CN');
+        }
+
+        /**
+         * 渲染AI建议卡片
+         * @param {Array} recommendations - 建议列表
+         */
+        function renderRecommendationsCard(recommendations) {
+            const recommendationsCard = document.getElementById('recommendations-card');
+            const recommendationsList = document.getElementById('recommendations-list');
+
+            if (!recommendationsCard || !recommendationsList) return;
+
+            recommendationsCard.classList.remove('hidden');
+
+            const priorityColors = {
+                high: 'border-red-400 bg-red-50',
+                medium: 'border-yellow-400 bg-yellow-50',
+                low: 'border-green-400 bg-green-50'
+            };
+
+            const priorityLabels = {
+                high: '高',
+                medium: '中',
+                low: '低'
+            };
+
+            recommendationsList.innerHTML = recommendations.map(rec => `
+                <div class="flex items-start gap-3 p-3 border-l-4 rounded-r-lg ${priorityColors[rec.priority]}">
+                    <span class="px-2 py-1 text-xs font-semibold rounded bg-white">
+                        ${priorityLabels[rec.priority]}
+                    </span>
+                    <p class="text-body flex-1">${rec.text}</p>
+                </div>
+            `).join('');
+        }
+
+        /**
+         * 初始化电压曲线图
+         * @param {Array} data - 电压数据
+         */
+        function initVoltageChart(data) {
+            const chartDom = document.getElementById('voltage-chart');
+            if (!chartDom) return;
+
+            const myChart = echarts.init(chartDom);
+
+            const times = data.map(d => d.time);
+            const cellKeys = Object.keys(data[0]).filter(k => k !== 'time');
+
+            const series = cellKeys.map(cell => ({
+                name: cell,
+                type: 'line',
+                data: data.map(d => d[cell]),
+                smooth: true,
+                symbol: 'none',
+                lineStyle: {
+                    width: 2
+                }
+            }));
+
+            const option = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'cross'
+                    }
+                },
+                legend: {
+                    data: cellKeys,
+                    bottom: 0
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '15%',
+                    top: '10%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: times,
+                    name: '时间'
+                },
+                yAxis: {
+                    type: 'value',
+                    name: '电压 (V)',
+                    min: 3.4,
+                    max: 3.8
+                },
+                series: series
+            };
+
+            myChart.setOption(option);
+
+            // 响应式调整
+            window.addEventListener('resize', () => {
+                myChart.resize();
+            });
+        }
+
+        /**
+         * 初始化温度热力图
+         * @param {Array} data - 温度数据
+         */
+        function initTemperatureChart(data) {
+            const chartDom = document.getElementById('temperature-chart');
+            if (!chartDom) return;
+
+            const myChart = echarts.init(chartDom);
+
+            const times = data.map(d => d.time);
+            const cellKeys = Object.keys(data[0]).filter(k => k !== 'time');
+
+            // 转换数据格式为热力图所需格式
+            const heatmapData = [];
+            data.forEach((d, i) => {
+                cellKeys.forEach((cell, j) => {
+                    heatmapData.push([j, i, d[cell]]);
+                });
+            });
+
+            const option = {
+                tooltip: {
+                    position: 'top',
+                    formatter: function(params) {
+                        return `电池${cellKeys[params.data[0]]}<br/>时间: ${times[params.data[1]]}<br/>温度: ${params.data[2]}°C`;
+                    }
+                },
+                grid: {
+                    left: '10%',
+                    right: '5%',
+                    bottom: '10%',
+                    top: '10%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: cellKeys,
+                    name: '电池编号',
+                    splitArea: {
+                        show: true
+                    }
+                },
+                yAxis: {
+                    type: 'category',
+                    data: times,
+                    name: '时间',
+                    splitArea: {
+                        show: true
+                    }
+                },
+                visualMap: {
+                    min: 20,
+                    max: 35,
+                    calculable: true,
+                    orient: 'horizontal',
+                    left: 'center',
+                    bottom: '0%',
+                    inRange: {
+                        color: ['#50a3ba', '#eac736', '#d94e5d']
+                    },
+                    text: ['高温', '低温']
+                },
+                series: [{
+                    type: 'heatmap',
+                    data: heatmapData,
+                    label: {
+                        show: false
+                    },
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }]
+            };
+
+            myChart.setOption(option);
+
+            // 响应式调整
+            window.addEventListener('resize', () => {
+                myChart.resize();
+            });
+        }
+
+        /**
+         * 初始化风险雷达图
+         * @param {Object} risk - 风险数据
+         */
+        function initRadarChart(risk) {
+            const chartDom = document.getElementById('radar-chart');
+            if (!chartDom) return;
+
+            const myChart = echarts.init(chartDom);
+
+            const option = {
+                tooltip: {},
+                legend: {
+                    data: ['风险评估'],
+                    bottom: 0
+                },
+                radar: {
+                    indicator: [
+                        { name: '内短路风险', max: 100 },
+                        { name: '析锂风险', max: 100 },
+                        { name: '健康状态', max: 100 },
+                        { name: '安全熵', max: 100 },
+                        { name: '衰减速率', max: 100 }
+                    ],
+                    radius: '65%',
+                    splitNumber: 5,
+                    name: {
+                        textStyle: {
+                            fontSize: 14
+                        }
+                    }
+                },
+                series: [{
+                    name: '风险评估',
+                    type: 'radar',
+                    data: [{
+                        value: [
+                            risk.internalShort,
+                            risk.lithiumPlating,
+                            risk.health,
+                            risk.safetyEntropy,
+                            risk.degradation
+                        ],
+                        name: '风险评估',
+                        areaStyle: {
+                            opacity: 0.3
+                        },
+                        lineStyle: {
+                            width: 2
+                        }
+                    }]
+                }]
+            };
+
+            myChart.setOption(option);
+
+            // 响应式调整
+            window.addEventListener('resize', () => {
+                myChart.resize();
+            });
         }
 
         // 页面加载完成后初始化

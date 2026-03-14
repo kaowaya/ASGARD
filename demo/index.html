@@ -605,7 +605,7 @@
          */
         function renderTiersOverview() {
             const tiersCards = basSkills.tiers.map(tier => `
-                <div class="bento-card cursor-pointer hover:shadow-lg transition-shadow" onclick="showTierSkills('${tier.id}')">
+                <div class="bento-card cursor-pointer hover:shadow-lg transition-shadow" onclick="showTierSkills('${sanitizeHtml(tier.id)}')">
                     <div class="flex items-center justify-between mb-3">
                         <span class="text-2xl font-bold text-black">${tier.id}</span>
                         <span class="text-sm text-gray-500">${tier.count} 个技能</span>
